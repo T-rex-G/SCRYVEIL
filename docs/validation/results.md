@@ -29,3 +29,9 @@ Tests cover original preservation, hashes/byte offsets, duplicate source idempot
 Important failed observations preserved: initial static type/lint issues fixed; initial production retained-two-report RSS exceeded budget; unnecessary copies removed and sequential export retention measured separately. See ADR-001. Initial advisory IDs: PYSEC-2026-1845 (pytest), PYSEC-2026-3447 (setuptools), GHSA-8rrh-rw8j-w5fx (wheel). Pinned fixes:9.0.3/83.0.0/0.46.2. No upstream source/test suite/binary or actual device acquisition executed.
 
 GitHub Actions status is separate from local results; inspect the PR checks for the published commit. No preemptive green CI claim. Runtime comparison for Rust/Go/Swift, macOS, Windows, real APR exports, phone services, vulnerability-detection accuracy and future tool adapters remain NOT TESTED.
+
+## Saved-case hardening continuation (2026-10-22)
+
+95 tests pass (73 existing plus 22 metadata corruption/history regressions). Cases now validate closed metadata field sets and operational history before use: consent, collection mode, strict boolean/integer distinctions, valid UTC metadata dates, runtime values, artifact order, nonempty creation audit, analysis input/config binding, and review decisions tied to audit operations. Corruption tests recompute audit hashes to exercise semantic checks independently of the hash chain. Historical reviews survive later imports and reanalysis; repeated exports remain identical. The run start clock is captured before analysis. Existing 0.1.0 cases remain supported; no migration or runtime dependency was added.
+
+Ruff lint/format, strict mypy, Bandit, repository hygiene, synthetic CLI demo and source/wheel build passed. This continuation does not establish real-version APR conformance, hostile-local-user isolation, authenticated metadata, or a fresh performance benchmark.

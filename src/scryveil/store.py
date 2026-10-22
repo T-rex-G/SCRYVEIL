@@ -16,6 +16,7 @@ from typing import Any
 from .engine import DEFAULT_CONFIG, RuleConfig, analyze
 from .models import SCHEMA, ScryveilError
 from .parse import MAX_BYTES, canonical, digest, load_json, parse
+from .state import validate_metadata
 
 CASE_ID = re.compile(r"case-[0-9a-f]{32}\Z")
 ART_ID = re.compile(r"artifact-[0-9a-f]{64}\Z")
@@ -107,6 +108,7 @@ class CaseStore:
                 or state.get("case_id") != case_id
             ):
                 raise ScryveilError("invalid_case_state", 4)
+            validate_metadata(state)
             yield path, state
 
     def _save(self, path: Path, state: dict[str, Any]) -> None:
@@ -152,6 +154,7 @@ class CaseStore:
             "reviews": [],
         }
         _audit(state, "case.create", [case_id], "created")
+        state["created_at"] = state["audit"][0]["timestamp"]
         self._save(path, state)
         return {"case_id": case_id, "status": "created"}
 
@@ -258,12 +261,13 @@ class CaseStore:
     def run(self, case_id: str, config: RuleConfig = DEFAULT_CONFIG) -> dict[str, Any]:
         with self.locked(case_id) as (path, state):
             self.verify(path, state)
+            started_at = now()
             start = time.perf_counter()
             result = analyze(state["events"], state["artifacts"], config)
             if result != state["analysis"]:
                 state["analysis"] = result
                 state["rule_run"] = {
-                    "started_at": now(),
+                    "started_at": started_at,
                     "runtime_seconds": time.perf_counter() - start,
                     "runtime": platform.python_version(),
                     "tool_version": SCHEMA,
