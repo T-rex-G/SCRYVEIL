@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools==83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scryveil"
+version = "0.1.0"
+description = "Local-first, evidence-bound mobile investigation research core"
+requires-python = ">=3.12"
+license = "MIT"
+readme = "README.md"
+dependencies = []
+
+[project.scripts]
+scryveil = "scryveil.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest==9.0.3", "ruff==0.14.1", "mypy==1.18.2", "bandit==1.8.6", "build==1.3.0", "jsonschema==4.25.1"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"] # Formatter governs code; forensic explanation strings may be long.
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/scryveil"]

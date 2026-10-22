@@ -1,0 +1,13 @@
+# Known limitations
+
+- Experimental APR subset validated with synthetic fixtures only; no real export/version conformance or physical device. Unknown/malformed records remain warnings, not silently successful coverage.
+- Periodicity input is deliberately synthetic-only in M1. APR aggregate counts cannot support interval analysis. No real network acquisition/PCAP parser, TLS payload inspection, actor attribution or universal spyware verdict.
+- Only exact domain IOC equality. No STIX, process/hash IOC, authenticated feed/freshness, calibrated detection accuracy or complete history. Legitimate sync and missing observations remain alternatives.
+- Original bytes preserved and checked, but read-only mode is not immutable storage; audit is not externally anchored/signed. Same-user/root attackers and fully rewritten metadata are outside the integrity claim. Private files are not encrypted.
+- Store is bounded JSON, POSIX-only, advisory locks, no crash recovery UI. Hostile local path-race hardening is incomplete. Actual performance experiment and initial failed RSS budget are recorded in ADR-001.
+- Internal Case/Artifact/RuleRun state uses dictionaries; Event/Finding have dataclasses. JSON Schema conformance tests and runtime semantic checks exist, but full typed persistence model replacement is future work.
+- Redacted reports retain timestamps/hashes; they are not anonymous. Console redirection permissions are the shell's responsibility.
+- No archive extraction; corrupt/malicious ZIP/tar/plist tests prove refusal, not safe extraction. No AI, so injection tests prove inert data handling, not LLM resistance.
+- No third-party source/binaries/runtime libraries adopted; licensing remains open for future integrations. Upstream selected-source review is not a full security audit. Additional suggested projects beyond documented sources remain research backlog.
+- Dev dependencies pinned by version, not wheel hash; CPython/native dependency vulnerabilities and full transitive license inventory are not guaranteed covered by package-advisory checks.
+- Benchmarks are one shared Linux host and synthetic records; no native Rust/Go/Swift benchmark, cross-platform packaging, adversarial max-memory proof or long-running capture performance guarantee.

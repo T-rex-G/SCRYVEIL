@@ -1,0 +1,16 @@
+{
+  "synthetic": true,
+  "origin": "Independently generated; no Apple-produced or private data",
+  "license": "MIT",
+  "files": [
+    "benign_sync.ndjson",
+    "duplicates.ndjson",
+    "empty.ndjson",
+    "indicators.ndjson",
+    "insufficient.ndjson",
+    "malformed.ndjson",
+    "noisy.ndjson",
+    "periodic.ndjson",
+    "privacy_report.ndjson"
+  ]
+}

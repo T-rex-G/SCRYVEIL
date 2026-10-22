@@ -1,0 +1,53 @@
+{
+  "method": "Five isolated processes; four 5000-record imports, analyze, two sequential fully validated exports; release caller report between exports",
+  "initial_retained_two_reports": {
+    "seconds": 8.76604262,
+    "peak_rss_kib": 274368
+  },
+  "after_copy_removal_retained_two_reports": {
+    "seconds": 8.176122319,
+    "peak_rss_kib": 261548
+  },
+  "runs": [
+    {
+      "records": 20000,
+      "findings": 4,
+      "seconds": 8.378240434999952,
+      "peak_rss_kib": 181212,
+      "report_bytes": 28067763,
+      "identical_repeated_export": true
+    },
+    {
+      "records": 20000,
+      "findings": 4,
+      "seconds": 8.56438885700004,
+      "peak_rss_kib": 181208,
+      "report_bytes": 28067765,
+      "identical_repeated_export": true
+    },
+    {
+      "records": 20000,
+      "findings": 4,
+      "seconds": 7.706256534999966,
+      "peak_rss_kib": 181192,
+      "report_bytes": 28067765,
+      "identical_repeated_export": true
+    },
+    {
+      "records": 20000,
+      "findings": 4,
+      "seconds": 7.373592409999901,
+      "peak_rss_kib": 181140,
+      "report_bytes": 28067765,
+      "identical_repeated_export": true
+    },
+    {
+      "records": 20000,
+      "findings": 4,
+      "seconds": 7.367667926999957,
+      "peak_rss_kib": 181136,
+      "report_bytes": 28067765,
+      "identical_repeated_export": true
+    }
+  ]
+}
