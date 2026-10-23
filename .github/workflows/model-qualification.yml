@@ -1,0 +1,39 @@
+name: synthetic-local-model-qualification
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/model_qualification.py'
+      - 'scripts/run_model_experiment.py'
+      - '.github/workflows/model-qualification.yml'
+permissions:
+  contents: read
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install original package
+        run: |
+          python -m pip install setuptools==83.0.0
+          python -m pip install --no-build-isolation --no-deps .
+      - name: Prepare pinned CPU runtime and public weights before isolation
+        run: |
+          mkdir -p "$RUNNER_TEMP/scryveil-model"
+          git init "$RUNNER_TEMP/scryveil-model/llama"
+          git -C "$RUNNER_TEMP/scryveil-model/llama" remote add origin https://github.com/ggml-org/llama.cpp.git
+          git -C "$RUNNER_TEMP/scryveil-model/llama" fetch --depth 1 origin 4231b23dc2c46661d01157aac5245bdcf03ce4b1
+          git -C "$RUNNER_TEMP/scryveil-model/llama" checkout --detach FETCH_HEAD
+          cmake -S "$RUNNER_TEMP/scryveil-model/llama" -B "$RUNNER_TEMP/scryveil-model/llama/build" -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DLLAMA_OPENSSL=OFF -DLLAMA_SUBPROCESS=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF -DLLAMA_BUILD_APP=OFF
+          cmake --build "$RUNNER_TEMP/scryveil-model/llama/build" -j 2 --target llama-server
+          curl --fail --location --max-time 300 --proto '=https' --output "$RUNNER_TEMP/scryveil-model/model.gguf" https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/a615a81362316d7b9f5a7a9c4313adfdf9b54588/qwen2.5-1.5b-instruct-q4_k_m.gguf
+          printf '%s  %s\n' 6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e "$RUNNER_TEMP/scryveil-model/model.gguf" | sha256sum --check
+      - name: Measure actual model with generated cases and no external route
+        run: |
+          sudo unshare --net -- /bin/bash -c 'set -e; ip link set lo up; exec runuser -u runner -- "$1" "$2/scripts/run_model_experiment.py" "$3"' scryveil "$(command -v python)" "$GITHUB_WORKSPACE" "$RUNNER_TEMP/scryveil-model"
