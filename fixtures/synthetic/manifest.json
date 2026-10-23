@@ -11,6 +11,7 @@
     "malformed.ndjson",
     "noisy.ndjson",
     "periodic.ndjson",
-    "privacy_report.ndjson"
+    "privacy_report.ndjson",
+    "privacy_sessions.ndjson"
   ]
 }

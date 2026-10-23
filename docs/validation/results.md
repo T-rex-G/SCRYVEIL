@@ -1,4 +1,24 @@
-# Verified local validation — 2026-10-22
+# Verified validation
+
+## Current privacy-review continuation — 2026-10-23
+
+Baseline before this continuation: `ba4414257233e6683dab563afa4682c7cde47956` on `feat/forensic-core-genesis` (PR #1). Linux x86_64, CPython 3.12.14, pinned developer tools from `requirements-dev.lock`. All data used here is independently generated; no phone or private export was accessed.
+
+The final local test run passed **159 tests in 8.72 s** (95 prior tests plus 64 added cases). Ruff lint/format, strict mypy (10 source files), Bandit and repository hygiene passed. Source distribution and wheel built successfully. The wheel was installed without dependencies into a separate virtual environment; `doctor` and both complete CLI demos passed from `/tmp`, outside the checkout. CI now runs these installed-wheel demos too. These checks establish the exercised synthetic behavior and static checks, not real-device conformance or spyware-detection accuracy.
+
+The new privacy review tests cover exact microsecond intervals; partial, reversed and ambiguous boundaries; identifier/resource/broadcaster conflicts; duplicate source retention; independent exports; unknown attribution/tracking/context; default redaction and explicit private JSON; report-source partition and arithmetic; changed originals; no-network CLI behavior; and the versioned JSON Schema. Ten fixed random seeds generate **1,000 independent known-duration sessions** with reordered records, duplicate boundaries and five UTC offsets. All generated durations were recovered exactly. This is an algorithmic oracle, not a statistical estimate of field accuracy.
+
+Additional regressions reject boolean/integer/float substitutions in stored normalized evidence, forged findings before analyst review, boolean thresholds and enormous integer metadata/configuration without a traceback. Optimization regressions retain ASCII control rejection, printable Unicode and independent nested mutable event attributes.
+
+The synthetic core demo still produces 9 events, the periodic review-needed observation and exact-domain indicator match, with identical repeated JSON. The new `scripts/privacy_demo.py` checks the actual CLI: 6 access records yield 2 complete intervals and 1 missing-end interval; 3 network records yield 2 distinct summaries with counts 25 and 40. Both duplicate provenance and redaction are checked, repeated reports are identical, and the explicit local identifier view works. Both demos label device validation **NOT TESTED**.
+
+A compatibility experiment executed the previous baseline's modules in a separate temporary module path, created/analyzed/reviewed a synthetic case, then read it with this implementation. The old canonical analysis report was byte-identical and the saved state unchanged after the new privacy review. This checks the exercised baseline case without a migration; it is not exhaustive historical-case compatibility testing.
+
+**Performance gate OPEN / NOT PASSED:** all samples are in `docs/architecture/experiments/privacy-results.json` and interpreted in ADR-001 section 11. Five privacy runs after bounded representation changes took 9.188–14.202 s, max 116,256 KiB RSS; five alternating core runs took 10.684–34.221 s, max 181,180 KiB. The later privacy capacity smoke took 16.486 s, max 116,344 KiB and produced an identical repeated 16,316,912-byte report. These revisions and the subsequent integer-error guards are distinguished in the measurement file. Memory stayed below the 256 MiB measured budget; the 10-second target is not currently satisfied. Earlier passing timing below is retained as history, not the current status.
+
+Native runtime comparison, real Apple exports, per-OS-version behavior, macOS/Windows packaging and acquisition remain untested. No claim of superiority over Plaso, MVT or commercial tools is supported. Source research and known limitations are in `docs/research/apr-review-evidence.md` and `docs/privacy-review.md`. GitHub Actions must be checked for the published commit separately from these local results.
+
+## Initial core validation — 2026-10-22 (historical)
 
 Repository baseline: T-rex-G/SCRYVEIL main `dfef9764308a79a88f8b103cea27a00563606a89`. Main rechecked unchanged before publication. Branch: feat/forensic-core-genesis. Linux x86_64 / CPython3.12.14. No device or private export used.
 

@@ -27,6 +27,23 @@ Installation needs packages available locally or network access. The core has **
 
 One-command `python scripts/demo.py` creates temporary private synthetic cases, imports three fixtures, analyzes and verifies identical repeated JSON export. Expected summary: 9 events; `periodic.metadata: review_needed`; `ioc.domain.exact: indicator_match`; real-device validation `NOT TESTED`. Temporary demo cases are removed on completion.
 
+## Evidence-linked App Privacy Report review
+
+The original case/analysis report remains available. A separate privacy review reconstructs documented resource-access intervals and displays network attribution from verified original bytes. It is useful without indicator feeds or AI. Real iPhone exports and OS-version compatibility are still unverified.
+
+```sh
+python scripts/privacy_demo.py
+# After importing an owner-authorized APR into a private local case:
+scryveil privacy report --case "$CASE_ID" --format markdown
+scryveil privacy report --case "$CASE_ID" --format json
+# Explicit local JSON view including app identifiers and domains:
+scryveil privacy report --case "$CASE_ID" --include-identifiers
+```
+
+The synthetic demo produces two complete intervals, one missing end, and two separate network summaries with reported counts 25 and 40. Repeated reports are identical. Missing/ambiguous boundaries have no invented duration; repeated records retain all source references. Counts are never added across summaries/exports. Default reports omit raw identifiers; the explicit private JSON view includes app/domain identifiers, network context and domain owner. Protect both views as case data.
+
+Read [privacy review semantics](docs/privacy-review.md) and [research basis](docs/research/apr-review-evidence.md). `privacy report` derives its own versioned observations without changing saved cases or requiring `analyze`. Exit 0 means a report was generated; inspect its coverage, issues and interval statuses for uncertainty.
+
 ## Persistent synthetic walkthrough
 
 ```sh
@@ -62,6 +79,8 @@ python -m build --no-isolation
 
 [Validation results](docs/validation/results.md), [limits](docs/validation/known-limitations.md), [hardware matrix](docs/validation/hardware-matrix.md), [schemas](docs/evidence-schema.md), [threat model](docs/threat-model.md) and [upstream research](docs/research/upstream-assessment.md) distinguish tests from documentation claims. GitHub CI uses read-only permissions, pinned actions, synthetic fixtures and no artifact uploads.
 
+The 20,000-record performance gate is **open**: recent sequential runs stayed below 256 MiB but did not consistently meet the 10-second target. ADR-001 records all samples and the next comparison required; the earlier timing pass is historical.
+
 ## Next bounded milestone
 
-Validate APR variations against consented, locally held real exports without committing them; add explicitly synthetic regression shapes and stricter persisted-state typed validation. Then design one original sysdiagnose plaintext subartifact parser with independent source provenance. Tool adapters, large-case storage, acquisition and UI each require their own evidence-backed gate. No real evidence belongs in GitHub, issues or model services.
+Qualify the documented APR subset against consented, locally held real exports without committing them. Record source-version metadata and independently known activity; convert only fictional equivalents into regression fixtures. Persisted-state metadata validation and synthetic interval reconstruction are implemented, while complete typed persistence remains future work. Then design one original sysdiagnose plaintext subartifact parser with independent source provenance. Tool adapters, large-case storage, acquisition and UI each require their own evidence-backed gate. No real evidence belongs in GitHub, issues or model services.

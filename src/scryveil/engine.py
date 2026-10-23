@@ -22,7 +22,13 @@ class RuleConfig:
         if type(self.min_events) is not int or not 3 <= self.min_events <= 5000:
             raise ScryveilError("invalid_rule_config")
         for value in [self.min_window_seconds, self.max_cv, self.max_relative_mad]:
-            if not math.isfinite(value) or value < 0:
+            if type(value) not in (int, float):
+                raise ScryveilError("invalid_rule_config")
+            try:
+                finite = math.isfinite(value)
+            except OverflowError as exc:
+                raise ScryveilError("invalid_rule_config") from exc
+            if not finite or value < 0:
                 raise ScryveilError("invalid_rule_config")
         if self.min_window_seconds == 0 or self.max_cv > 1 or self.max_relative_mad > 1:
             raise ScryveilError("invalid_rule_config")

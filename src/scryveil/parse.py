@@ -11,6 +11,7 @@ from .models import Event, ScryveilError
 MAX_BYTES = 8 * 1024 * 1024
 MAX_LINE = 64 * 1024
 MAX_RECORDS = 5000
+CONTROL_CHARACTER = re.compile(r"[\x00-\x1f\x7f]")
 STAMP = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.(\d{1,6}))?(Z|[+-]\d\d:\d\d)$")
 
 
@@ -30,7 +31,7 @@ def text_field(value: Any, optional: bool = False) -> str | None:
         return None
     if not isinstance(value, str) or not value or len(value) > 1024:
         raise ScryveilError("invalid_field")
-    if any(ord(c) < 32 or ord(c) == 127 for c in value):
+    if CONTROL_CHARACTER.search(value):
         raise ScryveilError("invalid_field")
     return value
 

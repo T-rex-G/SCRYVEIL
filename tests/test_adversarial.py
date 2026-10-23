@@ -259,3 +259,43 @@ def test_prompt_like_text_is_data_and_never_runs(tmp_path: Path):
     assert events[0]["attributes"]["app"] == payload
     analyze(events, [])
     assert not marker.exists()
+
+
+def test_control_characters_rejected_but_printable_unicode_preserved():
+    from scryveil.parse import text_field
+
+    for code in [*range(32), 127]:
+        with pytest.raises(ScryveilError, match="invalid_field"):
+            text_field("prefix" + chr(code) + "suffix")
+    for value in ["com.example.é", " synthetic ", "com.example.😀", "a\u0080b"]:
+        assert text_field(value) == value
+
+
+@pytest.mark.parametrize("field", ["min_window_seconds", "max_cv", "max_relative_mad"])
+def test_boolean_rule_threshold_is_not_a_number(field):
+    from scryveil.engine import RuleConfig
+
+    with pytest.raises(ScryveilError, match="invalid_rule_config"):
+        RuleConfig(**{field: True}).validate()
+
+
+def test_event_serialization_keeps_nested_attributes_and_limits_independent():
+    from scryveil.models import Event
+
+    data = encoded(record())
+    values = parse(data, "artifact-" + digest(data), True)[0][0]
+    values["attributes"]["nested"] = {"items": ["synthetic"]}
+    event = Event(**values)
+    exported = event.json()
+    assert exported == values
+    exported["attributes"]["nested"]["items"].append("changed")
+    exported["limitations"].append("changed")
+    assert event.attributes["nested"]["items"] == ["synthetic"]
+    assert "changed" not in event.limitations
+
+
+def test_oversized_integer_rule_threshold_fails_with_public_error():
+    from scryveil.engine import RuleConfig
+
+    with pytest.raises(ScryveilError, match="invalid_rule_config"):
+        RuleConfig(min_window_seconds=10**400).validate()

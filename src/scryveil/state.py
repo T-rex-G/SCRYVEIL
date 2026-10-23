@@ -118,9 +118,27 @@ def validate_metadata(state: dict[str, Any]) -> None:
         stamp(run["started_at"])
         duration = run["runtime_seconds"]
         require(type(duration) in (int, float))
-        require(math.isfinite(duration) and duration >= 0)
+        try:
+            require(math.isfinite(duration) and duration >= 0)
+        except OverflowError as exc:
+            raise ScryveilError("invalid_case_state", 4) from exc
         require(isinstance(run["runtime"], str))
         require(re.fullmatch(r"\d+\.\d+\.\d+", run["runtime"]) is not None)
         require(run["tool_version"] == SCHEMA)
         require(run["input_artifact_ids"] == imported)
         require(run["config_sha256"] == analysis.get("config_sha256"))
+
+
+def same_json(left: Any, right: Any) -> bool:
+    """JSON provenance equality must distinguish bool, int and float values."""
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, dict):
+        return left.keys() == right.keys() and all(
+            same_json(value, right[key]) for key, value in left.items()
+        )
+    if isinstance(left, list):
+        return len(left) == len(right) and all(
+            same_json(a, b) for a, b in zip(left, right, strict=True)
+        )
+    return bool(left == right)

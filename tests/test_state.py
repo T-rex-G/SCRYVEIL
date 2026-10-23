@@ -38,6 +38,7 @@ def case(tmp_path):
         (("rule_run", "runtime"), "private-untrusted-text"),
         (("rule_run", "runtime_seconds"), True),
         (("rule_run", "runtime_seconds"), -1),
+        (("rule_run", "runtime_seconds"), 10**400),
         (("rule_run", "input_artifact_ids"), []),
         (("rule_run", "config_sha256"), "0" * 64),
         (("rule_run", "extra"), "private-untrusted-text"),
@@ -78,3 +79,30 @@ def test_historical_reviews_survive_import_and_reanalysis(case):
     assert report["analyst_decisions"] == before["analyst_decisions"]
     assert len(report["analysis"]["findings"]) == 2
     assert canonical(report) == canonical(build_report(store, cid))
+
+
+@pytest.mark.parametrize(
+    "key,value", [("synthetic", 1), ("byte_offset", False), ("byte_length", 0.0)]
+)
+def test_source_equal_but_different_json_type_is_rejected(case, key, value):
+    store, cid = case
+    filename = store.path(cid) / "state.json"
+    state = json.loads(filename.read_bytes())
+    event = state["events"][0]
+    event[key] = float(event[key]) if key == "byte_length" else value
+    filename.write_bytes(canonical(state))
+    with pytest.raises(ScryveilError, match="event_lineage_failed"):
+        build_report(store, cid)
+
+
+def test_review_cannot_accept_a_forged_finding(case):
+    store, cid = case
+    filename = store.path(cid) / "state.json"
+    state = json.loads(filename.read_bytes())
+    finding = state["analysis"]["findings"][0]
+    finding["explanation"] = "untrusted unsupported conclusion"
+    filename.write_bytes(canonical(state))
+    before = filename.read_bytes()
+    with pytest.raises(ScryveilError, match="finding_lineage_failed"):
+        store.review(cid, finding["finding_id"], "accepted_benign")
+    assert filename.read_bytes() == before

@@ -1,5 +1,6 @@
 """Versioned data contracts. Parsers validate input; exports rederive lineage."""
 
+from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -35,7 +36,13 @@ class Event:
     schema_version: str = SCHEMA
 
     def json(self) -> dict[str, Any]:
-        return asdict(self)
+        # Event scalar fields are immutable. Copy only the two mutable fields
+        # instead of recursively visiting every scalar during each source reparse.
+        return {
+            **vars(self),
+            "attributes": deepcopy(self.attributes),
+            "limitations": self.limitations.copy(),
+        }
 
 
 @dataclass(frozen=True)

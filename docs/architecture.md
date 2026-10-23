@@ -15,3 +15,5 @@ Import → bounded NDJSON validation → private hash-addressed originals → no
 Linux is the validated host. POSIX file permissions/locking are required; Windows storage is unsupported. macOS is not tested. Future UI consumes these contracts only after engine validation.
 
 Sources: pinned upstream files and comparisons are in [research/upstream-assessment.md](research/upstream-assessment.md). The bounded import and report invariants are additionally justified by executable adversarial tests.
+
+A separate `privacy.py` read-only projection interprets documented APR interval and network fields directly from hash-verified originals under the case lock. It returns `scryveil.privacy-review/1`; existing stored parsers, cases and analysis schemas are unchanged. This avoids rewriting previously verified interpretations while permitting richer, independently versioned observations. See docs/research/apr-review-evidence.md and schemas/privacy-review-v1.schema.json.

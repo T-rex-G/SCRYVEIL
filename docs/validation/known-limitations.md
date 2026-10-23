@@ -1,6 +1,6 @@
 # Known limitations
 
-- Experimental APR subset validated with synthetic fixtures only; no real export/version conformance or physical device. Unknown/malformed records remain warnings, not silently successful coverage.
+- Experimental APR import and derived interval/network review validated with synthetic fixtures only; no real export/version conformance or physical device. Unknown/malformed records remain warnings, not silently successful coverage.
 - Periodicity input is deliberately synthetic-only in M1. APR aggregate counts cannot support interval analysis. No real network acquisition/PCAP parser, TLS payload inspection, actor attribution or universal spyware verdict.
 - Only exact domain IOC equality. No STIX, process/hash IOC, authenticated feed/freshness, calibrated detection accuracy or complete history. Legitimate sync and missing observations remain alternatives.
 - Original bytes preserved and checked, but read-only mode is not immutable storage; audit is not externally anchored/signed. Same-user/root attackers and fully rewritten metadata are outside the integrity claim. Private files are not encrypted.
@@ -11,3 +11,6 @@
 - No third-party source/binaries/runtime libraries adopted; licensing remains open for future integrations. Upstream selected-source review is not a full security audit. Additional suggested projects beyond documented sources remain research backlog.
 - Dev dependencies pinned by version, not wheel hash; CPython/native dependency vulnerabilities and full transitive license inventory are not guaranteed covered by package-advisory checks.
 - Benchmarks are one shared Linux host and synthetic records; no native Rust/Go/Swift benchmark, cross-platform packaging, adversarial max-memory proof or long-running capture performance guarantee.
+
+- Privacy review pairs intervals within each original artifact, never across exports. Exact byte duplicates are collapsed for interpretation only; divergent metadata yields ambiguity. Unknown boundary/resource/identifier fields remain unresolved. Counts and durations are not combined into cross-export totals. Source identifiers do not establish device/app-installation identity.
+- `--include-identifiers` is an explicit local JSON disclosure mode; default redaction does not make timestamps, hashes or relationships anonymous. Privacy review generation is read-only and binds to the existing audit tip; report exports do not append a new audit event.

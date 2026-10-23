@@ -1,0 +1,772 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scryveil.invalid/schemas/privacy-review-v1",
+  "title": "SCRYVEIL derived privacy review v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "scryveil.privacy-review/1"
+    },
+    "analyzer_version": {
+      "const": "1.0.0"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^case-[0-9a-f]{32}$"
+    },
+    "source_audit_head": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "identifiers_included": {
+      "type": "boolean"
+    },
+    "provenance_mode": {
+      "enum": [
+        "no_evidence",
+        "synthetic",
+        "mixed_or_imported"
+      ]
+    },
+    "scope": {
+      "type": "string"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Artifact"
+      },
+      "maxItems": 32
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "maxItems": 20000
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Coverage"
+      }
+    },
+    "apps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/App"
+      }
+    },
+    "domains": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Domain"
+      }
+    },
+    "access_intervals": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Interval"
+      }
+    },
+    "network_summaries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Network"
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Issue"
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "access_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "interval_status_counts": {
+          "type": "object",
+          "properties": {
+            "complete": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missing_begin": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missing_end": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ambiguous": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "unresolved_identity_or_kind": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "invalid_time_order": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "network_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "network_summaries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "apps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "domains": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "access_records",
+        "interval_status_counts",
+        "network_records",
+        "network_summaries",
+        "apps",
+        "domains"
+      ],
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "report_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "analyzer_version",
+    "case_id",
+    "source_audit_head",
+    "identifiers_included",
+    "provenance_mode",
+    "scope",
+    "artifacts",
+    "sources",
+    "coverage",
+    "apps",
+    "domains",
+    "access_intervals",
+    "network_summaries",
+    "issues",
+    "summary",
+    "limitations",
+    "report_sha256"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Source": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^evt-[0-9a-f]{64}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "source_locator": {
+          "type": "string",
+          "pattern": "^line:[1-9][0-9]*$"
+        },
+        "byte_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "event_type": {
+          "enum": [
+            "privacy.access",
+            "network.summary"
+          ]
+        },
+        "event_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_offset": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "time_precision": {
+          "type": "string"
+        },
+        "synthetic": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "event_id",
+        "artifact_id",
+        "source_locator",
+        "byte_offset",
+        "byte_length",
+        "event_type",
+        "event_time",
+        "source_offset",
+        "time_precision",
+        "synthetic"
+      ],
+      "additionalProperties": false
+    },
+    "Warning": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "line",
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Warning"
+          }
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256",
+        "size",
+        "synthetic",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "apr_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "other_parsed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unparsed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_order_warning": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "apr_records",
+        "other_parsed_records",
+        "unparsed_records",
+        "source_order_warning"
+      ],
+      "additionalProperties": false
+    },
+    "App": {
+      "type": "object",
+      "properties": {
+        "app_ref": {
+          "type": "string",
+          "pattern": "^app-[0-9]{6}$"
+        },
+        "identifier_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "identifier": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "app_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Domain": {
+      "type": "object",
+      "properties": {
+        "domain_ref": {
+          "type": "string",
+          "pattern": "^domain-[0-9]{6}$"
+        },
+        "domain": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "domain_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Interval": {
+      "type": "object",
+      "properties": {
+        "interval_id": {
+          "type": "string",
+          "pattern": "^interval-[0-9a-f]{64}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "app_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^app-[0-9]{6}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resource": {
+          "enum": [
+            "camera",
+            "contacts",
+            "location",
+            "mediaLibrary",
+            "microphone",
+            "photos",
+            "screenRecording",
+            "unknown"
+          ]
+        },
+        "status": {
+          "enum": [
+            "complete",
+            "missing_begin",
+            "missing_end",
+            "ambiguous",
+            "unresolved_identity_or_kind",
+            "invalid_time_order"
+          ]
+        },
+        "start_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "end_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration_microseconds": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "begin_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          }
+        },
+        "end_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          }
+        },
+        "duplicate_record_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "interval_id",
+        "artifact_id",
+        "app_ref",
+        "resource",
+        "status",
+        "start_time",
+        "end_time",
+        "duration_microseconds",
+        "evidence_ids",
+        "begin_evidence_ids",
+        "end_evidence_ids",
+        "duplicate_record_count"
+      ],
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "status": {
+            "const": "complete"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+          },
+          "end_time": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+          },
+          "duration_microseconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "begin_evidence_ids": {
+            "minItems": 1
+          },
+          "end_evidence_ids": {
+            "minItems": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "duration_microseconds": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "Network": {
+      "type": "object",
+      "properties": {
+        "summary_id": {
+          "type": "string",
+          "pattern": "^net-[0-9a-f]{64}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "app_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^app-[0-9]{6}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "domain_ref": {
+          "type": "string",
+          "pattern": "^domain-[0-9]{6}$"
+        },
+        "first_reported_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_reported_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reported_hits": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attribution": {
+          "enum": [
+            "AppInitiated",
+            "NonAppInitiated",
+            "unknown"
+          ]
+        },
+        "tracking_classification": {
+          "enum": [
+            "flagged_by_source",
+            "not_flagged_by_source",
+            "unknown"
+          ]
+        },
+        "web_context_present": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "duplicate_record_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "domain_owner": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "summary_id",
+        "artifact_id",
+        "app_ref",
+        "domain_ref",
+        "first_reported_time",
+        "last_reported_time",
+        "reported_hits",
+        "attribution",
+        "tracking_classification",
+        "web_context_present",
+        "evidence_ids",
+        "duplicate_record_count"
+      ],
+      "additionalProperties": false
+    },
+    "Issue": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^evt-[0-9a-f]{64}$"
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[a-z_]+$"
+        }
+      },
+      "required": [
+        "event_id",
+        "code"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "if": {
+    "properties": {
+      "identifiers_included": {
+        "const": false
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "apps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "app_ref": {
+              "type": "string",
+              "pattern": "^app-[0-9]{6}$"
+            }
+          },
+          "required": [
+            "app_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "domains": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "domain_ref": {
+              "type": "string",
+              "pattern": "^domain-[0-9]{6}$"
+            }
+          },
+          "required": [
+            "domain_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "network_summaries": {
+        "type": "array",
+        "items": {
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "context"
+                ]
+              },
+              {
+                "required": [
+                  "domain_owner"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "apps": {
+        "type": "array",
+        "items": {
+          "required": [
+            "identifier_type",
+            "identifier"
+          ]
+        }
+      },
+      "domains": {
+        "type": "array",
+        "items": {
+          "required": [
+            "domain"
+          ]
+        }
+      },
+      "network_summaries": {
+        "type": "array",
+        "items": {
+          "required": [
+            "context",
+            "domain_owner"
+          ]
+        }
+      }
+    }
+  }
+}

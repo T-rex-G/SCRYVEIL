@@ -10,6 +10,7 @@ from typing import Any, Never
 from .engine import RuleConfig
 from .models import SCHEMA, ScryveilError
 from .parse import canonical
+from .privacy import build_privacy_report, privacy_markdown
 from .report import build_report, markdown
 from .store import CaseStore
 
@@ -52,6 +53,16 @@ def parser() -> Parser:
     )
     report.add_argument("--case", required=True)
     report.add_argument("--format", choices=["json", "markdown"], default="json")
+    privacy = (
+        sub.add_parser("privacy").add_subparsers(dest="action", required=True).add_parser("report")
+    )
+    privacy.add_argument("--case", required=True)
+    privacy.add_argument("--format", choices=["json", "markdown"], default="json")
+    privacy.add_argument(
+        "--include-identifiers",
+        action="store_true",
+        help="Include private app/domain identifiers in local JSON output",
+    )
     review = sub.add_parser("review")
     review.add_argument("--case", required=True)
     review.add_argument("--finding", required=True)
@@ -71,6 +82,7 @@ def execute(args: argparse.Namespace) -> Any:
             "validated_host": "Linux/Python 3.12",
             "hardware": "not_tested",
             "apr_import": "experimental",
+            "apr_privacy_review": "documented_subset_synthetic_tested",
             "ios_usb": "unsupported",
             "backup": "unsupported",
             "sysdiagnose": "unsupported",
@@ -80,6 +92,11 @@ def execute(args: argparse.Namespace) -> Any:
             "external_tools": "not_configured",
         }
     store = CaseStore(args.root)
+    if args.command == "privacy":
+        if args.include_identifiers and args.format != "json":
+            raise ScryveilError("private_identifiers_require_json")
+        privacy_report = build_privacy_report(store, args.case, args.include_identifiers)
+        return privacy_markdown(privacy_report) if args.format == "markdown" else privacy_report
     if args.command == "case":
         return (
             store.create(args.label, args.consent)

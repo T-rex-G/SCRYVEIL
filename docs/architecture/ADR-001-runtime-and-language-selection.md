@@ -1,7 +1,7 @@
 # ADR-001 — Runtime and language selection
 
 - Date: 2026-10-22
-- Status: **Accepted for the bounded Phase 1; revisit before archive acquisition or desktop distribution.**
+- Status: **Accepted for the bounded Phase 1; performance gate reopened 2026-10-23.** Revisit before archive acquisition or desktop distribution.
 - Authority: owner's stack-neutral v2 directive replaces v1's Python prescription.
 - Decision: **retain a typed Python 3.12+ single-process offline core with no runtime third-party packages.** No Python upstream library is embedded. Keep versioned JSON contracts at acquisition, parser and report boundaries. No Rust, Go, Swift or TypeScript production component yet.
 - This is a scope-dependent engineering choice, not a claim that Python is universally fastest, safest or the permanent implementation of every module.
@@ -73,7 +73,7 @@ Initial installation feasibility: `.venv/bin/python -m pip install -e '.[dev]'` 
 
 ## 6. Decision and strongest counterargument
 
-Retain **Python for this limited original engine** because the bounded inputs, exact-offset handling, raw-byte preservation and transparent rules can be delivered with no production dependencies, and measured narrow processing fits the intended budget. There is no current requirement for a binary-format parser, live service concurrency or interpreter-free desktop installer that would justify a second runtime or a rewrite. This reasoning would still apply on a fresh repository; existing code is not the rationale.
+Retain **Python for this limited original engine** because the bounded inputs, exact-offset handling, raw-byte preservation and transparent rules can be delivered with no production dependencies. The initial narrow processing measurements fit the intended budget; subsequent full-pipeline measurements reopened the performance gate (section 11). There is no current requirement for a binary-format parser, live service concurrency or interpreter-free desktop installer that would justify a second runtime or a rewrite. This reasoning would still apply on a fresh repository; existing code is not the rationale.
 
 **Best counterargument:** choose Rust now to avoid eventual migration, gain stronger compile-time invariants and improve native packaging, especially if huge hostile artifacts become central. Go is similarly attractive if the main product becomes a standalone cross-platform acquisition/orchestration CLI. These alternatives may be better at the next scope boundary. The cost of the selected path is interpreter distribution, weaker static guarantees, per-object memory overhead, synchronous state serialization and future migration work. The current `dict[str, Any]` store needs stronger schema validation; passing mypy does not prove its shape. Do not label this the most scalable lifetime design.
 
@@ -101,10 +101,30 @@ Primary language references read: [Rust ownership](https://doc.rust-lang.org/boo
 
 The choice is defensible for the measured bounded release with these declared gaps. It is not evidence of hardware support, universal spyware detection, throughput leadership or a final 3-year technology lock-in.
 
-## 10. Production feasibility gate actually executed
+## 10. Initial production feasibility measurements (historical)
 
 After the decision, the original full pipeline was measured with four 5,000-record imports, analysis and two checked report exports. First stress run retained both complete report objects and byte strings in the caller: **8.766s, 274,368KiB RSS**, exceeding the 256MiB budget. Inspection identified a needless deep copy of the analysis graph and a verification list retaining every reparsed event. Removing these copies reduced the same retained-report stress to **8.176s, 261,548KiB**; still too close to the ceiling to claim broad headroom.
 
 The reproducible `pipeline.py` then modeled **sequential exports**, releasing the first caller-owned report before generating the second and comparing full-payload SHA-256. This is explicitly a different retention pattern, not a hidden benchmark substitution. Five fresh-process runs: **7.368–8.564s**, max **181,212KiB (~177MiB)**, 20,000 records / four findings; identical repeat export verified in every run. All samples and both earlier stress outcomes are in `experiments/pipeline-results.json`.
 
-Conclusion: this bounded sequential workload meets the initial 10s/256MiB gate; callers retaining multiple complete reports can approach/exceed it. No worst-case hostile-memory bound or large-case claim follows. The measured failure triggered concrete representation fixes and a documented caller-retention contract, not an unsupported native rewrite. Before supporting larger cases, profile/replace whole-state persistence and compare native candidates as specified above.
+At that revision and on that run, this bounded sequential workload met the initial 10s/256MiB gate; callers retaining multiple complete reports could approach/exceed it. Section 11 supersedes that pass as the current performance status. No worst-case hostile-memory bound or large-case claim follows. The measured failure triggered concrete representation fixes and a documented caller-retention contract, not an unsupported native rewrite. Before supporting larger cases, profile/replace whole-state persistence and compare native candidates as specified above.
+
+## 11. APR privacy review and reopened performance gate (2026-10-23)
+
+The new read-only privacy projection interprets documented access boundaries and network summaries from verified originals. It preserves the existing 0.1.0 case and analysis-report contracts. [Research](../research/apr-review-evidence.md) compares Apple field documentation with pinned Plaso source; this is source inspection and original synthetic testing, not executed comparative accuracy testing or device qualification.
+
+`experiments/privacy_pipeline.py` creates four 5,000-record imports (16,000 access boundaries, 8,000 complete intervals and 4,000 separate network summaries), then verifies two sequential exports. It retains only one complete report at a time. All measurements, including failed and intermediate samples, are preserved in [privacy-results.json](experiments/privacy-results.json). The host remains Linux x86_64 / CPython 3.12.14 with uncontrolled shared-runner scheduling; wall and process CPU times are recorded for the later privacy runs. No private exports or hardware were used.
+
+| Executed workload / revision | Wall time | Maximum peak RSS | Interpretation |
+|---|---:|---:|---|
+| Privacy pipeline, initial five samples | 10.342–28.625 s | 126,072 KiB | Time gate failed |
+| Privacy pipeline, control-character regex only, five samples | 12.941–19.596 s | 116,484 KiB | Time gate failed |
+| Privacy pipeline, regex plus reduced event copying, five samples | 9.188–14.202 s | 116,256 KiB | Four of five exceeded 10 s |
+| Original core pipeline, alternating with those five privacy samples | 10.684–34.221 s | 181,180 KiB | All five exceeded 10 s; earlier pass is not current evidence |
+| Privacy capacity smoke after preserving unknown network context | 16.486 s (CPU 16.387 s) | 116,344 KiB | One capacity check, not a five-run acceptance pass |
+
+Every completed export pair was identical. Memory stayed below 256 MiB for these measured sequential workloads; this is not a hostile worst-case bound. The final capacity report was 16,316,912 bytes. The five-run privacy series preceded the null-versus-false context correction. The capacity smoke preceded the final enormous-integer error guards; its source hashes identify the measured files, not a claim that every later file was benchmarked.
+
+Profiling identified repeated parsing, per-character text checks and recursive dataclass serialization as costs (instrumented timings are not benchmark timings). Two bounded changes preserve semantics: a compiled control-character regex and copying only mutable event fields instead of recursively visiting immutable scalars. A five-sample microbenchmark measured the narrow text check at median 0.2360 s before / 0.0655 s after, for the recorded inputs and iteration count. Regression tests cover all ASCII control characters, printable Unicode and nested mutable-field independence. This does **not** establish an end-to-end speedup: whole-pipeline ranges overlap and shared-runner variation is substantial.
+
+**Current decision:** retain the verified single-runtime implementation for this experimental bounded CLI, but the 10-second acceptance gate is **OPEN / NOT PASSED**. No release-performance or scaling claim is justified. The observed CPU work warrants a follow-up that measures an indexed/streamed persistence design and a bounded Go or Rust implementation of the identified hot path against identical correctness fixtures. Those toolchains, and Swift, were unavailable in this environment; native runtime/build comparison remains **NOT MEASURED**. Until that comparison demonstrates a benefit, adding a production runtime would replace an observed limitation with an unmeasured assumption. Real-export conformance, desktop packaging and sustained acquisition retain their separate gates.

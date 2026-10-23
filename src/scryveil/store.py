@@ -16,7 +16,7 @@ from typing import Any
 from .engine import DEFAULT_CONFIG, RuleConfig, analyze
 from .models import SCHEMA, ScryveilError
 from .parse import MAX_BYTES, canonical, digest, load_json, parse
-from .state import validate_metadata
+from .state import same_json, validate_metadata
 
 CASE_ID = re.compile(r"case-[0-9a-f]{32}\Z")
 ART_ID = re.compile(r"artifact-[0-9a-f]{64}\Z")
@@ -250,9 +250,9 @@ class CaseStore:
             if digest(data) != artifact["sha256"] or len(data) != artifact["size"]:
                 raise ScryveilError("source_integrity_failed", 4)
             events, warnings, family = parse(data, aid, artifact["synthetic"])
-            if warnings != artifact["warnings"] or family != artifact["format"]:
+            if not same_json(warnings, artifact["warnings"]) or family != artifact["format"]:
                 raise ScryveilError("parser_integrity_failed", 4)
-            if events != state["events"][event_index : event_index + len(events)]:
+            if not same_json(events, state["events"][event_index : event_index + len(events)]):
                 raise ScryveilError("event_lineage_failed", 4)
             event_index += len(events)
         if event_index != len(state["events"]):
@@ -264,7 +264,7 @@ class CaseStore:
             started_at = now()
             start = time.perf_counter()
             result = analyze(state["events"], state["artifacts"], config)
-            if result != state["analysis"]:
+            if not same_json(result, state["analysis"]):
                 state["analysis"] = result
                 state["rule_run"] = {
                     "started_at": started_at,
@@ -287,12 +287,18 @@ class CaseStore:
             self.verify(path, state)
             if state["analysis"] is None:
                 raise ScryveilError("analysis_required", 3)
+            self.verify_analysis(state)
+            return state
+
+    def verify_analysis(self, state: dict[str, Any]) -> None:
+        try:
             result = analyze(
                 state["events"], state["artifacts"], RuleConfig(**state["analysis"]["config"])
             )
-            if result != state["analysis"]:
-                raise ScryveilError("finding_lineage_failed", 4)
-            return state
+        except (TypeError, ValueError, KeyError, ScryveilError) as exc:
+            raise ScryveilError("finding_lineage_failed", 4) from exc
+        if not same_json(result, state["analysis"]):
+            raise ScryveilError("finding_lineage_failed", 4)
 
     def review(self, case_id: str, finding_id: str, decision: str) -> dict[str, str]:
         if decision not in {"review_needed", "accepted_benign", "inconclusive"}:
@@ -303,6 +309,7 @@ class CaseStore:
                 f["finding_id"] for f in state["analysis"]["findings"]
             }:
                 raise ScryveilError("finding_not_found")
+            self.verify_analysis(state)
             state["reviews"].append(
                 {"finding_id": finding_id, "decision": decision, "timestamp": now()}
             )
