@@ -23,7 +23,7 @@ from scryveil.store import CaseStore
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL = "qualification-qwen"
-MODEL_SHA256 = "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e"
+MODEL_SHA256 = "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
 SCENARIOS = {
     "mixed_formats": "Investigate the fictional search service across JSON crash, JSON exception and disk-write resource reports. Test the initial hypothesis that every report proves a fatal crash. Inspect coverage, query events and compare deterministic findings, then explain contrary observations and limitations with exact evidence references.",
     "recurrence": "Investigate recurring failures of the fictional search service. What observations support recurrence, what contradicts the hypothesis that all reports were fatal, and which sources are missing? Inspect evidence and alternatives before a grounded final report.",
@@ -203,7 +203,7 @@ def evaluate(mock=False):
         "schema_version": "scryveil.model-evaluation/1",
         "kind": "mock_harness_check" if mock else "actual_model_experiment",
         "evidence": "independently generated only; no private or device-export data",
-        "model": None if mock else "Qwen/Qwen2.5-1.5B-Instruct-GGUF Q4_K_M",
+        "model": None if mock else "Qwen/Qwen3-4B-GGUF Q4_K_M; enable_thinking=false",
         "expected_model_sha256": None if mock else MODEL_SHA256,
         "system_prompt_sha256": digest(SYSTEM.encode()),
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT)

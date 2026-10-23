@@ -1,6 +1,6 @@
 # Diagnostic investigation operator guide
 
-This is an experimental Linux/Python 3.12+ CLI with a real read-only investigation protocol. It has no live acquisition and no validated spyware verdict. Only generated diagnostic fixtures have been executed; real Apple exports and model quality remain qualification gates. The default provider is a deterministic mock, requiring no credits or network.
+This is an experimental Linux/Python 3.12+ CLI with a real read-only investigation protocol. It has no live acquisition and no validated spyware verdict. Only generated diagnostic fixtures have been executed. A pinned Qwen model has been measured on those fixtures; genuine Apple exports and useful model reasoning remain qualification gates. See the [measured milestone](validation/diagnostic-model-milestone.md). The default provider is a deterministic mock, requiring no credits or network.
 
 ## Run the complete offline example
 
@@ -31,15 +31,23 @@ For an independently authorized actual export, omit `--synthetic`; do not upload
 
 ## Supported diagnostic scope
 
-Two JSON objects: one metadata line, then the JSON body. Supported dispatch: `bug_type` string `309` and `298`. Body crash version 104 is the qualified synthetic shape; other versions warn. Resource exceptions are supported when represented as a 309 JSON report with `EXC_RESOURCE`; separate text/resource formats (for example 142), stackshots, panic reports and arbitrary IPS streams are unsupported. Original bytes remain unchanged.
+The explicit IPS route reads a JSON metadata line, then dispatches on `bug_type`:
+
+| Declared format | Current bounded interpretation |
+|---|---|
+| 309 / 308, JSON body version 2 | Process, exception/termination, signed raw codes, capture time and simulation/lightweight-corpse declarations; 308 is a diagnostic exception, not automatically fatal |
+| 145, disk-write text Report Version 29 | Top summary through the first stack/powerstats section; start/end interval, action taken, displayed quantities and units, exact line bytes |
+| 309 body version 104 / 298 Jetsam | Original compatibility reader retained; 104 is the old synthetic profile, not a claim that Apple's modern JSON body schema is version 104 |
+
+New observations expose `format_profile`, `schema_status` and `interpretation_status`. Recognized fields remain a partial interpretation. Other body/report versions warn as unqualified; unknown report types or resource events are rejected. Stacks/powerstats in text reports, panic/stackshots, symbolication and arbitrary IPS streams are unsupported. No original is rewritten. Disk-write units/decimals are preserved as displayed; rounded MB amounts are not silently converted to exact bytes. Report start/end times are separate from metadata tracking time. `python scripts/diagnostic_formats_demo.py` exercises these distinctions with fictional fixtures.
 
 For crashes: declared process/PID/path/bundle/parent, exception, termination, source time and at most 32 faulting frames. For Jetsam: per-process rows, optional reason, resident pages and declared page size. Invalid optional fields become unknown with fixed warning codes. Missing/invalid event time is never replaced by import time or metadata tracking time. Known fields are a subset; no symbolication or inferred stack is performed.
 
-Recurrence groups declared process names and counts distinct non-null incident IDs. Same-name processes from different devices/versions can group; the report says identity is unverified. Nonfatal/simulated entries are contrary evidence to an assertion that every report is a fatal crash. This detector cannot decide between a software defect, resource pressure or an attack.
+Recurrence groups declared process names and counts distinct non-null incident IDs. Same-name processes from different devices/versions can group; the report says identity is unverified. Nonfatal/simulated entries and resource reports declaring `Action taken: none` are contrary evidence to an assertion that every report is a fatal crash. This detector cannot decide between a software defect, resource pressure or an attack.
 
 ## Configure a local model endpoint
 
-Use a model already installed and independently configured to operate offline. SCRYVEIL neither downloads models nor starts servers. A local server's logging, plugins, cloud routing and retention remain the owner's responsibility. For a suitable Ollama server, the endpoint shape is `http://127.0.0.1:11434/v1/chat/completions`; llama.cpp commonly exposes the same path on its configured port. Actual versions/models are untested here.
+Use a model already installed and independently configured to operate offline. SCRYVEIL neither downloads models nor starts servers. A local server's logging, plugins, cloud routing and retention remain the owner's responsibility. For a suitable Ollama server, the endpoint shape is `http://127.0.0.1:11434/v1/chat/completions`; llama.cpp commonly exposes the same path on its configured port. A pinned llama.cpp/Qwen CPU configuration was actually measured with generated cases and an isolated network namespace. Its initial quality failure and subsequent results are in the [milestone report](validation/diagnostic-model-milestone.md); it is not a production model recommendation. Ollama and external providers remain untested.
 
 Create an owner-only config outside the checkout; replace the model with the exact locally installed model name:
 
@@ -92,14 +100,20 @@ All tools are `scryveil.tools/1`, and all errors are structured codes without ra
 | `findings.inspect` | No arguments; deterministic findings, support, contradictions and alternatives |
 | `hypotheses.compare` | Required finding ID; that finding's deterministic alternatives and evidence; no model assertion becomes a fact |
 
-Snapshot: earliest 2,000 events by default, configurable 1–20,000 with `--max-events`, maximum 16 MiB. Unknown times sort last. Omitted count is explicit; this is selection, not representative sampling or a complete investigation. Queries are inclusive in UTC; missing source times do not match time ranges. Results cap at 64 KiB. Large findings/identifier-rich excerpts can return `tool_result_too_large`; they are not silently clipped into a misleading complete result. Source files retain the existing 8 MiB limit, with at most 32 artifacts/20,000 events per case.
+Snapshot: earliest 2,000 events by default, configurable 1–20,000 with `--max-events`, maximum 16 MiB. Unknown times sort last. Omitted count is explicit; this is selection, not representative sampling or a complete investigation. Queries are inclusive in UTC; missing source times do not match time ranges. Results cap at 64 KiB. Large findings/identifier-rich excerpts can return `tool_result_too_large`; they are not silently clipped into a misleading complete result. Source files retain the existing 8 MiB limit, with at most 32 artifacts/20,000 events per case. A measured 30-record mixed-format case exhausted the scripted mock's cumulative context budget after six requests despite fast parsing; case capacity is not a promise of a complete model investigation. Prefer focused queries/pages and inspect incomplete status.
 
 Provider budgets: 1–32 requests, 1–60 seconds each, 4–256 KiB serialized context, 128–8,192 requested output tokens, and 1,024–200,000 estimated total token units. Estimates use context bytes plus output tokens, not the provider's tokenizer. Reported usage is included when valid; missing usage/cost stays unknown. Rates are optional `input_usd_per_million` / `output_usd_per_million`; cost is an estimate, not a billing guarantee. No automatic retry or framework loop runs beyond these limits.
 
 ## Reading results and recovering failures
 
-A completed report contains the question, plan, tool trace with result hashes, coverage, deterministic findings, exact-field observed facts, derived measurements, unresolved hypotheses, contrary evidence and unanswered questions. Evidence references point to original artifact IDs, byte regions and, for Jetsam processes, JSON pointers. An exact reference proves where a value came from, not that the source or hypothesis is true. Reports include sensitive metadata and model text; review before sharing or rendering elsewhere.
+A completed report contains the question, plan, tool trace with result hashes, coverage, deterministic findings, exact-field observed facts, derived measurements, unresolved hypotheses, contrary evidence and unanswered questions. Evidence references point to original artifact IDs, byte regions and, JSON fields, JSON pointers; selected text fields carry their exact physical line/byte span. An exact reference proves where a value came from, not that the source or hypothesis is true. Reports include sensitive metadata and model text; review before sharing or rendering elsewhere.
 
 Exit 0 means a completed workflow, not forensic accuracy. Exit 2 includes imported-field warnings; inspect them. Exit 3 includes incomplete/budget-limited investigations; partial reports retain status/trace. Exit 4 includes isolation/integrity/local-state failures. Ctrl-C returns 130, with a partial report if the investigation loop had started. Fixed error codes include `remote_disclosure_consent_required`, `tool_not_allowed`, `reference_out_of_scope`, `unsupported_factual_claim`, `context_budget_exhausted`, `token_budget_exhausted`, `provider_token_budget_exceeded`, `provider_failed` and `provider_timeout`.
 
 Reruns are explicit, reverify originals and may incur fresh provider requests. There is no automatic resume. The mock report is reproducible for the same case/config/question; actual model output is not promised deterministic. Unsupported or missing sources do not establish a clean device.
+
+## Reproduce model measurements safely
+
+`python scripts/model_qualification.py --mock` checks the evaluator against the scripted provider. Without `--mock`, it targets only the qualification server at `127.0.0.1:18080` and builds its own hardcoded fictional cases. It accepts no private case/path/config. The [qualification workflow](../.github/workflows/model-qualification.yml) pins the model/runtime, verifies the weight hash, and starts both server and evaluator inside a loopback-only Linux network namespace after setup. It preserves per-scenario results even if a later scenario stops. In PR CI, download/inference requires an explicitly selected head commit containing `[model-qualification]`; ordinary updates skip this costly experiment. Download/build requires Internet; inference itself has no external route. This separate development experiment is not run by the product CLI.
+
+Review the recorded actions and final narrative alongside exact-field accuracy, contrary citations, query count, errors and budgets. A null accuracy or unexposed injection scenario is unmeasured, not a pass. Actual run outcomes are preserved even when the workflow process exits successfully. No private evidence may be substituted into this public CI harness.

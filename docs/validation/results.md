@@ -1,5 +1,7 @@
 # Verified validation
 
+Later qualification and current limits: [diagnostic/model milestone](diagnostic-model-milestone.md). The counts and no-model statements below describe the earlier checkpoint, not current untested claims.
+
 ## Current privacy-review continuation — 2026-10-23
 
 Baseline before this continuation: `ba4414257233e6683dab563afa4682c7cde47956` on `feat/forensic-core-genesis` (PR #1). Linux x86_64, CPython 3.12.14, pinned developer tools from `requirements-dev.lock`. All data used here is independently generated; no phone or private export was accessed.

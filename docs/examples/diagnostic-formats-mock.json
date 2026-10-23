@@ -1,0 +1,715 @@
+{
+  "schema_version": "scryveil.investigation/1",
+  "case_id": "case-505ec238d7ff48289e5653cb23bb28e3",
+  "snapshot_sha256": "d56d0890f8ce8777dcbeb5acf54928318b1c95794eff7867f03868564d964aaa",
+  "source_state_sha256": "1a6a04081b8ffde1cea9cbc099d4dafd715459348201ca244957ddeb892c2a37",
+  "disclosure_sha256": "1797cddcf7763ae33158c631a10b770249ff7e6e93452ec3bd8c5e94206767ea",
+  "provider": {
+    "schema_version": "scryveil.provider/1",
+    "adapter": "mock",
+    "mode": "offline",
+    "max_requests": 12,
+    "timeout_seconds": 15,
+    "max_context_bytes": 131072,
+    "max_output_tokens": 2048,
+    "max_total_tokens": 200000
+  },
+  "question": "Investigate the fictional search service across JSON crash, JSON exception and disk-write resource reports. Test the initial hypothesis that every report proves a fatal crash. Inspect coverage, query events and compare deterministic findings, then explain contrary observations and limitations with exact evidence references.",
+  "status": "completed",
+  "plan": [
+    "Inspect coverage and diagnostic records",
+    "Compare deterministic recurrence observations and alternatives",
+    "Check network evidence without assuming causation",
+    "Report supported facts and missing sources"
+  ],
+  "trace": [
+    {
+      "step": 1,
+      "action_sha256": "6fd2b696c4b6f201c676fa413e1c01c7721e81024ca174fa67d6d5f6d11e0a3b",
+      "result_sha256": "84d307eec12c8aa3e13dca622adc199a8c70b88ba9cd3c1e426d65ddc3314280",
+      "ok": true
+    },
+    {
+      "step": 2,
+      "action_sha256": "f11bc19f6c4afc044c819d55a0cd09b64270611a5f2550346ce66343683a48ad",
+      "result_sha256": "6adffb088a34f433a15a87406990cccae5effacd79f72de391dace4fae73fe2e",
+      "ok": true,
+      "tool": "case.inspect",
+      "arguments": {},
+      "result": {
+        "data": {
+          "events": 3,
+          "findings": 1,
+          "identifiers_included": true,
+          "snapshot_sha256": "d56d0890f8ce8777dcbeb5acf54928318b1c95794eff7867f03868564d964aaa"
+        },
+        "evidence_ids": [],
+        "ok": true,
+        "schema_version": "scryveil.tools/1",
+        "truncated": false
+      }
+    },
+    {
+      "step": 3,
+      "action_sha256": "9aa4931056cd6aaa8ffe74548859aea179bc48613e699ea0a0273b6503c5d46f",
+      "result_sha256": "dd4490c7c98948826fe7be9ea6605805ee9b7803506f8a2b81b6ae225e304c42",
+      "ok": true,
+      "tool": "coverage.inspect",
+      "arguments": {},
+      "result": {
+        "data": {
+          "clock_accuracy": "unknown",
+          "complete_device_history": false,
+          "families": {
+            "apple_ips_diagnostic_v2": 3
+          },
+          "not_collected_or_supported": [
+            "ios_backup",
+            "sysdiagnose_archive",
+            "pcap",
+            "configuration_profiles",
+            "live_device",
+            "android"
+          ],
+          "omitted_events": 0,
+          "real_export_qualification": "open",
+          "same_device_identity": "unverified",
+          "selected_events": 3,
+          "total_events": 3
+        },
+        "evidence_ids": [],
+        "ok": true,
+        "schema_version": "scryveil.tools/1",
+        "truncated": false
+      }
+    },
+    {
+      "step": 4,
+      "action_sha256": "81c8659884f5034435cd9121585e79459b6831c7c113e077f44904d871ef533e",
+      "result_sha256": "46712f64f405beb7e95efd0de35f55c2436ef2432e62d31cea8378e30ef10fb8",
+      "ok": true,
+      "tool": "diagnostics.search",
+      "arguments": {},
+      "result": {
+        "data": {
+          "events": [
+            {
+              "app_ref": null,
+              "artifact_id": "artifact-43a461e3367db8c192c2cb65679f27cc5744bcda909f9937ae3b17d1b3435b75",
+              "bundle_id": null,
+              "byte_length": 675,
+              "byte_offset": 131,
+              "domain_ref": null,
+              "event_id": "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+              "event_time": "2026-02-03T12:00:00.123400Z",
+              "event_type": "diagnostic.crash",
+              "exception_codes": "0x0000000000000001, 0xffffffffffffffff",
+              "exception_message": null,
+              "exception_raw_codes": [
+                1,
+                -1
+              ],
+              "exception_subtype": "fictional invalid address",
+              "exception_type": "EXC_BAD_ACCESS",
+              "field_locations": {
+                "event_time": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/captureTime",
+                  "source_locator": "line:2"
+                },
+                "exception_codes": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/exception/codes",
+                  "source_locator": "line:2"
+                },
+                "exception_raw_codes": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/exception/rawCodes",
+                  "source_locator": "line:2"
+                },
+                "exception_type": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/exception/type",
+                  "source_locator": "line:2"
+                },
+                "pid": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/pid",
+                  "source_locator": "line:2"
+                },
+                "process": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/procName",
+                  "source_locator": "line:2"
+                },
+                "termination_code": {
+                  "byte_length": 675,
+                  "byte_offset": 131,
+                  "json_pointer": "/termination/code",
+                  "source_locator": "line:2"
+                }
+              },
+              "format_profile": "ips.json.309.v2",
+              "frames": [
+                {
+                  "image_index": 0,
+                  "image_offset": 32,
+                  "symbol": "fictional_search"
+                }
+              ],
+              "interpretation_status": "partial",
+              "json_pointer": "",
+              "lightweight_corpse": null,
+              "nonfatal": null,
+              "os_build": "FICT-2",
+              "os_version": "Fictional OS",
+              "parent_process": null,
+              "parser": "apple_ips_diagnostic_v2",
+              "parser_version": "2.0.0",
+              "pid": 201,
+              "process": "com.example.searchd",
+              "process_path": "/fictional/com.example.searchd",
+              "process_ref": "process-000001",
+              "schema_status": "recognized_subset",
+              "simulated": null,
+              "source_locator": "line:2",
+              "source_offset": "+02:30",
+              "synthetic": true,
+              "termination_code": 11,
+              "termination_namespace": "SIGNAL",
+              "termination_reason": "fictional termination",
+              "time_precision": "fractional_digits:4"
+            },
+            {
+              "app_ref": null,
+              "artifact_id": "artifact-4474c35fa1dd12213ece71b8a89a8c246e39b9923c7b58903e0a338ca86b620e",
+              "bundle_id": null,
+              "byte_length": 636,
+              "byte_offset": 152,
+              "domain_ref": null,
+              "event_id": "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057",
+              "event_time": "2026-02-03T12:02:00.250000Z",
+              "event_type": "diagnostic.exception",
+              "exception_codes": "0x6000000000000007, 0x0000000000000009",
+              "exception_message": "fictional guard diagnostic",
+              "exception_raw_codes": [
+                6917529027641081863,
+                9
+              ],
+              "exception_subtype": "GUARD_TYPE_USER",
+              "exception_type": "EXC_GUARD",
+              "field_locations": {
+                "event_time": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/captureTime",
+                  "source_locator": "line:2"
+                },
+                "exception_codes": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/exception/codes",
+                  "source_locator": "line:2"
+                },
+                "exception_message": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/exception/message",
+                  "source_locator": "line:2"
+                },
+                "exception_raw_codes": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/exception/rawCodes",
+                  "source_locator": "line:2"
+                },
+                "exception_type": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/exception/type",
+                  "source_locator": "line:2"
+                },
+                "lightweight_corpse": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/isLightWeightCorpse",
+                  "source_locator": "line:2"
+                },
+                "pid": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/pid",
+                  "source_locator": "line:2"
+                },
+                "process": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/procName",
+                  "source_locator": "line:2"
+                },
+                "simulated": {
+                  "byte_length": 151,
+                  "byte_offset": 0,
+                  "json_pointer": "/is_simulated",
+                  "source_locator": "line:1"
+                },
+                "termination_code": {
+                  "byte_length": 636,
+                  "byte_offset": 152,
+                  "json_pointer": "/termination/code",
+                  "source_locator": "line:2"
+                }
+              },
+              "format_profile": "ips.json.308.v2",
+              "frames": [
+                {
+                  "image_index": 0,
+                  "image_offset": 64,
+                  "symbol": null
+                }
+              ],
+              "interpretation_status": "partial",
+              "json_pointer": "",
+              "lightweight_corpse": true,
+              "nonfatal": null,
+              "os_build": null,
+              "os_version": null,
+              "parent_process": null,
+              "parser": "apple_ips_diagnostic_v2",
+              "parser_version": "2.0.0",
+              "pid": 202,
+              "process": "com.example.searchd",
+              "process_path": "/fictional/com.example.searchd",
+              "process_ref": "process-000001",
+              "schema_status": "recognized_subset",
+              "simulated": true,
+              "source_locator": "line:2",
+              "source_offset": "+02:30",
+              "synthetic": true,
+              "termination_code": 9,
+              "termination_namespace": "other",
+              "termination_reason": "fictional fault",
+              "time_precision": "fractional_digits:4"
+            },
+            {
+              "action_taken": "none",
+              "app_ref": null,
+              "artifact_id": "artifact-ab16ab53baef868791046c2fef8534a0b8cd133c1508f38db448de3be37cc393",
+              "byte_length": 827,
+              "byte_offset": 127,
+              "domain_ref": null,
+              "duration_seconds": "60.00",
+              "event_end_time": "2026-02-03T12:05:00.000000Z",
+              "event_id": "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+              "event_time": "2026-02-03T12:04:00.000000Z",
+              "event_time_role": "interval_start",
+              "event_type": "diagnostic.resource",
+              "exception_type": null,
+              "field_locations": {
+                "action_taken": {
+                  "byte_length": 23,
+                  "byte_offset": 502,
+                  "json_pointer": "",
+                  "source_locator": "line:12"
+                },
+                "duration_seconds": {
+                  "byte_length": 25,
+                  "byte_offset": 698,
+                  "json_pointer": "",
+                  "source_locator": "line:18"
+                },
+                "event_end_time": {
+                  "byte_length": 48,
+                  "byte_offset": 175,
+                  "json_pointer": "",
+                  "source_locator": "line:3"
+                },
+                "event_time": {
+                  "byte_length": 48,
+                  "byte_offset": 127,
+                  "json_pointer": "",
+                  "source_locator": "line:2"
+                },
+                "limit_duration_seconds": {
+                  "byte_length": 25,
+                  "byte_offset": 624,
+                  "json_pointer": "",
+                  "source_locator": "line:15"
+                },
+                "pid": {
+                  "byte_length": 22,
+                  "byte_offset": 450,
+                  "json_pointer": "",
+                  "source_locator": "line:10"
+                },
+                "process": {
+                  "byte_length": 38,
+                  "byte_offset": 363,
+                  "json_pointer": "",
+                  "source_locator": "line:8"
+                },
+                "resource_kind": {
+                  "byte_length": 30,
+                  "byte_offset": 472,
+                  "json_pointer": "",
+                  "source_locator": "line:11"
+                },
+                "sampled_duration_seconds": {
+                  "byte_length": 26,
+                  "byte_offset": 723,
+                  "json_pointer": "",
+                  "source_locator": "line:19"
+                },
+                "writes_caused": {
+                  "byte_length": 27,
+                  "byte_offset": 649,
+                  "json_pointer": "",
+                  "source_locator": "line:16"
+                },
+                "writes_duration_seconds": {
+                  "byte_length": 22,
+                  "byte_offset": 676,
+                  "json_pointer": "",
+                  "source_locator": "line:17"
+                },
+                "writes_limit": {
+                  "byte_length": 26,
+                  "byte_offset": 598,
+                  "json_pointer": "",
+                  "source_locator": "line:14"
+                }
+              },
+              "format_profile": "ips.text.145.v29",
+              "interpretation_status": "partial",
+              "json_pointer": "",
+              "limit_duration_seconds": "86400",
+              "nonfatal": null,
+              "os_version": "Fictional OS (FICT-2)",
+              "parser": "apple_ips_diagnostic_v2",
+              "parser_version": "2.0.0",
+              "pid": 203,
+              "process": "com.example.searchd",
+              "process_path": "/fictional/com.example.searchd",
+              "process_ref": "process-000001",
+              "resource_kind": "disk_writes",
+              "sampled_duration_seconds": "45.50",
+              "schema_status": "recognized_subset",
+              "simulated": null,
+              "source_locator": "line:2",
+              "source_offset": "+02:30",
+              "synthetic": true,
+              "time_precision": "fractional_digits:3",
+              "writes_caused": {
+                "unit": "MB",
+                "value": "12.50"
+              },
+              "writes_duration_seconds": "60",
+              "writes_limit": {
+                "unit": "MB",
+                "value": "9.00"
+              },
+              "writes_summary": "Fictional accounting summary, not actual disk activity"
+            }
+          ],
+          "matched": 3,
+          "next_cursor": null
+        },
+        "evidence_ids": [
+          "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057",
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9"
+        ],
+        "ok": true,
+        "schema_version": "scryveil.tools/1",
+        "truncated": false
+      }
+    },
+    {
+      "step": 5,
+      "action_sha256": "fff97e6b2e3752064b7d921330c17ad7983260866c74dd9143da1130576c6b16",
+      "result_sha256": "0898cff90d6f58fa269b7852dd19421b037d5a11b5a1d58a88cf7d48687da2e4",
+      "ok": true,
+      "tool": "findings.inspect",
+      "arguments": {},
+      "result": {
+        "data": [
+          {
+            "alternatives": [
+              "software defect",
+              "resource pressure or policy termination",
+              "different devices or process versions",
+              "malicious cause remains unestablished"
+            ],
+            "assessment": "review_needed",
+            "contradictory_evidence_ids": [
+              "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+              "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+            ],
+            "distinct_reported_incidents": 3,
+            "finding_id": "diag-b01f40ee6d3e7036725cd48be3f5ad4c5eb16d416b60b64906ca14ad71a48dc8",
+            "first_observed_utc": "2026-02-03T12:00:00.123400Z",
+            "last_observed_utc": "2026-02-03T12:04:00.000000Z",
+            "limitations": [
+              "Incident IDs and process names are source declarations, not authenticated identity.",
+              "Nonfatal and simulated reports do not prove process termination.",
+              "Report recurrence alone does not establish spyware or its absence."
+            ],
+            "observation": "Multiple distinct incident identifiers name the same process in supplied diagnostic reports.",
+            "process_ref": "process-000001",
+            "rule": "diagnostics.recurrent_reports/1",
+            "supporting_evidence_ids": [
+              "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+              "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+              "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+            ]
+          }
+        ],
+        "evidence_ids": [
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+          "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+        ],
+        "ok": true,
+        "schema_version": "scryveil.tools/1",
+        "truncated": false
+      }
+    },
+    {
+      "step": 6,
+      "action_sha256": "1443f1fe783dd175c68ce6cc8dab06bea0286f5f99586aefbd8034e48400a719",
+      "result_sha256": "18fdfba52dd58cf5e811f4ac95556730058c978f7762009ffbb29d373c8d20b0",
+      "ok": true,
+      "tool": "network.query",
+      "arguments": {},
+      "result": {
+        "data": {
+          "events": [],
+          "matched": 0,
+          "next_cursor": null
+        },
+        "evidence_ids": [],
+        "ok": true,
+        "schema_version": "scryveil.tools/1",
+        "truncated": false
+      }
+    },
+    {
+      "step": 7,
+      "action_sha256": "8e242dabc03ea5832e5d71506216c9c1b7b6eb1abff1b74abdbbc62a493cd138",
+      "result_sha256": "0898cff90d6f58fa269b7852dd19421b037d5a11b5a1d58a88cf7d48687da2e4",
+      "ok": true,
+      "tool": "hypotheses.compare",
+      "arguments": {
+        "finding_id": "diag-b01f40ee6d3e7036725cd48be3f5ad4c5eb16d416b60b64906ca14ad71a48dc8"
+      },
+      "result": {
+        "data": [
+          {
+            "alternatives": [
+              "software defect",
+              "resource pressure or policy termination",
+              "different devices or process versions",
+              "malicious cause remains unestablished"
+            ],
+            "assessment": "review_needed",
+            "contradictory_evidence_ids": [
+              "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+              "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+            ],
+            "distinct_reported_incidents": 3,
+            "finding_id": "diag-b01f40ee6d3e7036725cd48be3f5ad4c5eb16d416b60b64906ca14ad71a48dc8",
+            "first_observed_utc": "2026-02-03T12:00:00.123400Z",
+            "last_observed_utc": "2026-02-03T12:04:00.000000Z",
+            "limitations": [
+              "Incident IDs and process names are source declarations, not authenticated identity.",
+              "Nonfatal and simulated reports do not prove process termination.",
+              "Report recurrence alone does not establish spyware or its absence."
+            ],
+            "observation": "Multiple distinct incident identifiers name the same process in supplied diagnostic reports.",
+            "process_ref": "process-000001",
+            "rule": "diagnostics.recurrent_reports/1",
+            "supporting_evidence_ids": [
+              "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+              "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+              "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+            ]
+          }
+        ],
+        "evidence_ids": [
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+          "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+        ],
+        "ok": true,
+        "schema_version": "scryveil.tools/1",
+        "truncated": false
+      }
+    },
+    {
+      "step": 8,
+      "action_sha256": "9c78d70c01380072f9e7ab9a05aab747bbfa4055764f5825769df2a063f15ae1",
+      "result_sha256": "ae1a5a1b15695fe993fa9dcdc6dc2c69f708bad5cc934cca29249e70ce036939",
+      "ok": true
+    }
+  ],
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "requests_with_usage": 0
+  },
+  "coverage": {
+    "total_events": 3,
+    "selected_events": 3,
+    "omitted_events": 0,
+    "families": {
+      "apple_ips_diagnostic_v2": 3
+    },
+    "not_collected_or_supported": [
+      "ios_backup",
+      "sysdiagnose_archive",
+      "pcap",
+      "configuration_profiles",
+      "live_device",
+      "android"
+    ],
+    "real_export_qualification": "open",
+    "clock_accuracy": "unknown",
+    "same_device_identity": "unverified",
+    "complete_device_history": false
+  },
+  "deterministic_findings": [
+    {
+      "finding_id": "diag-b01f40ee6d3e7036725cd48be3f5ad4c5eb16d416b60b64906ca14ad71a48dc8",
+      "rule": "diagnostics.recurrent_reports/1",
+      "assessment": "review_needed",
+      "distinct_reported_incidents": 3,
+      "supporting_evidence_ids": [
+        "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+        "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+        "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+      ],
+      "contradictory_evidence_ids": [
+        "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+        "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+      ],
+      "first_observed_utc": "2026-02-03T12:00:00.123400Z",
+      "last_observed_utc": "2026-02-03T12:04:00.000000Z",
+      "observation": "Multiple distinct incident identifiers name the same process in supplied diagnostic reports.",
+      "alternatives": [
+        "software defect",
+        "resource pressure or policy termination",
+        "different devices or process versions",
+        "malicious cause remains unestablished"
+      ],
+      "limitations": [
+        "Incident IDs and process names are source declarations, not authenticated identity.",
+        "Nonfatal and simulated reports do not prove process termination.",
+        "Report recurrence alone does not establish spyware or its absence."
+      ],
+      "process_ref": "process-000001"
+    }
+  ],
+  "result": {
+    "derived_measurements": [
+      {
+        "alternatives": [
+          "software defect",
+          "resource pressure or policy termination",
+          "different devices or process versions",
+          "malicious cause remains unestablished"
+        ],
+        "assessment": "review_needed",
+        "contradictory_evidence_ids": [
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+        ],
+        "distinct_reported_incidents": 3,
+        "finding_id": "diag-b01f40ee6d3e7036725cd48be3f5ad4c5eb16d416b60b64906ca14ad71a48dc8",
+        "first_observed_utc": "2026-02-03T12:00:00.123400Z",
+        "last_observed_utc": "2026-02-03T12:04:00.000000Z",
+        "limitations": [
+          "Incident IDs and process names are source declarations, not authenticated identity.",
+          "Nonfatal and simulated reports do not prove process termination.",
+          "Report recurrence alone does not establish spyware or its absence."
+        ],
+        "observation": "Multiple distinct incident identifiers name the same process in supplied diagnostic reports.",
+        "process_ref": "process-000001",
+        "rule": "diagnostics.recurrent_reports/1",
+        "supporting_evidence_ids": [
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+          "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+        ]
+      }
+    ],
+    "hypotheses": [
+      {
+        "confidence_justification": "Diagnostic recurrence does not distinguish a software defect from other causes; independent corroboration is missing.",
+        "contradictions": [
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057"
+        ],
+        "entailment": "not_independently_verified",
+        "status": "unresolved_model_hypothesis",
+        "support": [
+          "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+          "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057",
+          "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9"
+        ],
+        "text": "A software or resource problem is a candidate explanation; the cause remains unresolved."
+      }
+    ],
+    "observed_facts": [
+      {
+        "artifact_id": "artifact-43a461e3367db8c192c2cb65679f27cc5744bcda909f9937ae3b17d1b3435b75",
+        "byte_length": 675,
+        "byte_offset": 131,
+        "event_id": "evt-cbdb34e53a758ad8699fa789bdd4b0244257789d07bfd191bdcee319f84f4b5e",
+        "field": "event_type",
+        "json_pointer": "",
+        "source_locator": "line:2",
+        "value": "diagnostic.crash"
+      },
+      {
+        "artifact_id": "artifact-4474c35fa1dd12213ece71b8a89a8c246e39b9923c7b58903e0a338ca86b620e",
+        "byte_length": 636,
+        "byte_offset": 152,
+        "event_id": "evt-f5c5544f4b70539d2fc31c018f839721a17dc2d64ec598225776561ebbd25057",
+        "field": "event_type",
+        "json_pointer": "",
+        "source_locator": "line:2",
+        "value": "diagnostic.exception"
+      },
+      {
+        "artifact_id": "artifact-ab16ab53baef868791046c2fef8534a0b8cd133c1508f38db448de3be37cc393",
+        "byte_length": 827,
+        "byte_offset": 127,
+        "event_id": "evt-199634bef2f29e9946a460364c97e8fa328bc37fc3cc50c8b16a5a4541f4f7f9",
+        "field": "event_type",
+        "json_pointer": "",
+        "source_locator": "line:2",
+        "value": "diagnostic.resource"
+      }
+    ],
+    "scope": "No device safety verdict. Valid references do not establish hypothesis truth.",
+    "unanswered_questions": [
+      "Are these reports from the same device and software version?",
+      "What owner-observed activity coincided with the reports?",
+      "Which absent evidence sources could test the competing explanations?"
+    ]
+  },
+  "isolation": "linux_seccomp_no_files_no_network",
+  "requests": 8,
+  "reserved_token_estimate": 113522,
+  "token_reservation_basis": "serialized_context_bytes_plus_requested_output_tokens; provider tokenization may differ",
+  "usage_complete": false,
+  "estimated_cost_usd": null,
+  "cost_basis": "owner_configured_rates_and_provider_reported_usage; not an invoice",
+  "report_sha256": "975bcbf102c3333884a73dbc5bb9b2ac8cf6d86468a22c4ff370c9d80847571c"
+}

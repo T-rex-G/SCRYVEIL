@@ -3,15 +3,15 @@ Open-source mobile forensic research and threat investigation platform for spywa
 
 ## Current state
 
-The description above is the project ambition. This release is an **experimental forensic CLI with optional bounded AI investigation**. It is not a live iPhone scanner or complete forensic suite. No hardware or actual model has been validated. It cannot certify a device spyware-free.
+The description above is the project ambition. This release is an **experimental forensic CLI with optional bounded AI investigation**. It is not a live iPhone scanner or complete forensic suite. No hardware or genuine owner export has been qualified. A pinned local model was actually evaluated on generated evidence; investigation quality has not passed. It cannot certify a device spyware-free.
 
 The [stack-neutral ADR-001](docs/architecture/ADR-001-runtime-and-language-selection.md) compares Python, Rust, Go, Swift, TypeScript and minimal hybrids. It selects Python for the bounded Phase 1 based on workload/safety/integration trade-offs, documents actual measurements, and defines explicit revisit gates. It does not prescribe Python for every future component.
 
 Implemented: consent-scoped local cases; preserved originals and SHA-256; bounded NDJSON import; explicit-offset timestamps and byte/line locators; source warnings and coverage; deterministic periodicity on synthetic timed observations; exact domain IOC matching; competing hypotheses; analyst review; provenance graph; repeatable redacted JSON/Markdown reports that revalidate original bytes and findings.
 
-**Experimental real-format parsers:** Apple App Privacy Report `access`/`networkActivity` NDJSON and an explicit IPS JSON subset for crash, resource-exception and Jetsam reports. Only original generated fixtures were executed. Network aggregates never become packet timings; unknown format variations remain warnings. No backup/sysdiagnose/archive/PCAP/USB/Android acquisition or ingestion is implemented.
+**Experimental real-format parsers:** Apple App Privacy Report `access`/`networkActivity` NDJSON and version-aware IPS subsets for 309/308 JSON body version 2, 145 disk-write text and legacy Jetsam reports. Only original generated fixtures were executed. Network aggregates never become packet timings; unknown format variations remain warnings. No backup/sysdiagnose/archive/PCAP/USB/Android acquisition or ingestion is implemented.
 
-**New investigation slice:** deterministic diagnostic recurrence with contrary evidence; 11 versioned read-only tools; Linux syscall isolation; a mock provider and configurable chat-completions JSON adapter; consent-bound optional remote disclosure; evidence-linked JSON reports. The adapter has synthetic HTTP/TLS tests, not real model qualification. Read the [capability assessment](docs/capability-assessment.md), [ADR-002](docs/architecture/ADR-002-read-only-ai-investigation.md) and [operator guide](docs/investigation.md).
+**New investigation slice:** deterministic diagnostic recurrence with contrary evidence; 11 versioned read-only tools; Linux syscall isolation; a mock provider and configurable chat-completions JSON adapter; consent-bound optional remote disclosure; evidence-linked JSON reports. The adapter has synthetic HTTP/TLS tests and a measured local CPU model experiment; transport execution is not a model-quality pass. See the [current qualification report](docs/validation/diagnostic-model-milestone.md). Read the [capability assessment](docs/capability-assessment.md), [ADR-002](docs/architecture/ADR-002-read-only-ai-investigation.md) and [operator guide](docs/investigation.md).
 
 ## Install and demo (Linux, Python 3.12+)
 
@@ -30,6 +30,8 @@ Installation needs packages available locally or network access. The package has
 One-command `python scripts/demo.py` creates temporary private synthetic cases, imports three fixtures, analyzes and verifies identical repeated JSON export. Expected summary: 9 events; `periodic.metadata: review_needed`; `ioc.domain.exact: indicator_match`; real-device validation `NOT TESTED`. Temporary demo cases are removed on completion.
 
 Run `python scripts/investigation_demo.py` for the complete diagnostic slice: four fictional IPS reports, five events, four distinct incident declarations, one nonfatal contrary record and an eight-step mock investigation. Originals and case state remain unchanged. `diagnostics report` works without AI; `investigate preview` makes disclosure reviewable before a configured remote run. No external request is made by default.
+
+Run `python scripts/diagnostic_formats_demo.py` for the new 309/308/145 triad: three observations, three distinct incident declarations, two contrary records, exact resource-line citations and an eight-step mock report. Genuine exports remain a separate authorization and qualification gate.
 
 ## Evidence-linked App Privacy Report review
 
@@ -87,4 +89,4 @@ The latest five-run local 20,000-record measurements pass 10 seconds/256 MiB for
 
 ## Next bounded milestone
 
-Qualify IPS/APR semantics on separately authorized local exports, test actual local model usefulness with egress disabled, and obtain independent boundary review. Then expand isolated artifact support and indexed persistence through the [prioritized milestones](docs/capability-assessment.md). Model use, collectors, large-case storage and UI require distinct evidence gates. No private evidence belongs in GitHub, CI or model services without separate explicit authorization.
+Qualify IPS/APR semantics on separately authorized local exports, improve the measured failures of actual local model investigation with egress disabled, and obtain independent boundary review. Then expand isolated artifact support and indexed persistence through the [prioritized milestones](docs/capability-assessment.md). Model use, collectors, large-case storage and UI require distinct evidence gates. No private evidence belongs in GitHub, CI or model services without separate explicit authorization.

@@ -1,5 +1,7 @@
 # Diagnostic investigation qualification — 2026-10-23
 
+Later qualification and current limits: [diagnostic/model milestone](diagnostic-model-milestone.md). The counts and no-model statements below describe the earlier checkpoint, not current untested claims.
+
 Continuation of PR #1, preserving baseline `edbe9b135c25614161151ff679a02b690640b674`. Recoverable implementation checkpoint `c9a16e1aa1cd581ab534ee803f4787bdaf6fd779` passed [GitHub Actions run 39960989697](https://github.com/T-rex-G/SCRYVEIL/actions/runs/39960989697). Subsequent changes add policy-before-TLS hardening, accounting/contract tests and qualification documentation; CI must be assessed on the exact final PR head. No merge performed.
 
 ## Completed and measured
