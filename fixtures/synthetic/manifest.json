@@ -16,6 +16,9 @@
     "diagnostic-0.ips",
     "diagnostic-1.ips",
     "diagnostic-2.ips",
-    "diagnostic-jetsam.ips"
+    "diagnostic-jetsam.ips",
+    "diagnostic-v2-crash.ips",
+    "diagnostic-v2-exception.ips",
+    "diagnostic-text-resource.ips"
   ]
 }

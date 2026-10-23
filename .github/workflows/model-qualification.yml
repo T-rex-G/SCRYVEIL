@@ -6,6 +6,8 @@ on:
       - 'scripts/model_qualification.py'
       - 'scripts/run_model_experiment.py'
       - '.github/workflows/model-qualification.yml'
+      - 'src/scryveil/**'
+      - 'fixtures/synthetic/*.ips'
 permissions:
   contents: read
 jobs:

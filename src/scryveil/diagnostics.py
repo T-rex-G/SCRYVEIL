@@ -12,6 +12,7 @@ from .models import Event, ScryveilError
 from .parse import MAX_BYTES, MAX_LINE, canonical, digest, load_json, text_field, timestamp
 
 IPS = "apple_ips_json_v1"
+IPS_DIAGNOSTIC = "apple_ips_diagnostic_v2"
 APPLE_TIME = re.compile(r"^(\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d(?:\.\d{1,6})?) ([+-]\d\d)(\d\d)$")
 
 
@@ -38,7 +39,7 @@ def ips_time(value: Any) -> tuple[str | None, str | None, str]:
 
 
 def parse_ips(
-    data: bytes, aid: str, synthetic: bool
+    data: bytes, aid: str, synthetic: bool, *, extended: bool = False
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
     if len(data) > MAX_BYTES:
         raise ScryveilError("input_too_large")
@@ -50,7 +51,7 @@ def parse_ips(
         raise ScryveilError("invalid_ips_envelope")
     bounded_json(rec)
     bug = meta.get("bug_type")
-    if bug not in ("309", "298"):
+    if bug not in (("309", "308", "298") if extended else ("309", "298")):
         raise ScryveilError("unsupported_ips_type")
     warnings: list[dict[str, Any]] = []
 
@@ -83,7 +84,7 @@ def parse_ips(
             return {}
         return value
 
-    source_time = rec.get("captureTime") if bug == "309" else rec.get("date")
+    source_time = rec.get("captureTime") if bug in ("309", "308") else rec.get("date")
     try:
         utc, zone, precision = ips_time(source_time)
     except ScryveilError:
@@ -103,9 +104,9 @@ def parse_ips(
         "report_tracking_time": string(meta.get("timestamp"), "tracking_time"),
     }
     rows: list[tuple[str, dict[str, Any]]] = []
-    if bug == "309":
+    if bug in ("309", "308"):
         version = integer(rec.get("version"), "version")
-        if version != 104:
+        if version != (2 if extended else 104):
             warn("ips_schema_version_unqualified")
         exc, term = (
             obj(rec.get("exception"), "exception"),
@@ -136,6 +137,75 @@ def parse_ips(
             "simulated": simulated if type(simulated) is bool else None,
             "frames": [],
         }
+        if extended:
+            attrs.update(
+                interpretation_status="partial",
+                schema_status="recognized_subset" if version == 2 else "unqualified_version",
+                format_profile=f"ips.json.{bug}.v{version if version is not None else 'unknown'}",
+                exception_codes=string(exc.get("codes"), "exception_codes"),
+                exception_message=string(exc.get("message"), "exception_message"),
+                exception_raw_codes=None,
+                lightweight_corpse=None,
+                field_locations={},
+            )
+
+            def location(pointer: str, metadata: bool = False) -> dict[str, Any]:
+                return {
+                    "source_locator": "line:1" if metadata else "line:2",
+                    "byte_offset": 0 if metadata else len(header) + 1,
+                    "byte_length": len(header) if metadata else len(body),
+                    "json_pointer": pointer,
+                }
+
+            for field, pointer in {
+                "event_time": "/captureTime",
+                "process": "/procName",
+                "pid": "/pid",
+                "exception_type": "/exception/type",
+                "exception_codes": "/exception/codes",
+                "exception_message": "/exception/message",
+                "exception_raw_codes": "/exception/rawCodes",
+                "termination_code": "/termination/code",
+                "nonfatal": "/isNonFatal",
+                "simulated": "/isSimulated",
+                "lightweight_corpse": "/isLightWeightCorpse",
+            }.items():
+                current: Any = rec
+                for part in pointer.lstrip("/").split("/"):
+                    current = current.get(part) if isinstance(current, dict) else None
+                if current is not None:
+                    attrs["field_locations"][field] = location(pointer)
+            raw_codes = exc.get("rawCodes")
+            if raw_codes is not None:
+                if (
+                    isinstance(raw_codes, list)
+                    and len(raw_codes) <= 4
+                    and all(type(v) is int and -(2**63) <= v < 2**64 for v in raw_codes)
+                ):
+                    attrs["exception_raw_codes"] = raw_codes
+                else:
+                    warn("invalid_ips_exception_raw_codes")
+            # Apple reports can declare simulation in envelope metadata. Keep
+            # this distinct from proof of termination or a device compromise.
+            declared = meta.get("is_simulated")
+            if declared is not None:
+                if type(declared) in (bool, int) and declared in (0, 1):
+                    if attrs["simulated"] is not None and attrs["simulated"] != bool(declared):
+                        attrs["simulated"] = None
+                        warn("ips_simulation_flag_conflict")
+                    elif attrs["simulated"] is None:
+                        attrs["simulated"] = bool(declared)
+                        attrs["field_locations"]["simulated"] = location("/is_simulated", True)
+                else:
+                    warn("invalid_ips_simulation_metadata")
+            corpse = rec.get("isLightWeightCorpse")
+            if corpse is not None:
+                if type(corpse) in (bool, int) and corpse in (0, 1):
+                    attrs["lightweight_corpse"] = bool(corpse)
+                else:
+                    warn("invalid_ips_lightweight_corpse")
+            if rec.get("bug_type") is not None and rec["bug_type"] != bug:
+                warn("ips_bug_type_conflict")
         threads = rec.get("threads", [])
         index = integer(rec.get("faultingThread"), "faulting_thread")
         if not isinstance(threads, list) or len(threads) > 256:
@@ -164,6 +234,8 @@ def parse_ips(
         kind = (
             "diagnostic.resource"
             if attrs["exception_type"] == "EXC_RESOURCE"
+            else "diagnostic.exception"
+            if bug == "308"
             else "diagnostic.crash"
         )
         rows.append((kind, attrs))
@@ -222,8 +294,8 @@ def parse_ips(
                 source_offset=zone,
                 time_precision=precision,
                 synthetic=synthetic,
-                parser=IPS,
-                parser_version="1.0.0",
+                parser=IPS_DIAGNOSTIC if extended else IPS,
+                parser_version="2.0.0" if extended else "1.0.0",
                 attributes=attrs,
                 limitations=[
                     "Documented IPS subset; real-export/version conformance remains open.",
@@ -232,7 +304,40 @@ def parse_ips(
                 ],
             ).json()
         )
-    return events, warnings, IPS
+    return events, warnings, IPS_DIAGNOSTIC if extended else IPS
+
+
+def parse_diagnostic(
+    data: bytes, aid: str, synthetic: bool
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
+    """New imports dispatch by declared format, never by filename alone.
+
+    Stored v1 cases continue to use parse_ips with its original interpretation.
+    Legacy 104/Jetsam behavior stays unchanged; v2/308 and text get a new family.
+    """
+    if len(data) > MAX_BYTES:
+        raise ScryveilError("input_too_large")
+    head, separator, body = data.partition(b"\n")
+    if not separator or len(head) > MAX_LINE or not body.strip():
+        raise ScryveilError("invalid_ips_envelope")
+    meta = load_json(head)
+    if not isinstance(meta, dict):
+        raise ScryveilError("invalid_ips_envelope")
+    bug = meta.get("bug_type")
+    if bug == "145":
+        from .diagnostic_text import parse_resource_text
+
+        return parse_resource_text(data, aid, synthetic)
+    if bug not in ("309", "308", "298"):
+        raise ScryveilError("unsupported_ips_type")
+    rec = load_json(body)
+    legacy = bug == "298" or (
+        bug == "309"
+        and isinstance(rec, dict)
+        and type(rec.get("version")) is int
+        and rec["version"] == 104
+    )
+    return parse_ips(data, aid, synthetic, extended=not legacy)
 
 
 def diagnostic_findings(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -256,7 +361,9 @@ def diagnostic_findings(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
         contrary = [
             e["event_id"]
             for e in failures
-            if e["attributes"].get("nonfatal") is True or e["attributes"].get("simulated") is True
+            if e["attributes"].get("nonfatal") is True
+            or e["attributes"].get("simulated") is True
+            or e["attributes"].get("action_taken") == "none"
         ]
         times = sorted({e["event_time"] for e in failures if e["event_time"] is not None})
         findings.append(

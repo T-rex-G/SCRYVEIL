@@ -29,6 +29,37 @@
   },
   {
     "schema_version": "scryveil.extension/1",
+    "version": "2.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "apple_ips_diagnostic_v2",
+    "kind": "parser",
+    "implementation": "scryveil.diagnostics:parse_diagnostic",
+    "compatibility": [
+      "case 0.1.0 additive diagnostic observations",
+      "309 / 308 JSON body version 2; 145 disk writes text Report Version 29"
+    ],
+    "capabilities": [
+      "preserve original byte and field locations",
+      "distinguish tracking time and event interval",
+      "retain raw exception codes and rounded resource quantities",
+      "explicit partial interpretation and schema qualification status"
+    ],
+    "resource_budgets": {
+      "input_bytes": 8388608,
+      "json_depth": 32,
+      "json_nodes": 100000,
+      "processes": 5000,
+      "frames": 32,
+      "text_summary_lines": 200,
+      "text_line_bytes": 65536
+    },
+    "qualification": "Apple documentation and public author-posted structures; independent synthetic regressions; owner exports not received or qualified"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
     "version": "1.0.0",
     "provenance": "SCRYVEIL original code; reviewed development branch",
     "license": "MIT",
@@ -144,6 +175,6 @@
       "response_bytes": 1048576,
       "action_bytes": 65536
     },
-    "qualification": "synthetic HTTP loop and local TLS certificate tests; actual models/external providers untested"
+    "qualification": "Actual pinned Qwen 1.5B CPU run exercised transport but failed investigation quality; see docs/validation/diagnostic-model-milestone.md. External providers untested."
   }
 ]

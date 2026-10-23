@@ -434,6 +434,278 @@
             "additionalProperties": false
           },
           "maxItems": 32
+        },
+        "format_profile": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema_status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interpretation_status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resource_kind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_time_role": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_end_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writes_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sampled_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "action_taken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_codes": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_message": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writes_summary": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lightweight_corpse": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "writes_caused": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "pattern": "^\\d{1,20}(?:\\.\\d{1,9})?$"
+                },
+                "unit": {
+                  "enum": [
+                    "bytes",
+                    "KB",
+                    "MB",
+                    "GB",
+                    "KiB",
+                    "MiB",
+                    "GiB"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writes_limit": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "pattern": "^\\d{1,20}(?:\\.\\d{1,9})?$"
+                },
+                "unit": {
+                  "enum": [
+                    "bytes",
+                    "KB",
+                    "MB",
+                    "GB",
+                    "KiB",
+                    "MiB",
+                    "GiB"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_raw_codes": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 4,
+              "items": {
+                "type": "integer",
+                "minimum": -9223372036854775808,
+                "maximum": 18446744073709551615
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "field_locations": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "source_locator": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "byte_offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "byte_length": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "json_pointer": {
+                "type": "string",
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "source_locator",
+              "byte_offset",
+              "byte_length",
+              "json_pointer"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [

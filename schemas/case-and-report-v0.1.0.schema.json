@@ -52,7 +52,8 @@
             "indicator.domain",
             "diagnostic.crash",
             "diagnostic.resource",
-            "diagnostic.jetsam"
+            "diagnostic.jetsam",
+            "diagnostic.exception"
           ]
         },
         "event_time": {
@@ -83,13 +84,15 @@
             "synthetic_jsonl",
             "apple_apr_experimental",
             "ioc_jsonl",
-            "apple_ips_json_v1"
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2"
           ]
         },
         "parser_version": {
           "enum": [
             "0.1.0",
-            "1.0.0"
+            "1.0.0",
+            "2.0.0"
           ]
         },
         "limitations": {
@@ -148,7 +151,8 @@
             "indicator.domain",
             "diagnostic.crash",
             "diagnostic.resource",
-            "diagnostic.jetsam"
+            "diagnostic.jetsam",
+            "diagnostic.exception"
           ]
         },
         "event_time": {
@@ -179,13 +183,15 @@
             "synthetic_jsonl",
             "apple_apr_experimental",
             "ioc_jsonl",
-            "apple_ips_json_v1"
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2"
           ]
         },
         "parser_version": {
           "enum": [
             "0.1.0",
-            "1.0.0"
+            "1.0.0",
+            "2.0.0"
           ]
         },
         "limitations": {
@@ -249,7 +255,8 @@
             "ioc_jsonl",
             "mixed",
             "unknown",
-            "apple_ips_json_v1"
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2"
           ]
         },
         "synthetic": {
@@ -322,7 +329,8 @@
             "ioc_jsonl",
             "mixed",
             "unknown",
-            "apple_ips_json_v1"
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2"
           ]
         },
         "synthetic": {

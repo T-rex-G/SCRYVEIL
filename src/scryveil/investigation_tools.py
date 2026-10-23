@@ -149,9 +149,29 @@ def snapshot_case(
                 "footprint_bytes",
                 "hits",
                 "first_recorded_time",
+                "format_profile",
+                "schema_status",
+                "interpretation_status",
+                "lightweight_corpse",
+                "resource_kind",
+                "event_time_role",
+                "event_end_time",
+                "writes_caused",
+                "writes_limit",
+                "writes_duration_seconds",
+                "limit_duration_seconds",
+                "duration_seconds",
+                "sampled_duration_seconds",
+                "field_locations",
             ):
                 if key in a:
                     row[key] = a[key]
+            if "action_taken" in a:
+                row["action_taken"] = (
+                    a["action_taken"]
+                    if a["action_taken"] in (None, "none", "terminated")
+                    else "other"
+                )
             for key, known in {
                 "exception_type": {
                     "EXC_BAD_ACCESS",
@@ -195,6 +215,10 @@ def snapshot_case(
                     "os_version",
                     "os_build",
                     "frames",
+                    "exception_codes",
+                    "exception_raw_codes",
+                    "exception_message",
+                    "writes_summary",
                 ):
                     if key in a:
                         row[key] = a[key]
@@ -395,14 +419,15 @@ class ReadOnlyTools:
             ):
                 raise ScryveilError("unsupported_factual_claim")
             event = self.events[eid]
+            location = event.get("field_locations", {}).get(field, {})
             facts.append(
                 {
                     **fact,
                     "artifact_id": event["artifact_id"],
-                    "source_locator": event["source_locator"],
-                    "byte_offset": event["byte_offset"],
-                    "byte_length": event["byte_length"],
-                    "json_pointer": event.get("json_pointer"),
+                    "source_locator": location.get("source_locator", event["source_locator"]),
+                    "byte_offset": location.get("byte_offset", event["byte_offset"]),
+                    "byte_length": location.get("byte_length", event["byte_length"]),
+                    "json_pointer": location.get("json_pointer", event.get("json_pointer")),
                 }
             )
         measurements = []

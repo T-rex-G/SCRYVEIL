@@ -1,6 +1,8 @@
 """Launch the pinned CPU server inside an already isolated network namespace."""
 
+import json
 import os
+import resource
 import socket
 import subprocess
 import sys
@@ -25,6 +27,7 @@ finally:
     probe.close()
 os.environ.clear()
 os.environ["LANG"] = "C.UTF-8"
+started = time.monotonic()
 with (runtime / "model-server.log").open("wb") as log:
     child = subprocess.Popen(
         [
@@ -82,3 +85,19 @@ with (runtime / "model-server.log").open("wb") as log:
         except subprocess.TimeoutExpired:
             child.kill()
             child.wait()
+        usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+        print(
+            "SCRYVEIL_MODEL_RESOURCES="
+            + json.dumps(
+                {
+                    "scope": "server and evaluation child processes; excludes build/download",
+                    "wall_seconds": time.monotonic() - started,
+                    "user_cpu_seconds": usage.ru_utime,
+                    "system_cpu_seconds": usage.ru_stime,
+                    "largest_child_peak_rss_kib": usage.ru_maxrss,
+                    "model_threads": 2,
+                    "network": "loopback_only",
+                }
+            ),
+            flush=True,
+        )

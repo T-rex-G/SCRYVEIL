@@ -1,0 +1,25 @@
+{"bug_type":"145","incident_id":"fictional-text-resource","timestamp":"2026-02-03 14:40:00.000 +0230","scryveil_fixture":true}
+Date/Time:        2026-02-03 14:34:00.000 +0230
+End time:         2026-02-03 14:35:00.000 +0230
+OS Version:       Fictional OS (FICT-2)
+Report Version:   29
+Incident Identifier: fictional-text-resource
+Data Source:      Microstackshots
+Command:          com.example.searchd
+Path:             /fictional/com.example.searchd
+PID:              203
+Event:            disk writes
+Action taken:     none
+Writes:           Fictional accounting summary, not actual disk activity
+Writes limit:     9.00 MB
+Limit duration:   86400s
+Writes caused:    12.50 MB
+Writes duration:  60s
+Duration:         60.00s
+Duration Sampled:  45.50s
+
+Heaviest stack for the target process:
+  1 fictional_stack_symbol
+Powerstats for: com.example.other [999]
+End time:         2030-01-01 00:00:00.000 +0000
+Path:             /fictional/unrelated-powerstats

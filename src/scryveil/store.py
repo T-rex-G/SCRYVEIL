@@ -8,12 +8,12 @@ import stat
 import tempfile
 import time
 import uuid
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .diagnostics import IPS, parse_ips
+from .diagnostics import IPS, IPS_DIAGNOSTIC, parse_diagnostic, parse_ips
 from .engine import DEFAULT_CONFIG, RuleConfig, analyze
 from .models import SCHEMA, ScryveilError
 from .parse import MAX_BYTES, canonical, digest, load_json, parse
@@ -174,13 +174,17 @@ class CaseStore:
         aid = "artifact-" + sha
         if input_format not in {"ndjson", "ips"}:
             raise ScryveilError("unsupported_format")
-        events, warnings, family = (parse_ips if input_format == "ips" else parse)(
+        events, warnings, family = (parse_diagnostic if input_format == "ips" else parse)(
             data, aid, synthetic
         )
         with self.locked(case_id) as (path, state):
             self.verify(path, state)
             for artifact in state["artifacts"]:
                 if artifact["artifact_id"] == aid:
+                    if input_format == "ips" and artifact["format"] == IPS:
+                        # Reimport is idempotent under its recorded reader;
+                        # upgrading the executable never migrates old evidence.
+                        events, warnings, family = parse_ips(data, aid, synthetic)
                     if artifact["format"] != family:
                         raise ScryveilError("parser_selection_conflict")
                     if artifact["synthetic"] != synthetic:
@@ -258,9 +262,16 @@ class CaseStore:
             data = read_regular(path / "originals" / artifact["sha256"], MAX_BYTES)
             if digest(data) != artifact["sha256"] or len(data) != artifact["size"]:
                 raise ScryveilError("source_integrity_failed", 4)
-            events, warnings, family = (parse_ips if artifact["format"] == IPS else parse)(
-                data, aid, artifact["synthetic"]
-            )
+            reader: Callable[
+                [bytes, str, bool], tuple[list[dict[str, Any]], list[dict[str, Any]], str]
+            ]
+            if artifact["format"] == IPS:
+                reader = parse_ips
+            elif artifact["format"] == IPS_DIAGNOSTIC:
+                reader = parse_diagnostic
+            else:
+                reader = parse
+            events, warnings, family = reader(data, aid, artifact["synthetic"])
             if not same_json(warnings, artifact["warnings"]) or family != artifact["format"]:
                 raise ScryveilError("parser_integrity_failed", 4)
             if not same_json(events, state["events"][event_index : event_index + len(events)]):

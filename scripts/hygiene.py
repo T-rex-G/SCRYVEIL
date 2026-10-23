@@ -42,14 +42,18 @@ if not manifest.get("synthetic") or actual != set(manifest["files"]):
     errors.append("fixture allowlist mismatch")
 for path in fixtures.glob("*.ips"):
     head, body = path.read_bytes().split(b"\n", 1)
-    meta, report = json.loads(head), json.loads(body)
+    meta = json.loads(head)
     if meta.get("scryveil_fixture") is not True:
         errors.append("ips fixture provenance missing")
-    names = (
-        [report["procName"]]
-        if "procName" in report
-        else [p["name"] for p in report.get("processes", [])]
-    )
+    if meta.get("bug_type") == "145":
+        names = re.findall(r"^Command:[ \t]+([^\r\n]+)$", body.decode(), re.MULTILINE)
+    else:
+        report = json.loads(body)
+        names = (
+            [report["procName"]]
+            if "procName" in report
+            else [p["name"] for p in report.get("processes", [])]
+        )
     if not names or any(not n.startswith("com.example.") for n in names):
         errors.append("nonfictional ips process")
 for path in fixtures.glob("*.ndjson"):
