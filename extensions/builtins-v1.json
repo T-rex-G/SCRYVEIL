@@ -1,0 +1,149 @@
+[
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "apple_ips_json_v1",
+    "kind": "parser",
+    "implementation": "scryveil.diagnostics:parse_ips",
+    "compatibility": [
+      "case 0.1.0 additive IPS event support",
+      "JSON envelope bug_type 309 / 298; report version 104 for 309"
+    ],
+    "capabilities": [
+      "parse supplied bytes",
+      "preserve exact body locations",
+      "warn on unqualified fields"
+    ],
+    "resource_budgets": {
+      "input_bytes": 8388608,
+      "json_depth": 32,
+      "json_nodes": 100000,
+      "processes": 5000,
+      "frames": 32
+    },
+    "qualification": "synthetic fixtures and Apple documentation; real export gate open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "diagnostics.recurrent_reports/1",
+    "kind": "detector",
+    "implementation": "scryveil.diagnostics:diagnostic_findings",
+    "compatibility": [
+      "normalized diagnostic events 0.1.0"
+    ],
+    "capabilities": [
+      "derive incident recurrence",
+      "retain nonfatal/simulated contrary evidence"
+    ],
+    "resource_budgets": {
+      "events": 20000
+    },
+    "qualification": "synthetic expected results only; no calibrated security accuracy"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [
+      "read authorized in-memory snapshot",
+      "write pipe responses"
+    ],
+    "side_effects": [],
+    "extension_id": "scryveil.tools/1",
+    "kind": "investigator_tools",
+    "implementation": "scryveil.investigation_tools:ReadOnlyTools",
+    "compatibility": [
+      "scryveil.snapshot/1",
+      "scryveil.agent/1",
+      "Linux libseccomp.so.2 required by runtime"
+    ],
+    "capabilities": [
+      "case.inspect",
+      "coverage.inspect",
+      "evidence.list",
+      "integrity.verify",
+      "timeline.query",
+      "diagnostics.search",
+      "network.query",
+      "process.inspect",
+      "evidence.read_excerpt",
+      "findings.inspect",
+      "hypotheses.compare"
+    ],
+    "resource_budgets": {
+      "snapshot_bytes": 16777216,
+      "result_bytes": 65536,
+      "query_events": 25,
+      "worker_cpu_seconds": 20,
+      "worker_address_space_bytes": 536870912
+    },
+    "qualification": "OS syscall denial and adversarial synthetic tests; no independent audit"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "mock",
+    "kind": "provider",
+    "implementation": "scryveil.providers:MockProvider",
+    "compatibility": [
+      "scryveil.provider/1",
+      "scryveil.agent/1"
+    ],
+    "capabilities": [
+      "deterministic scripted investigation demonstration"
+    ],
+    "resource_budgets": {
+      "requests": 32,
+      "action_bytes": 65536
+    },
+    "qualification": "executed offline; not a model or an intelligence benchmark"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [
+      "loopback connection after explicit run OR public HTTPS after exact disclosure consent",
+      "one named SCRYVEIL_ credential from owner environment"
+    ],
+    "side_effects": [
+      "explicitly authorized model requests disclose minimized context",
+      "provider may log requests or incur charges"
+    ],
+    "extension_id": "chat-completions-json",
+    "kind": "provider",
+    "implementation": "scryveil.providers:ChatCompletionsProvider",
+    "compatibility": [
+      "scryveil.provider/1",
+      "scryveil.agent/1",
+      "non-streaming /v1/chat/completions JSON message content"
+    ],
+    "capabilities": [
+      "owner-configured model endpoint",
+      "optional provider usage reporting"
+    ],
+    "resource_budgets": {
+      "requests": 32,
+      "request_timeout_seconds": 60,
+      "context_bytes": 262144,
+      "response_bytes": 1048576,
+      "action_bytes": 65536
+    },
+    "qualification": "synthetic HTTP loop and local TLS certificate tests; actual models/external providers untested"
+  }
+]

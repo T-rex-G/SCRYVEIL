@@ -55,3 +55,7 @@ GitHub Actions status is separate from local results; inspect the PR checks for 
 95 tests pass (73 existing plus 22 metadata corruption/history regressions). Cases now validate closed metadata field sets and operational history before use: consent, collection mode, strict boolean/integer distinctions, valid UTC metadata dates, runtime values, artifact order, nonempty creation audit, analysis input/config binding, and review decisions tied to audit operations. Corruption tests recompute audit hashes to exercise semantic checks independently of the hash chain. Historical reviews survive later imports and reanalysis; repeated exports remain identical. The run start clock is captured before analysis. Existing 0.1.0 cases remain supported; no migration or runtime dependency was added.
 
 Ruff lint/format, strict mypy, Bandit, repository hygiene, synthetic CLI demo and source/wheel build passed. This continuation does not establish real-version APR conformance, hostile-local-user isolation, authenticated metadata, or a fresh performance benchmark.
+
+## Diagnostic investigation continuation
+
+See [current investigation qualification](investigation-results.md) for the 244-test suite, original-format compatibility comparison, OS/HTTP/TLS adversarial checks, installed-wheel demos, five-run measurements and explicit open gates. Older results in this file remain historical rather than claims of final-head qualification.

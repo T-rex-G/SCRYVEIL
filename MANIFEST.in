@@ -1,5 +1,6 @@
 include LICENSE README.md SECURITY.md PRIVACY.md CONTRIBUTING.md AGENTS.md requirements-dev.lock
 recursive-include schemas *.json
+recursive-include extensions *.json
 recursive-include fixtures/synthetic *.ndjson *.json *.ips
 recursive-include scripts *.py
 recursive-include tests *.py

@@ -12,7 +12,7 @@ from scryveil.investigation_tools import ReadOnlyTools, snapshot_case
 from scryveil.investigation_worker import Session
 from scryveil.models import ScryveilError
 from scryveil.parse import canonical
-from scryveil.providers import DEFAULT_CONFIG, Reply, load_config, validate_config
+from scryveil.providers import DEFAULT_CONFIG, MockProvider, Reply, load_config, validate_config
 from scryveil.store import CaseStore
 
 FIXTURES = Path(__file__).parents[1] / "fixtures/synthetic"
@@ -226,6 +226,26 @@ def test_isolation_unavailable_fails_closed(monkeypatch):
         isolation.restrict_worker()
 
 
+def test_literal_unicode_search_works_inside_os_boundary(case):
+    store, cid = case
+    snap = snapshot_case(store, cid, include_identifiers=True)
+    snap["events"][0]["process"] = "com.example.épreuve"
+    worker = Worker(snap, 5)
+    try:
+        worker.request(PLAN)
+        result = worker.request(
+            {
+                **BASE,
+                "kind": "tool",
+                "name": "diagnostics.search",
+                "arguments": {"text": "ÉPREUVE", "start_time": "2026-01-01T00:00:00Z"},
+            }
+        )
+        assert result["ok"] and result["data"]["matched"] == 1
+    finally:
+        worker.close()
+
+
 def test_os_boundary_denies_files_network_execution_and_environment(tmp_path):
     sentinel = tmp_path / "sentinel"
     sentinel.write_text("untouched")
@@ -339,6 +359,31 @@ def test_unknown_provider_outputs_and_infinite_queries_are_bounded(case):
     )
     assert result["requests"] == 3 and result["status"] == "request_budget_exhausted"
     assert result["trace"][-1]["error"] == "tool_not_allowed"
+
+
+def test_provider_reported_overage_stops_without_a_second_request(case):
+    store, cid = case
+
+    class Overage:
+        def next(self, messages):
+            return Reply(PLAN, {"input_tokens": 200000, "output_tokens": 1})
+
+    report = investigate(store, cid, "Question", DEFAULT_CONFIG, provider=Overage())
+    assert report["status"] == "provider_token_budget_exceeded" and report["requests"] == 1
+    assert report["trace"] == [] and report["result"] is None
+
+
+def test_case_change_during_run_is_detected_before_report_acceptance(case):
+    store, cid = case
+
+    class OwnerChange(MockProvider):
+        def next(self, messages):
+            if self.step == 0:
+                store.run(cid)
+            return super().next(messages)
+
+    with pytest.raises(ScryveilError, match="case_changed_during_investigation"):
+        investigate(store, cid, "Question", DEFAULT_CONFIG, provider=OwnerChange())
 
 
 def test_minimized_snapshot_and_schema_contract(case):

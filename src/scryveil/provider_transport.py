@@ -38,7 +38,12 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
     try:
         sock.connect(selected[4])
         if context is not None:
-            sock = context.wrap_socket(sock, server_hostname=host)
+            # Construct the wrapper without consuming provider-controlled TLS
+            # records. Perform the handshake only after installing the policy.
+            sock = context.wrap_socket(sock, server_hostname=host, do_handshake_on_connect=False)
+        restrict_worker(connected_socket=True)
+        if isinstance(sock, ssl.SSLSocket):
+            sock.do_handshake()
         connection = http.client.HTTPConnection(host, port, timeout=config["timeout_seconds"])
         connection.sock = sock
         payload = canonical(
@@ -57,7 +62,6 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         }
         if request["credential"]:
             headers["Authorization"] = "Bearer " + request["credential"]
-        restrict_worker(connected_socket=True)
         connection.request("POST", url.path, body=payload, headers=headers)
         response = connection.getresponse()
         # No redirects, proxies, cookies, downloads or provider-supplied URLs.

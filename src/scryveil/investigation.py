@@ -162,8 +162,8 @@ def investigate(
             if len(canonical(messages)) > config["max_context_bytes"]:
                 report["status"] = "context_budget_exhausted"
                 break
-            # UTF-8 byte count is a conservative input reservation, not a usage
-            # measurement. Missing provider usage never creates a false zero.
+            # Byte-based input reservation is an estimate, not a provider
+            # tokenizer or billing guarantee. Missing usage is never false zero.
             reservation = len(canonical(messages)) + config["max_output_tokens"]
             if reserved_tokens + reservation > config["max_total_tokens"]:
                 report["status"] = "token_budget_exhausted"
@@ -179,6 +179,8 @@ def investigate(
                 usage["input_tokens"] += reply.usage["input_tokens"]
                 usage["output_tokens"] += reply.usage["output_tokens"]
                 usage["requests_with_usage"] += 1
+                if usage["input_tokens"] + usage["output_tokens"] > config["max_total_tokens"]:
+                    raise ScryveilError("provider_token_budget_exceeded")
             if len(canonical(reply.action)) > 65536:
                 raise ScryveilError("agent_response_too_large")
             result = worker.request(reply.action)
@@ -220,7 +222,11 @@ def investigate(
         if digest(canonical(state)) != snapshot["source_state_sha256"]:
             raise ScryveilError("case_changed_during_investigation", 4)
     report["requests"] = requests
-    report["reserved_token_upper_bound"] = reserved_tokens
+    report["reserved_token_estimate"] = reserved_tokens
+    # Token accounting metadata, not an authentication secret.
+    report["token_reservation_basis"] = (  # nosec B105
+        "serialized_context_bytes_plus_requested_output_tokens; provider tokenization may differ"
+    )
     report["usage_complete"] = usage["requests_with_usage"] == requests and requests > 0
     report["estimated_cost_usd"] = (
         round(

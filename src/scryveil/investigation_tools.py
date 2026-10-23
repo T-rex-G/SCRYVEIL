@@ -1,5 +1,6 @@
 """Versioned, case-bound queries over a minimized, verified in-memory snapshot."""
 
+import json
 from collections import Counter
 from copy import deepcopy
 from typing import Any
@@ -363,7 +364,13 @@ class ReadOnlyTools:
                     )
                 ]
         if "text" in args:
-            rows = [e for e in rows if args["text"].casefold() in canonical(e).decode().casefold()]
+            # Search displayed Unicode, not the ASCII escape spelling used for
+            # canonical hashes. This does not interpret regex or instructions.
+            rows = [
+                e
+                for e in rows
+                if args["text"].casefold() in json.dumps(e, ensure_ascii=False).casefold()
+            ]
         cursor, limit = args.get("cursor", 0), args.get("limit", 25)
         selected = rows[cursor : cursor + limit]
         truncated = cursor + limit < len(rows)

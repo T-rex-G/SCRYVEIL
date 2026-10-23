@@ -2,6 +2,9 @@
 
 import json
 import socket
+import ssl
+import subprocess
+import sys
 import threading
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -26,7 +29,7 @@ def response(action=PLAN, usage=None):
 
 
 @contextmanager
-def peer(callback):
+def peer(callback, tls_context=None):
     observed = []
 
     class Handler(BaseHTTPRequestHandler):
@@ -48,6 +51,8 @@ def peer(callback):
                 pass
 
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    if tls_context is not None:
+        server.socket = tls_context.wrap_socket(server.socket, server_side=True)
     thread = threading.Thread(
         target=server.serve_forever, kwargs={"poll_interval": 0.02}, daemon=True
     )
@@ -145,6 +150,79 @@ def test_real_transport_timeout_terminates_broker():
             assert len(observed) == 1
     finally:
         release.set()
+
+
+@pytest.mark.parametrize(
+    "hostname,accepted", [("provider.example.invalid", True), ("wrong.example.invalid", False)]
+)
+def test_tls_handshake_is_confined_and_hostname_verified(tmp_path, hostname, accepted):
+    # Ephemeral test-only key. No key/certificate enters the repository or output.
+    key, cert = tmp_path / "test-key.pem", tmp_path / "test-cert.pem"
+    subprocess.run(
+        [
+            "openssl",
+            "req",
+            "-x509",
+            "-newkey",
+            "rsa:2048",
+            "-nodes",
+            "-days",
+            "1",
+            "-subj",
+            "/CN=provider.example.invalid",
+            "-addext",
+            "subjectAltName=DNS:provider.example.invalid",
+            "-keyout",
+            str(key),
+            "-out",
+            str(cert),
+        ],
+        check=True,
+        capture_output=True,
+        timeout=15,
+    )
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(cert, key)
+    with peer(lambda _: (200, response()), context) as (config, observed):
+        port = int(config["endpoint"].split(":")[2].split("/")[0])
+        config.update(mode="remote", endpoint=f"https://{hostname}:{port}/v1/chat/completions")
+        # Only this test child substitutes DNS/TCP routing and its trust store.
+        # The production broker does not accept a custom CA or route override.
+        code = """
+import json, socket, ssl, sys
+from scryveil.provider_transport import exchange
+payload=json.load(sys.stdin)
+original_socket=socket.socket
+class LoopbackSocket(original_socket):
+    def connect(self, address):
+        return super().connect(('127.0.0.1', address[1]))
+socket.socket=LoopbackSocket
+socket.getaddrinfo=lambda host,port,**kw: [(socket.AF_INET,socket.SOCK_STREAM,6,'',('93.184.215.14',port))]
+original_context=ssl.create_default_context
+ssl.create_default_context=lambda: original_context(cafile=payload.pop('test_ca'))
+try:
+    result=exchange(payload)
+except ssl.SSLCertVerificationError:
+    result={'ok':False,'error':'certificate_rejected'}
+print(json.dumps(result))
+"""
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", code],
+            input=canonical(
+                {
+                    "config": config,
+                    "credential": None,
+                    "messages": [{"role": "user", "content": "synthetic"}],
+                    "test_ca": str(cert),
+                }
+            ),
+            capture_output=True,
+            timeout=10,
+        )
+        assert result.returncode == 0, result.stderr
+        output = json.loads(result.stdout)
+        assert output["ok"] is accepted
+        assert len(observed) == int(accepted)
 
 
 @pytest.mark.parametrize(

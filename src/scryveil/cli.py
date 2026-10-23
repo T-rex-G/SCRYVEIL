@@ -182,6 +182,9 @@ def main(argv: list[str] | None = None) -> int:
     except ScryveilError as exc:
         print(json.dumps({"error": exc.code}), file=sys.stderr)
         return exc.exit_code
+    except KeyboardInterrupt:
+        print(json.dumps({"error": "cancelled"}), file=sys.stderr)
+        return 130
     except (OSError, ValueError, KeyError, TypeError, RecursionError):
         print(json.dumps({"error": "local_io_or_state_error"}), file=sys.stderr)
         return 4

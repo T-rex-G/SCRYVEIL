@@ -1,0 +1,33 @@
+# Diagnostic and AI architecture evidence
+
+Review date: 2026-10-23. Primary documentation and selected pinned source only. No personal evidence, upstream binaries, live models or device services were executed. Earlier eight-reference research remains at its recorded SHAs; it is not silently relabeled as a new head review.
+
+## Apple format basis and original fixtures
+
+[Apple: JSON crash reports](https://developer.apple.com/documentation/xcode/interpreting-the-json-format-of-a-crash-report) describes the two-object IPS envelope used by modern crash reports. The first line is metadata; the following JSON body contains the incident. Metadata `timestamp` is a reporting/tracking clock, so SCRYVEIL uses body `captureTime` for a 309 event and retains the original tracking string separately. Documented process, exception, termination and faulting-thread fields inform the parser. Unknown report versions warn; unfamiliar optional types become unknown with warnings. This is a supported subset, not a universal `.ips` decoder. Numeric/string variants, older text reports and other bug types need separate qualification.
+
+[Apple: Jetsam reports](https://developer.apple.com/documentation/xcode/identifying-high-memory-use-with-jetsam-event-reports) distinguishes process memory snapshots from termination reasons. Our parser does not mark every listed process as killed. Memory interpretation uses resident pages multiplied by the declared page size; missing/conflicting page size stays unknown. A Jetsam report has no crash stack to invent. Dispatch for bug type 298 and version behavior remain real-export qualification gates.
+
+The four `.ips` fixtures are original generated examples with fictional processes, incidents, paths and dates. They contain no exported device data. They test exact body offsets/JSON pointers, source timezone conversion, malformed/unknown fields, recurrence, nonfatal contrary evidence and non-victim Jetsam rows. Documentation grounding is stronger than copying an arbitrary JSON shape, but is not independent real-format execution validation. No real sample was authorized for this task. Acceptance gate 2 therefore remains explicitly open.
+
+## Independent 2026 secure-design assessment
+
+[Amnesty's announcement, 31 August 2026](https://securitylab.amnesty.org/latest/2026/08/strengthening-the-tools-behind-consensual-forensics-secure-design-assessment/) identifies an independent 0xche review of the combined MVT/AndroidQF workflow, including secure design, code security and usability. It is relevant to acquisition and analysis together, not only parser correctness.
+
+The [0xche assessment](https://0xche.org/pdf/assessment.pdf), linked from its [project page](https://0xche.org/en/projects/26-consensual-forensics/), was inspected, especially evidence handling/isolation (pp. 13–14) and manifest/path handling (pp. 22–24). Its lessons include verifying integrity at consumption, separating acquisition/hash/sealing phases, avoiding shared transient state, enforcing network restrictions outside optional flags, and making findings/coverage understandable. Filesystem modes under one identity do not alone isolate cases. The report's code findings are historical reviewer observations; we did not reproduce them or establish current remediation status. We do not repeat a general claim that all standard archive extraction is vulnerable. The PDF declares CC BY-NC-SA 4.0; it is linked, not copied into SCRYVEIL's MIT material.
+
+Our resulting engineering choices are original: snapshot verification before and after investigation, per-run workers with no case handles, enforced deny-by-default syscall/network boundaries, explicit disclosure manifests, typed reference checks, and visible omissions/alternatives. Signed external custody anchors, acquisition isolation and safe archive support remain absent. This implementation has not received an independent secure-design assessment.
+
+## Provider, isolation and license evidence
+
+| Source inspected | Observation | Decision / qualification |
+|---|---|---|
+| [Ollama compatibility documentation](https://docs.ollama.com/api/openai-compatibility) | Subset of OpenAI-style HTTP APIs; local server can also use cloud models | Use the small chat-completions JSON subset; operator must establish that a selected model/server is actually offline. No model tested |
+| [llama.cpp server README at `4231b23dc2c46661d01157aac5245bdcf03ce4b1`](https://github.com/ggml-org/llama.cpp/blob/4231b23dc2c46661d01157aac5245bdcf03ce4b1/tools/server/README.md), relevant HTTP/JSON/template sections; root LICENSE | JSON object/schema output documented; compatibility depends on model/template; MIT server code | Candidate local path, not a certified provider. No binaries/weights included; model-weight licenses are separate |
+| [Linux seccomp documentation](https://docs.kernel.org/userspace-api/seccomp_filter.html) | Syscall filtering reduces kernel surface; architecture/privilege handling matters; it is not a complete sandbox | Native syscall resolution through system libseccomp, no new privileges, inherited handles only, tested denials; host/kernel remain trusted |
+| [libseccomp LICENSE at `2814474a2bc105f5ffabf4bbc7ae9fb100997028`](https://github.com/seccomp/libseccomp/blob/2814474a2bc105f5ffabf4bbc7ae9fb100997028/LICENSE) and installed system copyright | LGPL 2.1 terms; system library is loaded dynamically | Required for investigation, not copied into wheel. A future bundled distribution needs its notices/source/relinking obligations reviewed |
+| [MCP security guidance](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices) | Explicit risks around proxy authority, SSRF, sessions and local server compromise | No unrestricted MCP or dynamic tools. Revisit only with an actual scoped client requirement |
+
+Source rechecks during this continuation: MVT `src/mvt/ios/modules/fs/shutdownlog.py` at `f4bfc39…` and libimobiledevice `tools/idevicecrashreport.c` at `fa0f791…`. MVT uses source shutdown association and process/path indicators; we did not adopt its parser or license. The crash collector defaults to removing copied records unless keep is set and starts a mover service; inspection is not proof of device-state immutability. This reinforces separating future acquisition from the AI tool surface.
+
+No runtime comparison was made against commercial suites or upstream tools. Provider documentation, tests of the HTTP contract and actual investigative model quality are three different evidence levels. Full source/license inventories for the other requested references are preserved in [upstream assessment](upstream-assessment.md) and [license matrix](license-matrix.md).
