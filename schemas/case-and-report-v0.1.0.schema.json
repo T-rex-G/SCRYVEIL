@@ -49,7 +49,10 @@
             "network.summary",
             "privacy.access",
             "context.approved_sync",
-            "indicator.domain"
+            "indicator.domain",
+            "diagnostic.crash",
+            "diagnostic.resource",
+            "diagnostic.jetsam"
           ]
         },
         "event_time": {
@@ -79,11 +82,15 @@
           "enum": [
             "synthetic_jsonl",
             "apple_apr_experimental",
-            "ioc_jsonl"
+            "ioc_jsonl",
+            "apple_ips_json_v1"
           ]
         },
         "parser_version": {
-          "const": "0.1.0"
+          "enum": [
+            "0.1.0",
+            "1.0.0"
+          ]
         },
         "limitations": {
           "type": "array",
@@ -138,7 +145,10 @@
             "network.summary",
             "privacy.access",
             "context.approved_sync",
-            "indicator.domain"
+            "indicator.domain",
+            "diagnostic.crash",
+            "diagnostic.resource",
+            "diagnostic.jetsam"
           ]
         },
         "event_time": {
@@ -168,11 +178,15 @@
           "enum": [
             "synthetic_jsonl",
             "apple_apr_experimental",
-            "ioc_jsonl"
+            "ioc_jsonl",
+            "apple_ips_json_v1"
           ]
         },
         "parser_version": {
-          "const": "0.1.0"
+          "enum": [
+            "0.1.0",
+            "1.0.0"
+          ]
         },
         "limitations": {
           "type": "array",
@@ -234,7 +248,8 @@
             "apple_apr_experimental",
             "ioc_jsonl",
             "mixed",
-            "unknown"
+            "unknown",
+            "apple_ips_json_v1"
           ]
         },
         "synthetic": {
@@ -306,7 +321,8 @@
             "apple_apr_experimental",
             "ioc_jsonl",
             "mixed",
-            "unknown"
+            "unknown",
+            "apple_ips_json_v1"
           ]
         },
         "synthetic": {

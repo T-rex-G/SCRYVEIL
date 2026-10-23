@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from .diagnostics import IPS, parse_ips
 from .engine import DEFAULT_CONFIG, RuleConfig, analyze
 from .models import SCHEMA, ScryveilError
 from .parse import MAX_BYTES, canonical, digest, load_json, parse
@@ -165,15 +166,23 @@ class CaseStore:
             if CASE_ID.fullmatch(p.name) and p.is_dir() and not p.is_symlink()
         ]
 
-    def import_file(self, case_id: str, source: Path, synthetic: bool = False) -> dict[str, Any]:
+    def import_file(
+        self, case_id: str, source: Path, synthetic: bool = False, input_format: str = "ndjson"
+    ) -> dict[str, Any]:
         data = read_regular(source, MAX_BYTES)
         sha = digest(data)
         aid = "artifact-" + sha
-        events, warnings, family = parse(data, aid, synthetic)
+        if input_format not in {"ndjson", "ips"}:
+            raise ScryveilError("unsupported_format")
+        events, warnings, family = (parse_ips if input_format == "ips" else parse)(
+            data, aid, synthetic
+        )
         with self.locked(case_id) as (path, state):
             self.verify(path, state)
             for artifact in state["artifacts"]:
                 if artifact["artifact_id"] == aid:
+                    if artifact["format"] != family:
+                        raise ScryveilError("parser_selection_conflict")
                     if artifact["synthetic"] != synthetic:
                         raise ScryveilError("provenance_mode_conflict")
                     _audit(state, "evidence.reimport", [aid], "duplicate")
@@ -249,7 +258,9 @@ class CaseStore:
             data = read_regular(path / "originals" / artifact["sha256"], MAX_BYTES)
             if digest(data) != artifact["sha256"] or len(data) != artifact["size"]:
                 raise ScryveilError("source_integrity_failed", 4)
-            events, warnings, family = parse(data, aid, artifact["synthetic"])
+            events, warnings, family = (parse_ips if artifact["format"] == IPS else parse)(
+                data, aid, artifact["synthetic"]
+            )
             if not same_json(warnings, artifact["warnings"]) or family != artifact["format"]:
                 raise ScryveilError("parser_integrity_failed", 4)
             if not same_json(events, state["events"][event_index : event_index + len(events)]):

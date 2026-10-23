@@ -12,6 +12,10 @@
     "noisy.ndjson",
     "periodic.ndjson",
     "privacy_report.ndjson",
-    "privacy_sessions.ndjson"
+    "privacy_sessions.ndjson",
+    "diagnostic-0.ips",
+    "diagnostic-1.ips",
+    "diagnostic-2.ips",
+    "diagnostic-jetsam.ips"
   ]
 }
