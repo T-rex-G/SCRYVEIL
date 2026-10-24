@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCRYVEIL provider configuration v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "scryveil.provider/1"
+    },
+    "adapter": {
+      "enum": [
+        "mock",
+        "chat-completions-json"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "offline",
+        "local",
+        "remote"
+      ]
+    },
+    "endpoint": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "model": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "api_key_env": {
+      "type": "string",
+      "pattern": "^SCRYVEIL_[A-Z0-9_]{1,64}$"
+    },
+    "input_usd_per_million": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "output_usd_per_million": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10000
+    },
+    "max_requests": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 32
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 60
+    },
+    "max_context_bytes": {
+      "type": "integer",
+      "minimum": 4096,
+      "maximum": 262144
+    },
+    "max_output_tokens": {
+      "type": "integer",
+      "minimum": 128,
+      "maximum": 8192
+    },
+    "max_total_tokens": {
+      "type": "integer",
+      "minimum": 1024,
+      "maximum": 200000
+    }
+  },
+  "required": [],
+  "additionalProperties": false,
+  "description": "Omitted fields use runtime defaults. Runtime additionally enforces adapter/mode combinations, private file permissions, exact URL path/scheme, loopback/public destination restrictions and consent. No inline credential is accepted.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "adapter": {
+            "const": "chat-completions-json"
+          }
+        },
+        "required": [
+          "adapter"
+        ]
+      },
+      "then": {
+        "required": [
+          "endpoint",
+          "model",
+          "mode"
+        ],
+        "properties": {
+          "mode": {
+            "enum": [
+              "local",
+              "remote"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "mode": {
+            "const": "offline"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "endpoint"
+              ]
+            },
+            {
+              "required": [
+                "model"
+              ]
+            },
+            {
+              "required": [
+                "api_key_env"
+              ]
+            },
+            {
+              "required": [
+                "input_usd_per_million"
+              ]
+            },
+            {
+              "required": [
+                "output_usd_per_million"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

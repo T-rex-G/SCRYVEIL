@@ -1,0 +1,13 @@
+{
+  "tool": "pip-audit 2.9.0",
+  "date": "2026-10-22",
+  "scope": "exact developer/build lock entries; runtime has no third-party requirements",
+  "packages": 25,
+  "known_vulnerabilities": 0,
+  "corrected_pins": {
+    "pytest": "9.0.3",
+    "setuptools": "83.0.0",
+    "wheel": "0.46.2"
+  },
+  "limits": "Advisory database check only, not malware/license audit or CPython vulnerability guarantee."
+}

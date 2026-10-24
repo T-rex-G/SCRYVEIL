@@ -1,0 +1,421 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCRYVEIL read-only tool call v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "case.inspect"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "coverage.inspect"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "evidence.list"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "integrity.verify"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "timeline.query"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "event_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "process_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "app_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "domain_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "start_time": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "end_time": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "cursor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "diagnostics.search"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "event_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "process_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "app_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "domain_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "start_time": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "end_time": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "cursor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "network.query"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "event_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "process_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "app_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "domain_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "start_time": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "end_time": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "cursor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "process.inspect"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "process_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "process_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "evidence.read_excerpt"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "event_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "event_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "findings.inspect"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "name": {
+          "const": "hypotheses.compare"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "finding_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "finding_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

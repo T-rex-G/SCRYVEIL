@@ -1,0 +1,455 @@
+{
+  "date": "2026-10-22",
+  "synthetic": true,
+  "before_optimization": [
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "seconds": 14.313745615000244,
+      "import_seconds": 6.347555846999967,
+      "first_export_seconds": 4.598072355000113,
+      "peak_rss_kib": 116772,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "seconds": 12.3778964979997,
+      "import_seconds": 6.569828904999667,
+      "first_export_seconds": 2.9956524290000743,
+      "peak_rss_kib": 126072,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "seconds": 10.342437910000172,
+      "import_seconds": 4.2827915090001625,
+      "first_export_seconds": 3.032004329999836,
+      "peak_rss_kib": 126044,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "seconds": 15.656605107999894,
+      "import_seconds": 4.822047289999773,
+      "first_export_seconds": 7.3821943110001484,
+      "peak_rss_kib": 125916,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "seconds": 28.62523171599969,
+      "import_seconds": 4.292849943999954,
+      "first_export_seconds": 4.7433141960000285,
+      "peak_rss_kib": 125984,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    }
+  ],
+  "initial_smoke": {
+    "seconds": 10.034878046999893,
+    "peak_rss_kib": 116568
+  },
+  "profile": {
+    "instrumented_seconds": 28.422,
+    "calls": 47934380,
+    "parse_cumulative_seconds": 18.792,
+    "text_field_cumulative_seconds": 6.554,
+    "asdict_cumulative_seconds": 4.829,
+    "same_json_cumulative_seconds": 3.323
+  },
+  "before_script_sha256": "605fb8d9c973f310ec70364740a6d3dc309399b09a649e83f5536c830100ca25",
+  "native_toolchains": {
+    "go": false,
+    "rustc": false,
+    "swift": false
+  },
+  "control_regex_samples": [
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "cpu_seconds": 14.198222346,
+      "seconds": 14.384746651000114,
+      "import_seconds": 7.0183910180003295,
+      "first_export_seconds": 3.0777624610000203,
+      "peak_rss_kib": 116180,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "cpu_seconds": 12.865460864000001,
+      "seconds": 12.941379341999891,
+      "import_seconds": 4.778700750000098,
+      "first_export_seconds": 2.7472317810002096,
+      "peak_rss_kib": 116484,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "cpu_seconds": 16.129834129,
+      "seconds": 16.245709340000303,
+      "import_seconds": 7.841324712000187,
+      "first_export_seconds": 4.877264561000175,
+      "peak_rss_kib": 116088,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "cpu_seconds": 19.491657579,
+      "seconds": 19.59623099500004,
+      "import_seconds": 9.458259042999998,
+      "first_export_seconds": 4.166493097000057,
+      "peak_rss_kib": 116184,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "cpu_seconds": 17.158104108,
+      "seconds": 17.268775444999847,
+      "import_seconds": 7.507930573000067,
+      "first_export_seconds": 5.070592915999896,
+      "peak_rss_kib": 116148,
+      "report_bytes": 15852913,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    }
+  ],
+  "after_copy_reduction": {
+    "privacy": [
+      {
+        "records": 20000,
+        "summary": {
+          "access_records": 16000,
+          "interval_status_counts": {
+            "complete": 8000
+          },
+          "network_records": 4000,
+          "network_summaries": 4000,
+          "apps": 4,
+          "domains": 1
+        },
+        "cpu_seconds": 14.118278149,
+        "seconds": 14.201959564999925,
+        "import_seconds": 7.495135637000203,
+        "first_export_seconds": 3.439628633999746,
+        "peak_rss_kib": 115500,
+        "report_bytes": 15852913,
+        "identical_repeated_export": true,
+        "python": "3.12.14",
+        "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+      },
+      {
+        "records": 20000,
+        "summary": {
+          "access_records": 16000,
+          "interval_status_counts": {
+            "complete": 8000
+          },
+          "network_records": 4000,
+          "network_summaries": 4000,
+          "apps": 4,
+          "domains": 1
+        },
+        "cpu_seconds": 12.791686049,
+        "seconds": 12.874513086999741,
+        "import_seconds": 5.9144081489998825,
+        "first_export_seconds": 3.998506000999896,
+        "peak_rss_kib": 115708,
+        "report_bytes": 15852913,
+        "identical_repeated_export": true,
+        "python": "3.12.14",
+        "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+      },
+      {
+        "records": 20000,
+        "summary": {
+          "access_records": 16000,
+          "interval_status_counts": {
+            "complete": 8000
+          },
+          "network_records": 4000,
+          "network_summaries": 4000,
+          "apps": 4,
+          "domains": 1
+        },
+        "cpu_seconds": 13.313514688,
+        "seconds": 13.4010031050002,
+        "import_seconds": 6.541606430000229,
+        "first_export_seconds": 4.21722029600005,
+        "peak_rss_kib": 116256,
+        "report_bytes": 15852913,
+        "identical_repeated_export": true,
+        "python": "3.12.14",
+        "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+      },
+      {
+        "records": 20000,
+        "summary": {
+          "access_records": 16000,
+          "interval_status_counts": {
+            "complete": 8000
+          },
+          "network_records": 4000,
+          "network_summaries": 4000,
+          "apps": 4,
+          "domains": 1
+        },
+        "cpu_seconds": 9.115977487,
+        "seconds": 9.188035753999884,
+        "import_seconds": 4.206192697000006,
+        "first_export_seconds": 2.4596993340001063,
+        "peak_rss_kib": 116256,
+        "report_bytes": 15852913,
+        "identical_repeated_export": true,
+        "python": "3.12.14",
+        "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+      },
+      {
+        "records": 20000,
+        "summary": {
+          "access_records": 16000,
+          "interval_status_counts": {
+            "complete": 8000
+          },
+          "network_records": 4000,
+          "network_summaries": 4000,
+          "apps": 4,
+          "domains": 1
+        },
+        "cpu_seconds": 10.367516971,
+        "seconds": 10.914655872999901,
+        "import_seconds": 5.103266543000245,
+        "first_export_seconds": 3.0680354279998028,
+        "peak_rss_kib": 115440,
+        "report_bytes": 15852913,
+        "identical_repeated_export": true,
+        "python": "3.12.14",
+        "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+      }
+    ],
+    "core": [
+      {
+        "records": 20000,
+        "findings": 4,
+        "seconds": 15.500043519999963,
+        "peak_rss_kib": 180996,
+        "report_bytes": 28067765,
+        "identical_repeated_export": true
+      },
+      {
+        "records": 20000,
+        "findings": 4,
+        "seconds": 34.22072284600017,
+        "peak_rss_kib": 181068,
+        "report_bytes": 28067765,
+        "identical_repeated_export": true
+      },
+      {
+        "records": 20000,
+        "findings": 4,
+        "seconds": 12.660673099999713,
+        "peak_rss_kib": 181160,
+        "report_bytes": 28067765,
+        "identical_repeated_export": true
+      },
+      {
+        "records": 20000,
+        "findings": 4,
+        "seconds": 10.68354888199974,
+        "peak_rss_kib": 181180,
+        "report_bytes": 28067765,
+        "identical_repeated_export": true
+      },
+      {
+        "records": 20000,
+        "findings": 4,
+        "seconds": 13.004211689000385,
+        "peak_rss_kib": 181044,
+        "report_bytes": 28067765,
+        "identical_repeated_export": true
+      }
+    ]
+  },
+  "after_copy_reduction_note": "Five runs per workload before final null-vs-false context-presence correction. No improvement or 10-second pass is inferred from shared-runner variation.",
+  "final_capacity_smoke": {
+    "records": 20000,
+    "summary": {
+      "access_records": 16000,
+      "interval_status_counts": {
+        "complete": 8000
+      },
+      "network_records": 4000,
+      "network_summaries": 4000,
+      "apps": 4,
+      "domains": 1
+    },
+    "cpu_seconds": 16.387444075,
+    "seconds": 16.48560533,
+    "import_seconds": 8.60445169400009,
+    "first_export_seconds": 3.30338953699993,
+    "peak_rss_kib": 116344,
+    "report_bytes": 16316912,
+    "identical_repeated_export": true,
+    "python": "3.12.14",
+    "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+  },
+  "measurement_revision_note": "Source hashes below identify the capacity-smoke revision. Later enormous-integer error guards in state.py and engine.py were not rebenchmarked; no performance pass is claimed.",
+  "capacity_smoke_source_sha256": {
+    "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+    "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+    "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+    "src/scryveil/state.py": "55a8f7bca39175a670214f81fc192ae9e5070070ca2a3db569594ad593e7f3c7",
+    "src/scryveil/store.py": "e6f6fde411745c2a1548f19fa2a495e2b2b94b334ad7a92276b7a9ff6cf96839",
+    "docs/architecture/experiments/privacy_pipeline.py": "5fc6a0af526e143e1c6dc9a493a526be1099d0b70e70e0acb546df8b6496eede"
+  },
+  "field_check_microbenchmark": {
+    "iterations_per_sample": 20000,
+    "values": [
+      "com.example.privacydemo",
+      "2026-01-01T00:00:00.000000+01:00",
+      "microphone",
+      "invalid\u0000value",
+      "com.example.\u00e9"
+    ],
+    "old_seconds": [
+      0.2291970679998485,
+      0.21429923699997744,
+      0.26732763800009707,
+      0.3021965830002955,
+      0.23600563299987698
+    ],
+    "regex_seconds": [
+      0.0715245540000069,
+      0.07672140499971647,
+      0.06545296600006623,
+      0.05107229699979143,
+      0.03800755800011757
+    ],
+    "scope": "Narrow validation loop only; not pipeline speedup or detection quality."
+  },
+  "conclusion": "Memory observed below 256 MiB. The 10-second wall-time gate was not passed across the five-run workloads. Toolchains Go/Rust/Swift unavailable; native comparison remains NOT MEASURED. No large-case performance claim."
+}

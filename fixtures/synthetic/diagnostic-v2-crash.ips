@@ -1,0 +1,15 @@
+{"bug_type":"309","incident_id":"fictional-version-two-crash","timestamp":"2026-02-03 14:31:00.000 +0230","scryveil_fixture":true}
+{
+  "version": 2,
+  "bug_type": "309",
+  "incident": "fictional-version-two-crash",
+  "captureTime": "2026-02-03 14:30:00.1234 +0230",
+  "procName": "com.example.searchd",
+  "procPath": "/fictional/com.example.searchd",
+  "pid": 201,
+  "osVersion": {"train":"Fictional OS","build":"FICT-2"},
+  "exception": {"type":"EXC_BAD_ACCESS","signal":"SIGSEGV","codes":"0x0000000000000001, 0xffffffffffffffff","rawCodes":[1,-1],"subtype":"fictional invalid address"},
+  "termination": {"namespace":"SIGNAL","code":11,"indicator":"fictional termination"},
+  "faultingThread":0,
+  "threads":[{"triggered":true,"frames":[{"imageIndex":0,"imageOffset":32,"symbol":"fictional_search"}]}]
+}

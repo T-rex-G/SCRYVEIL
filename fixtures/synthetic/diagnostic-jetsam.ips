@@ -1,0 +1,22 @@
+{"bug_type": "298", "incident_id": "fictional-jetsam", "scryveil_fixture": true}
+{
+  "incident": "fictional-jetsam",
+  "date": "2026-01-01 12:05:00.000 +0100",
+  "build": "Fictional OS 1.0",
+  "memoryStatus": {
+    "pageSize": 4096
+  },
+  "processes": [
+    {
+      "name": "com.example.searchd",
+      "pid": 103,
+      "rpages": 42,
+      "reason": "highwater"
+    },
+    {
+      "name": "com.example.background",
+      "pid": 104,
+      "rpages": 10
+    }
+  ]
+}

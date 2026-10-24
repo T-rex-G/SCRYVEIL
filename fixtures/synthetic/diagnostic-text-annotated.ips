@@ -1,0 +1,21 @@
+{"scryveil_fixture":true,"bug_type":"145","incident_id":"fictional-resource-annotation","timestamp":"2026-03-17 09:02:00.00 +0000","duration_ms":"92000"}
+Date/Time:        2026-03-17 09:00:00.000 +0000
+End time:         2026-03-17 09:01:32.000 +0000
+OS Version:       Fictional OS 73 (Fictional Build)
+Report Version:   73
+Incident Identifier: fictional-resource-annotation
+Data Source:      Microstackshots
+Command:          com.example.shell
+Path:             /fictional/com.example.shell
+PID:              470
+Event:            disk writes
+Action taken:     none
+Writes:           25.75 MB of file backed memory dirtied over 92 seconds
+Writes limit:     20.00 MB
+Limit duration:   86400s
+Writes caused:    25.75 MB
+Writes duration:  92s
+Duration:         92.00s
+Duration Sampled: 67.25s (event starts 20.50s before samples, event ends 4.25s after samples)
+Heaviest stack for the target process:
+  Fictional frames deliberately uninterpreted

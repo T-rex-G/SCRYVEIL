@@ -1,0 +1,36 @@
+{"bug_type": "309", "incident_id": "fictional-incident-1", "scryveil_fixture": true, "timestamp": "2026-01-01 12:00:01.000 +0100"}
+{
+  "version": 104,
+  "incident": "fictional-incident-1",
+  "procName": "com.example.searchd",
+  "pid": 101,
+  "procPath": "/fictional/com.example.searchd",
+  "captureTime": "2026-01-01 12:01:00.125 +0100",
+  "osVersion": {
+    "train": "Fictional OS 1.0",
+    "build": "synthetic-build"
+  },
+  "exception": {
+    "type": "EXC_BAD_ACCESS",
+    "signal": "SIGSEGV",
+    "subtype": "synthetic diagnostic condition"
+  },
+  "termination": {
+    "namespace": "SIGNAL",
+    "code": 11,
+    "indicator": "fictional signal"
+  },
+  "faultingThread": 0,
+  "threads": [
+    {
+      "triggered": true,
+      "frames": [
+        {
+          "symbol": "fictional_lookup",
+          "imageIndex": 0,
+          "imageOffset": 32
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "source_commit": "2eebb917a7e3f6c61daba573fc647f5cef93f645",
+  "host": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "runtime_sha256": {
+    "src/scryveil/__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+    "src/scryveil/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/scryveil/cli.py": "c151103f11e6bfa96eb8ac91a8268edaad5d38f0fdd2562816ff45c69b43078e",
+    "src/scryveil/diagnostic_text.py": "0b1f8b6805591a7fdc95a8c77e6f15424b923f7dfee068fb9f17c38442660b76",
+    "src/scryveil/diagnostics.py": "22e4e491c7c8f2eb92d6e8b9dd47108edcdc7de5843030284e87d22b03ab65cb",
+    "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+    "src/scryveil/investigation.py": "97644299ebbe77de7be30ef09cc4352b58ccdc9667a7d67845e06e9471fb1acc",
+    "src/scryveil/investigation_tools.py": "6a780345e93f89a11a8745dddda870ec9b2d51e8eab803c168e55dac588ee57b",
+    "src/scryveil/investigation_worker.py": "eccd6f35b67dfc14d56b00f8f775214d98aa6c46e4100049bf27bc88869ffb6b",
+    "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+    "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+    "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+    "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+    "src/scryveil/provider_transport.py": "7ee809a4747071e0e29ce16f22acb095161568101995cbdb617c732d20a37a03",
+    "src/scryveil/providers.py": "e400a0ce9dc41f8423fbbca5d11a1785fd85e8f2f224e2c69a5ed1d84fd6c76c",
+    "src/scryveil/report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+    "src/scryveil/state.py": "5797cb432205a8a1d03cd0c6d212a6db8fd105e7267c7b7b61368dcd910d5dd8",
+    "src/scryveil/store.py": "4e265aeb5c5470b51c3f48a35947d13a4b8de381c97d6b7ff7ff3293258cd8e2"
+  },
+  "method": "One sequential fresh-process compatibility spot check per historical workload; does not replace the previous five-run acceptance gate; shared host; per-process RSS, not simultaneous sum. No real evidence or model.",
+  "samples": [
+    {
+      "workload": "core_20000",
+      "process_wall_seconds": 5.114340052000216,
+      "records": 20000,
+      "findings": 4,
+      "seconds": 5.051946791000091,
+      "peak_rss_kib": 181188,
+      "report_bytes": 28067765,
+      "identical_repeated_export": true
+    },
+    {
+      "workload": "privacy_20000",
+      "process_wall_seconds": 4.356038271999978,
+      "records": 20000,
+      "summary": {
+        "access_records": 16000,
+        "interval_status_counts": {
+          "complete": 8000
+        },
+        "network_records": 4000,
+        "network_summaries": 4000,
+        "apps": 4,
+        "domains": 1
+      },
+      "cpu_seconds": 4.2759098060000005,
+      "seconds": 4.296285338999951,
+      "import_seconds": 1.580984633999833,
+      "first_export_seconds": 1.4717933570000241,
+      "peak_rss_kib": 141500,
+      "report_bytes": 16316912,
+      "identical_repeated_export": true,
+      "python": "3.12.14",
+      "host": "Linux-6.18.55-x86_64-with-glibc2.39"
+    },
+    {
+      "workload": "diagnostics_32",
+      "process_wall_seconds": 0.4367990490000011,
+      "records": 32,
+      "selected_events": 32,
+      "omitted_events": 0,
+      "status": "completed",
+      "requests": 8,
+      "seconds": 0.3783647759998985,
+      "cpu_seconds": 0.183678429,
+      "worker_cpu_seconds": 0.13761099999999998,
+      "import_seconds": 0.1950832669999727,
+      "peak_rss_kib": 15988,
+      "max_child_peak_rss_kib": 15988,
+      "report_bytes": 43934,
+      "identical_repeated_export": true,
+      "source_state_unchanged": true
+    },
+    {
+      "workload": "jetsam_20000_snapshot_2000",
+      "process_wall_seconds": 5.395960626000033,
+      "records": 20000,
+      "selected_events": 2000,
+      "omitted_events": 18000,
+      "status": "completed",
+      "requests": 7,
+      "seconds": 5.333400047000168,
+      "cpu_seconds": 5.214526618,
+      "worker_cpu_seconds": 0.116452,
+      "import_seconds": 1.3934140359999674,
+      "peak_rss_kib": 121888,
+      "max_child_peak_rss_kib": 121888,
+      "report_bytes": 25578,
+      "identical_repeated_export": true,
+      "source_state_unchanged": true
+    }
+  ]
+}
