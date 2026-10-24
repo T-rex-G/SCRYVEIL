@@ -13,6 +13,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from .collection import MAX_ARCHIVE, MAX_ARTIFACTS, MAX_CASE_BYTES, OPAQUE, ZIP, preserved, unpack
 from .diagnostic_text import parse_resource_summary
 from .diagnostics import (
     IPS,
@@ -206,7 +207,11 @@ class CaseStore:
                         "status": "duplicate",
                         "warning_count": len(artifact["warnings"]),
                     }
-            if len(state["artifacts"]) >= 32 or len(state["events"]) + len(events) > 20000:
+            if (
+                len(state["artifacts"]) >= MAX_ARTIFACTS
+                or len(state["events"]) + len(events) > 20000
+                or sum(a["size"] for a in state["artifacts"]) + len(data) > MAX_CASE_BYTES
+            ):
                 raise ScryveilError("case_capacity_exceeded")
             original = path / "originals" / sha
             _no_links(original)
@@ -251,6 +256,136 @@ class CaseStore:
             "synthetic": synthetic,
         }
 
+    def import_collection(
+        self, case_id: str, source: Path, synthetic: bool = False
+    ) -> dict[str, Any]:
+        data = read_regular(source, MAX_ARCHIVE)
+        manifest, members = unpack(data, synthetic)
+        archive_sha = digest(data)
+        archive_id = "artifact-" + archive_sha
+        with self.locked(case_id) as (path, state):
+            self.verify(path, state)
+            existing = {a["artifact_id"]: a for a in state["artifacts"]}
+            if archive_id in existing:
+                if (
+                    existing[archive_id]["format"] != ZIP
+                    or existing[archive_id]["synthetic"] != synthetic
+                ):
+                    raise ScryveilError("provenance_mode_conflict")
+                return {"status": "duplicate", "artifact_id": archive_id, "members": len(manifest)}
+            pending: list[tuple[dict[str, Any], bytes]] = [
+                (dict(artifact_id=archive_id, format=ZIP, events=[], warnings=[]), data)
+            ]
+            pending.extend(members)
+            new: list[tuple[dict[str, Any], bytes]] = []
+            new_event_count = 0
+            imported = now()
+            names = {
+                m["artifact_id"]: m["path"].rsplit("/", 1)[-1]
+                for m in manifest
+                if m["kind"] == "file"
+            }
+            for result, content in pending:
+                aid = result["artifact_id"]
+                if aid in existing:
+                    if (
+                        existing[aid]["format"] != result["format"]
+                        or existing[aid]["synthetic"] != synthetic
+                    ):
+                        raise ScryveilError("collection_parser_or_provenance_conflict")
+                    continue
+                artifact: dict[str, Any] = {
+                    "schema_version": SCHEMA,
+                    "artifact_id": aid,
+                    "sha256": digest(content),
+                    "original_filename": source.name if aid == archive_id else names[aid],
+                    "size": len(content),
+                    "format": result["format"],
+                    "imported_at": imported,
+                    "collection_time": None,
+                    "collection_mode": "synthetic" if synthetic else "imported",
+                    "synthetic": synthetic,
+                    "tool_version": SCHEMA,
+                    "capture_interval": None,
+                    "source_machine": "unknown",
+                    "sensitivity": "private",
+                    "warnings": result["warnings"],
+                }
+                if aid == archive_id:
+                    artifact["collection_manifest"] = manifest
+                existing[aid] = artifact
+                state["artifacts"].append(artifact)
+                state["events"].extend(result["events"])
+                new_event_count += len(result["events"])
+                _audit(
+                    state,
+                    "evidence.import",
+                    [aid],
+                    "partial_or_failed" if result["warnings"] else "imported",
+                )
+                new.append((artifact, content))
+            state["analysis"], state["rule_run"] = None, None
+            if (
+                len(state["artifacts"]) > MAX_ARTIFACTS
+                or len(state["events"]) > 20000
+                or sum(a["size"] for a in state["artifacts"]) > MAX_CASE_BYTES
+                or len(canonical(state)) > MAX_STATE
+            ):
+                raise ScryveilError("case_capacity_exceeded")
+            # All parsing and capacity checks precede publication. Content-addressed
+            # orphans after an IO failure are harmless and checked on a later import.
+            for artifact, content in new:
+                original = path / "originals" / artifact["sha256"]
+                _no_links(original)
+                if original.exists():
+                    if read_regular(original, MAX_ARCHIVE) != content:
+                        raise ScryveilError("orphan_original_mismatch", 4)
+                else:
+                    fd = os.open(
+                        original, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o400
+                    )
+                    with os.fdopen(fd, "wb") as stream:
+                        stream.write(content)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+            self._save(path, state)
+        counts: dict[str, int] = {}
+        for member in manifest:
+            status = member.get("status", "directory")
+            counts[status] = counts.get(status, 0) + 1
+        return {
+            "status": "collection_imported",
+            "artifact_id": archive_id,
+            "members": len(manifest),
+            "new_artifacts": len(new),
+            "event_count": new_event_count,
+            "warning_count": sum(len(m[0]["warnings"]) for m in members),
+            "member_status_counts": counts,
+            "synthetic": synthetic,
+        }
+
+    def collection_inventory(self, case_id: str) -> dict[str, Any]:
+        with self.locked(case_id) as (path, state):
+            self.verify(path, state)
+            return {
+                "schema_version": "scryveil.collection-inventory/1",
+                "case_id": case_id,
+                "source_state_sha256": digest(canonical(state)),
+                "archives": [
+                    {
+                        "artifact_id": a["artifact_id"],
+                        "sha256": a["sha256"],
+                        "members": a["collection_manifest"],
+                    }
+                    for a in state["artifacts"]
+                    if a["format"] == ZIP
+                ],
+                "limitations": [
+                    "Paths and ZIP local times are container declarations, not authenticated acquisition metadata.",
+                    "No device identity, complete history, or independently authenticated custody is established.",
+                ],
+            }
+
     def verify(self, path: Path, state: dict[str, Any]) -> None:
         previous = None
         for index, entry in enumerate(state["audit"]):
@@ -269,13 +404,35 @@ class CaseStore:
             if not ART_ID.fullmatch(aid) or aid in seen or aid != "artifact-" + artifact["sha256"]:
                 raise ScryveilError("invalid_artifact_identity", 4)
             seen.add(aid)
-            data = read_regular(path / "originals" / artifact["sha256"], MAX_BYTES)
+            data = read_regular(
+                path / "originals" / artifact["sha256"],
+                MAX_ARCHIVE if artifact["format"] == ZIP else MAX_BYTES,
+            )
             if digest(data) != artifact["sha256"] or len(data) != artifact["size"]:
                 raise ScryveilError("source_integrity_failed", 4)
             reader: Callable[
                 [bytes, str, bool], tuple[list[dict[str, Any]], list[dict[str, Any]], str]
             ]
-            if artifact["format"] == IPS:
+            if artifact["format"] == ZIP:
+                manifest, members = unpack(data, artifact["synthetic"])
+                if artifact["warnings"] != [] or not same_json(
+                    manifest, artifact["collection_manifest"]
+                ):
+                    raise ScryveilError("collection_lineage_failed", 4)
+                indexed = {a["artifact_id"]: a for a in state["artifacts"]}
+                for result, content in members:
+                    member = indexed.get(result["artifact_id"])
+                    if (
+                        member is None
+                        or member["format"] != result["format"]
+                        or member["synthetic"] != artifact["synthetic"]
+                        or member["size"] != len(content)
+                    ):
+                        raise ScryveilError("collection_lineage_failed", 4)
+                continue
+            if artifact["format"] == OPAQUE:
+                reader = preserved
+            elif artifact["format"] == IPS:
                 reader = parse_ips
             elif artifact["format"] == IPS_DIAGNOSTIC:
                 reader = parse_diagnostic_v2

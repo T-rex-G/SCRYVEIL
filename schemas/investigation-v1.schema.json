@@ -1261,6 +1261,13 @@
               "type": "null"
             }
           ]
+        },
+        "exception_signal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1024
         }
       },
       "required": [
@@ -1366,6 +1373,18 @@
               "type": "null"
             }
           ]
+        },
+        "statistics": {
+          "type": "object",
+          "maxProperties": 32
+        },
+        "reference_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxProperties": 4
         }
       },
       "required": [
@@ -1421,6 +1440,24 @@
         },
         "complete_device_history": {
           "const": false
+        },
+        "selection": {
+          "enum": [
+            "full_case_fail_on_capacity",
+            "earliest_event_cap"
+          ]
+        },
+        "collection_archives": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "collection_member_status_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
         }
       },
       "required": [
@@ -1466,7 +1503,7 @@
             "properties": {
               "line": {
                 "type": "integer",
-                "minimum": 1
+                "minimum": 0
               },
               "code": {
                 "type": "string",

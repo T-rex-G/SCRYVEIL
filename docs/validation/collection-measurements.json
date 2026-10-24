@@ -1,0 +1,208 @@
+{
+  "schema_version": "scryveil.collection-measurement/1",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "source_base_sha": "bceef32df32bfaa44cc68fa3dd9a77448bd5ba6c",
+  "working_tree_dirty": true,
+  "method": "Three sequential fresh processes after other validation commands completed; shared-host interference not controlled. Earlier concurrent-check measurements were not used as acceptance evidence.",
+  "command": "python scripts/collection_demo.py --output FRESH_PRIVATE_DIRECTORY",
+  "script_sha256": "76f531c821003741c44d0a5b08b028deb794d20526319662ae3f1346818a47e9",
+  "runs": [
+    {
+      "synthetic": true,
+      "case_id": "case-af23a9f56c1b4f628876b9d6f448cd40",
+      "archive_sha256": "53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+      "archive_bytes": 183905,
+      "import": {
+        "status": "collection_imported",
+        "artifact_id": "artifact-53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+        "members": 266,
+        "new_artifacts": 267,
+        "event_count": 6260,
+        "warning_count": 3,
+        "member_status_counts": {
+          "parsed_subset": 263,
+          "unsupported": 2,
+          "malformed": 1
+        },
+        "synthetic": true
+      },
+      "events": 6260,
+      "snapshot_bytes": 4884049,
+      "signature_groups": 3,
+      "incidents_per_signature": [
+        80,
+        80,
+        80
+      ],
+      "timings": {
+        "import_seconds": 0.3558739659999901,
+        "verified_snapshot_seconds": 0.6482599330000767,
+        "filtered_query_seconds": 0.0007537419999152917,
+        "mock_investigation_seconds": 1.3197537099999863
+      },
+      "parent_peak_rss_kib": 96312,
+      "mock_status": "completed",
+      "mock_requests": 8,
+      "reserved_token_units": 155992,
+      "originals_and_state_unchanged": true,
+      "actual_model_quality": "NOT_TESTED",
+      "genuine_export_qualification": "OPEN",
+      "runtime_sha256": {
+        "__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+        "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+        "cli.py": "d93f1dd2af97b36a41baccd5c5d104dcf75ce978eacf8874b709da0ae25faf0d",
+        "collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+        "diagnostic_intelligence.py": "4bdf9737e7903e5293c08f131e7c5bf20db90a83d121eb4c4eeddac13584bd6d",
+        "diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+        "diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+        "engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+        "investigation.py": "e754bf6c94794df4fb9baa025c9e7f92cfe32dd9546d0103be854ba068d8bd94",
+        "investigation_context.py": "adfd7cf7e19a649568340afecd834cb72ea2537d30fb328cf798b1f05cf98bd9",
+        "investigation_tools.py": "bd0179ebe0681bafc530d04c4e3286b65be8d3d713e0155f1e9ad61e8124d844",
+        "investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+        "isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+        "models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+        "parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+        "privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+        "provider_transport.py": "7ee809a4747071e0e29ce16f22acb095161568101995cbdb617c732d20a37a03",
+        "providers.py": "e400a0ce9dc41f8423fbbca5d11a1785fd85e8f2f224e2c69a5ed1d84fd6c76c",
+        "report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+        "state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+        "store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5"
+      },
+      "fresh_process_wall_seconds": 2.898490294999988
+    },
+    {
+      "synthetic": true,
+      "case_id": "case-f7713840d4564fb99b326301a7401ae3",
+      "archive_sha256": "53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+      "archive_bytes": 183905,
+      "import": {
+        "status": "collection_imported",
+        "artifact_id": "artifact-53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+        "members": 266,
+        "new_artifacts": 267,
+        "event_count": 6260,
+        "warning_count": 3,
+        "member_status_counts": {
+          "parsed_subset": 263,
+          "unsupported": 2,
+          "malformed": 1
+        },
+        "synthetic": true
+      },
+      "events": 6260,
+      "snapshot_bytes": 4884049,
+      "signature_groups": 3,
+      "incidents_per_signature": [
+        80,
+        80,
+        80
+      ],
+      "timings": {
+        "import_seconds": 0.3605634190000728,
+        "verified_snapshot_seconds": 0.6345600769999464,
+        "filtered_query_seconds": 0.0006435390000660846,
+        "mock_investigation_seconds": 1.3211574810000002
+      },
+      "parent_peak_rss_kib": 96620,
+      "mock_status": "completed",
+      "mock_requests": 8,
+      "reserved_token_units": 155992,
+      "originals_and_state_unchanged": true,
+      "actual_model_quality": "NOT_TESTED",
+      "genuine_export_qualification": "OPEN",
+      "runtime_sha256": {
+        "__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+        "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+        "cli.py": "d93f1dd2af97b36a41baccd5c5d104dcf75ce978eacf8874b709da0ae25faf0d",
+        "collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+        "diagnostic_intelligence.py": "4bdf9737e7903e5293c08f131e7c5bf20db90a83d121eb4c4eeddac13584bd6d",
+        "diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+        "diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+        "engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+        "investigation.py": "e754bf6c94794df4fb9baa025c9e7f92cfe32dd9546d0103be854ba068d8bd94",
+        "investigation_context.py": "adfd7cf7e19a649568340afecd834cb72ea2537d30fb328cf798b1f05cf98bd9",
+        "investigation_tools.py": "bd0179ebe0681bafc530d04c4e3286b65be8d3d713e0155f1e9ad61e8124d844",
+        "investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+        "isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+        "models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+        "parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+        "privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+        "provider_transport.py": "7ee809a4747071e0e29ce16f22acb095161568101995cbdb617c732d20a37a03",
+        "providers.py": "e400a0ce9dc41f8423fbbca5d11a1785fd85e8f2f224e2c69a5ed1d84fd6c76c",
+        "report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+        "state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+        "store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5"
+      },
+      "fresh_process_wall_seconds": 2.920211743999971
+    },
+    {
+      "synthetic": true,
+      "case_id": "case-e07f573cdda4457c8dbfd636df2585ac",
+      "archive_sha256": "53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+      "archive_bytes": 183905,
+      "import": {
+        "status": "collection_imported",
+        "artifact_id": "artifact-53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+        "members": 266,
+        "new_artifacts": 267,
+        "event_count": 6260,
+        "warning_count": 3,
+        "member_status_counts": {
+          "parsed_subset": 263,
+          "unsupported": 2,
+          "malformed": 1
+        },
+        "synthetic": true
+      },
+      "events": 6260,
+      "snapshot_bytes": 4884049,
+      "signature_groups": 3,
+      "incidents_per_signature": [
+        80,
+        80,
+        80
+      ],
+      "timings": {
+        "import_seconds": 0.3403634850000117,
+        "verified_snapshot_seconds": 0.6131424740000284,
+        "filtered_query_seconds": 0.0006946940000034374,
+        "mock_investigation_seconds": 1.253692032999993
+      },
+      "parent_peak_rss_kib": 95676,
+      "mock_status": "completed",
+      "mock_requests": 8,
+      "reserved_token_units": 155992,
+      "originals_and_state_unchanged": true,
+      "actual_model_quality": "NOT_TESTED",
+      "genuine_export_qualification": "OPEN",
+      "runtime_sha256": {
+        "__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+        "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+        "cli.py": "d93f1dd2af97b36a41baccd5c5d104dcf75ce978eacf8874b709da0ae25faf0d",
+        "collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+        "diagnostic_intelligence.py": "4bdf9737e7903e5293c08f131e7c5bf20db90a83d121eb4c4eeddac13584bd6d",
+        "diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+        "diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+        "engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+        "investigation.py": "e754bf6c94794df4fb9baa025c9e7f92cfe32dd9546d0103be854ba068d8bd94",
+        "investigation_context.py": "adfd7cf7e19a649568340afecd834cb72ea2537d30fb328cf798b1f05cf98bd9",
+        "investigation_tools.py": "bd0179ebe0681bafc530d04c4e3286b65be8d3d713e0155f1e9ad61e8124d844",
+        "investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+        "isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+        "models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+        "parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+        "privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+        "provider_transport.py": "7ee809a4747071e0e29ce16f22acb095161568101995cbdb617c732d20a37a03",
+        "providers.py": "e400a0ce9dc41f8423fbbca5d11a1785fd85e8f2f224e2c69a5ed1d84fd6c76c",
+        "report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+        "state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+        "store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5"
+      },
+      "fresh_process_wall_seconds": 2.7832452529999046
+    }
+  ],
+  "scope": "Generated fictional inputs and scripted mock only; no genuine Apple export or actual-model qualification."
+}

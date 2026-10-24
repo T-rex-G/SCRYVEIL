@@ -60,6 +60,11 @@ def disclosure(snapshot: dict[str, Any], question: str, config: dict[str, Any]) 
         "warning": "Hashes, times, relationships, your question and optional identifiers remain sensitive. A local server may itself forward requests unless independently configured offline.",
     }
     manifest["consent_sha256"] = digest(canonical(manifest))
+    if "access_profile" in snapshot:
+        manifest["access_profile"] = snapshot["access_profile"]
+        manifest["consent_sha256"] = digest(
+            canonical({k: v for k, v in manifest.items() if k != "consent_sha256"})
+        )
     return manifest
 
 
@@ -128,10 +133,19 @@ def investigate(
     consent_sha256: str | None = None,
     include_identifiers: bool = False,
     max_events: int = 2000,
+    all_events: bool = False,
+    diagnostic_details: bool = False,
     provider: Provider | None = None,
 ) -> dict[str, Any]:
     config = validate_config(config)
-    snapshot = snapshot_case(store, case_id, include_identifiers, max_events)
+    snapshot = snapshot_case(
+        store,
+        case_id,
+        include_identifiers,
+        max_events,
+        all_events=all_events,
+        diagnostic_details=diagnostic_details,
+    )
     manifest = disclosure(snapshot, question, config)
     if config["mode"] == "remote" and consent_sha256 != manifest["consent_sha256"]:
         raise ScryveilError("remote_disclosure_consent_required")

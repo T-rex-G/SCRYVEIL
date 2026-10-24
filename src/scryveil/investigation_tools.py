@@ -5,6 +5,8 @@ from collections import Counter
 from copy import deepcopy
 from typing import Any
 
+from .collection import MAX_ARTIFACTS
+from .diagnostic_intelligence import PROFILE, intelligence
 from .diagnostics import diagnostic_findings
 from .engine import analyze
 from .models import ScryveilError
@@ -17,6 +19,10 @@ MAX_SNAPSHOT = 16 * 1024 * 1024
 MAX_RESULT = 64 * 1024
 STRING = {"type": "string", "minLength": 1, "maxLength": 128}
 ID = {"type": "string", "minLength": 1, "maxLength": 80}
+PAGE = {
+    "cursor": {"type": "integer", "minimum": 0, "maximum": 20000},
+    "limit": {"type": "integer", "minimum": 1, "maximum": 25},
+}
 QUERY = {
     "event_type": STRING,
     "process_ref": ID,
@@ -44,14 +50,14 @@ TOOL_SCHEMAS = {
     for name, props, required in [
         ("case.inspect", {}, []),
         ("coverage.inspect", {}, []),
-        ("evidence.list", {}, []),
+        ("evidence.list", PAGE, []),
         ("integrity.verify", {}, []),
         ("timeline.query", QUERY, []),
         ("diagnostics.search", QUERY, []),
         ("network.query", QUERY, []),
         ("process.inspect", {"process_ref": ID}, ["process_ref"]),
         ("evidence.read_excerpt", {"event_id": ID}, ["event_id"]),
-        ("findings.inspect", {}, []),
+        ("findings.inspect", PAGE, []),
         ("hypotheses.compare", {"finding_id": ID}, ["finding_id"]),
     ]
 }
@@ -88,12 +94,20 @@ def validate(value: Any, schema: dict[str, Any]) -> None:
 
 
 def snapshot_case(
-    store: CaseStore, cid: str, include_identifiers: bool = False, max_events: int = 2000
+    store: CaseStore,
+    cid: str,
+    include_identifiers: bool = False,
+    max_events: int = 2000,
+    *,
+    all_events: bool = False,
+    diagnostic_details: bool = False,
 ) -> dict[str, Any]:
     if type(include_identifiers) is not bool:
         raise ScryveilError("invalid_identifier_option")
     if type(max_events) is not int or not 1 <= max_events <= 20000:
         raise ScryveilError("invalid_snapshot_limit")
+    if type(all_events) is not bool or type(diagnostic_details) is not bool:
+        raise ScryveilError("invalid_snapshot_option")
     with store.locked(cid) as (path, state):
         store.verify(path, state)
         if state["analysis"] is not None:
@@ -102,7 +116,7 @@ def snapshot_case(
         original = sorted(
             state["events"],
             key=lambda e: (e["event_time"] is None, e["event_time"] or "", e["event_id"]),
-        )[:max_events]
+        )[: 20000 if all_events else max_events]
         refs: dict[tuple[str, str], str] = {}
 
         def ref(kind: str, value: str | None) -> str | None:
@@ -227,8 +241,26 @@ def snapshot_case(
                 ):
                     if key in a:
                         row[key] = a[key]
+            if diagnostic_details and event["event_type"].startswith("diagnostic."):
+                for key in (
+                    "process",
+                    "exception_type",
+                    "exception_subtype",
+                    "exception_signal",
+                    "termination_namespace",
+                    "termination_reason",
+                    "reason",
+                    "os_version",
+                    "os_build",
+                    "frames",
+                    "exception_codes",
+                    "exception_raw_codes",
+                    "exception_message",
+                ):
+                    if key in a:
+                        row[key] = a[key]
             projected.append(row)
-        findings = diagnostic_findings(original)
+        findings = intelligence(original) if all_events else diagnostic_findings(original)
         for finding in findings:
             finding["process_ref"] = ref("process", finding.pop("process"))
         # Deterministic legacy detectors remain usable without mutating case state.
@@ -280,6 +312,25 @@ def snapshot_case(
                 "complete_device_history": False,
             },
         }
+        if all_events or diagnostic_details:
+            result["access_profile"] = {
+                "selection": "full_case_fail_on_capacity" if all_events else "earliest_event_cap",
+                "diagnostic_details": diagnostic_details,
+                "analysis_profile": PROFILE if all_events else "legacy_recurrence",
+            }
+            result["coverage"]["selection"] = result["access_profile"]["selection"]
+            result["coverage"]["collection_archives"] = sum(
+                "collection_manifest" in a for a in state["artifacts"]
+            )
+            result["coverage"]["collection_member_status_counts"] = dict(
+                sorted(
+                    Counter(
+                        m.get("status", "directory")
+                        for a in state["artifacts"]
+                        for m in a.get("collection_manifest", [])
+                    ).items()
+                )
+            )
         if len(canonical(result)) > MAX_SNAPSHOT:
             raise ScryveilError("snapshot_too_large")
         result["snapshot_sha256"] = digest(canonical(result))
@@ -347,7 +398,7 @@ def diagnostic_coverage(snapshot: dict[str, Any]) -> dict[str, Any]:
         "unimported_or_rejected_files": "unknown_not_recorded",
         "rejected_record_count": None,
         "limits": {
-            "case_artifacts": 32,
+            "case_artifacts": MAX_ARTIFACTS,
             "case_events": 20000,
             "snapshot_selection": "earliest_known_times_then_unknown",
         },
@@ -370,6 +421,13 @@ class ReadOnlyTools:
         self.seen_events: set[str] = set()
         self.read_events: set[str] = set()
         self.seen_findings: set[str] = set()
+        self.indexes: dict[str, dict[str, set[str]]] = {}
+        for field in ("event_type", "process_ref", "app_ref", "domain_ref"):
+            index: dict[str, set[str]] = {}
+            for eid, event in self.events.items():
+                if event.get(field) is not None:
+                    index.setdefault(event[field], set()).add(eid)
+            self.indexes[field] = index
 
     def call(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
         try:
@@ -424,7 +482,12 @@ class ReadOnlyTools:
         if name == "coverage.inspect":
             return self.snapshot["coverage"], [], False
         if name == "evidence.list":
-            return self.snapshot["artifacts"], [], False
+            cursor, limit = args.get("cursor", 0), args.get("limit", 25)
+            return (
+                self.snapshot["artifacts"][cursor : cursor + limit],
+                [],
+                cursor + limit < len(self.snapshot["artifacts"]),
+            )
         if name == "integrity.verify":
             return (
                 {
@@ -447,6 +510,11 @@ class ReadOnlyTools:
                 if name == "findings.inspect"
                 else [self.findings[args["finding_id"]]]
             )
+            truncated = False
+            if name == "findings.inspect":
+                cursor, limit = args.get("cursor", 0), args.get("limit", 25)
+                truncated = cursor + limit < len(selected)
+                selected = selected[cursor : cursor + limit]
             ids = sorted(
                 {
                     e
@@ -455,15 +523,17 @@ class ReadOnlyTools:
                     for e in f[k]
                 }
             )
-            return selected, ids, False
-        rows = list(self.events.values())
+            return selected, ids, truncated
+        candidates: set[str] | None = None
+        for field, index in self.indexes.items():
+            if field in args:
+                matched = index.get(args[field], set())
+                candidates = matched if candidates is None else candidates & matched
+        rows = [e for eid, e in self.events.items() if candidates is None or eid in candidates]
         if name == "diagnostics.search":
             rows = [e for e in rows if e["event_type"].startswith("diagnostic.")]
         if name == "network.query":
             rows = [e for e in rows if e["event_type"].startswith("network.")]
-        for k in ("event_type", "process_ref", "app_ref", "domain_ref"):
-            if k in args:
-                rows = [e for e in rows if e.get(k) == args[k]]
         for key in ("start_time", "end_time"):
             if key in args:
                 normalized = timestamp(args[key])[0]
@@ -485,7 +555,13 @@ class ReadOnlyTools:
                 for e in rows
                 if args["text"].casefold() in json.dumps(e, ensure_ascii=False).casefold()
             ]
-        cursor, limit = args.get("cursor", 0), args.get("limit", 25)
+        default_limit = (
+            5
+            if self.snapshot.get("access_profile", {}).get("selection")
+            == "full_case_fail_on_capacity"
+            else 25
+        )
+        cursor, limit = args.get("cursor", 0), args.get("limit", default_limit)
         selected = rows[cursor : cursor + limit]
         truncated = cursor + limit < len(rows)
         return (

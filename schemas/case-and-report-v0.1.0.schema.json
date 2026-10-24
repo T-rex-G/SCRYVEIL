@@ -8,7 +8,7 @@
       "properties": {
         "line": {
           "type": "integer",
-          "minimum": 1
+          "minimum": 0
         },
         "code": {
           "type": "string"
@@ -259,7 +259,9 @@
             "unknown",
             "apple_ips_json_v1",
             "apple_ips_diagnostic_v2",
-            "apple_ips_resource_text_v1"
+            "apple_ips_resource_text_v1",
+            "scryveil_zip_collection_v1",
+            "scryveil_preserved_bytes_v1"
           ]
         },
         "synthetic": {
@@ -334,7 +336,9 @@
             "unknown",
             "apple_ips_json_v1",
             "apple_ips_diagnostic_v2",
-            "apple_ips_resource_text_v1"
+            "apple_ips_resource_text_v1",
+            "scryveil_zip_collection_v1",
+            "scryveil_preserved_bytes_v1"
           ]
         },
         "synthetic": {
@@ -384,6 +388,13 @@
         },
         "sensitivity": {
           "const": "private"
+        },
+        "collection_manifest": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/CollectionMember"
+          }
         }
       },
       "required": [
@@ -403,7 +414,30 @@
         "source_machine",
         "sensitivity"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "scryveil_zip_collection_v1"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "collection_manifest"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "collection_manifest"
+              ]
+            }
+          }
+        }
+      ]
     },
     "Hypothesis": {
       "type": "object",
@@ -1121,6 +1155,124 @@
         "report_sha256"
       ],
       "additionalProperties": false
+    },
+    "CollectionMember": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "kind": {
+          "enum": [
+            "file",
+            "directory"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "clock": {
+          "const": "zip_local_time_offset_unknown"
+        },
+        "stored_local_time": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {
+            "type": "integer"
+          }
+        },
+        "compression_method": {
+          "enum": [
+            0,
+            8
+          ]
+        },
+        "local_header_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "compressed_data_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "compressed_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "format": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "parsed_subset",
+            "partial",
+            "unqualified_version",
+            "no_parsed_events",
+            "unsupported",
+            "malformed"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "index",
+        "path",
+        "kind",
+        "sha256",
+        "clock",
+        "stored_local_time",
+        "compression_method",
+        "local_header_offset",
+        "compressed_data_offset",
+        "compressed_size",
+        "size"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "file"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "artifact_id",
+              "format",
+              "status",
+              "reason"
+            ]
+          }
+        }
+      ]
     }
   },
   "$ref": "#/$defs/Case"

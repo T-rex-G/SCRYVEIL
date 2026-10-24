@@ -59,7 +59,18 @@
         },
         "arguments": {
           "type": "object",
-          "properties": {},
+          "properties": {
+            "cursor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25
+            }
+          },
           "required": [],
           "additionalProperties": false
         }
@@ -374,7 +385,18 @@
         },
         "arguments": {
           "type": "object",
-          "properties": {},
+          "properties": {
+            "cursor": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 20000
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 25
+            }
+          },
           "required": [],
           "additionalProperties": false
         }

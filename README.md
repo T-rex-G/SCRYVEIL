@@ -69,7 +69,7 @@ Use `--root /private/cases` **before** the command to choose a store. Existing s
 
 `review --case CASE_ID --finding FINDING_ID --decision accepted_benign` appends an analyst decision; it preserves the original finding and detector assessment. `analyze --min-events 5 --min-window 240` exposes sample/window controls; full parameters are recorded. Reports retain timestamps/hashes: redacted is not anonymous.
 
-Exit codes: `0` success, `2` invalid input/arguments **or imported record warnings**, `3` case busy/analysis required or incomplete investigation, `4` local I/O/state/lineage/isolation failure, `130` cancellation. A partial import retains original bytes plus warnings; exit 2 does not mean nothing was imported. Errors omit private paths. Archive/plist input is unsupported and never decompressed.
+Exit codes: `0` success, `2` invalid input/arguments **or imported record warnings**, `3` case busy/analysis required or incomplete investigation, `4` local I/O/state/lineage/isolation failure, `130` cancellation. A partial import retains original bytes plus warnings; exit 2 does not mean nothing was imported. Errors omit private paths. The explicit `collection import` route accepts bounded ZIP collections; unsupported members are preserved without interpretation. Plist/backup/PCAP decoding remains unsupported. See [collection investigation](docs/collections.md).
 
 ## Validation
 
@@ -90,3 +90,5 @@ The latest five-run local 20,000-record measurements pass 10 seconds/256 MiB for
 ## Next bounded milestone
 
 Qualify IPS/APR semantics on separately authorized local exports, improve the measured failures of actual local model investigation with egress disabled, and obtain independent boundary review. Then expand isolated artifact support and indexed persistence through the [prioritized milestones](docs/capability-assessment.md). Model use, collectors, large-case storage and UI require distinct evidence gates. No private evidence belongs in GitHub, CI or model services without separate explicit authorization.
+
+For an end-to-end fictional collection of 266 members and 6,260 events, see [the collection CLI guide](docs/collections.md). Full-case queries and diagnostic details are explicit options; actual-model reasoning and genuine Apple-export qualification remain open.

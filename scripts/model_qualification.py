@@ -16,6 +16,7 @@ from pathlib import Path
 
 from scryveil.investigation import SYSTEM, investigate
 from scryveil.investigation_tools import TOOL_SCHEMAS, snapshot_case
+from scryveil.models import ScryveilError
 from scryveil.parse import canonical, digest
 from scryveil.providers import DEFAULT_CONFIG, ChatCompletionsProvider, MockProvider, Reply
 from scryveil.state import same_json
@@ -67,9 +68,26 @@ class RecordedProvider:
                 "messages": len(supplied),
             }
         )
-        reply = self.inner.next(supplied)
-        self.actions.append(copy.deepcopy(reply.action))
-        return Reply(reply.action, reply.usage)
+        measurement = self.contexts[-1]
+        measurement["request_sequence"] = len(self.contexts)
+        measurement["started_monotonic_seconds"] = time.monotonic()
+        try:
+            reply = self.inner.next(supplied)
+            measurement["outcome"] = "reply"
+            measurement["usage"] = reply.usage
+            self.actions.append(copy.deepcopy(reply.action))
+            return Reply(reply.action, reply.usage)
+        except ScryveilError as exc:
+            measurement["outcome"] = exc.code
+            raise
+        except KeyboardInterrupt:
+            measurement["outcome"] = "cancelled"
+            raise
+        finally:
+            measurement["elapsed_seconds"] = (
+                time.monotonic() - measurement["started_monotonic_seconds"]
+            )
+            measurement["server_cancellation_confirmed"] = False
 
 
 def score(report, actions, snapshot):
@@ -146,7 +164,7 @@ def score(report, actions, snapshot):
     }
 
 
-def evaluate(mock=False):
+def evaluate(mock=False, scenarios=None):
     config = {
         **DEFAULT_CONFIG,
         "adapter": "chat-completions-json",
@@ -161,6 +179,8 @@ def evaluate(mock=False):
         config = {**DEFAULT_CONFIG, "max_total_tokens": 200000}
     records = []
     for name, question in SCENARIOS.items():
+        if scenarios is not None and name not in scenarios:
+            continue
         with tempfile.TemporaryDirectory(prefix="scryveil-generated-evaluation-") as tmp:
             base = Path(tmp)
             store = CaseStore(base / "cases")
@@ -246,5 +266,9 @@ def evaluate(mock=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mock", action="store_true")
+    parser.add_argument("--scenario", action="append", choices=SCENARIOS)
     args = parser.parse_args()
-    print("SCRYVEIL_MODEL_RESULT=" + json.dumps(evaluate(args.mock), separators=(",", ":")))
+    print(
+        "SCRYVEIL_MODEL_RESULT="
+        + json.dumps(evaluate(args.mock, args.scenario), separators=(",", ":"))
+    )

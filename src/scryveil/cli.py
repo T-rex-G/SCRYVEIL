@@ -7,9 +7,10 @@ import sys
 from pathlib import Path
 from typing import Any, Never
 
+from .diagnostic_intelligence import narrative
 from .engine import RuleConfig
 from .investigation import disclosure, investigate
-from .investigation_tools import diagnostic_coverage, snapshot_case
+from .investigation_tools import ReadOnlyTools, diagnostic_coverage, snapshot_case
 from .models import SCHEMA, ScryveilError
 from .parse import canonical
 from .privacy import build_privacy_report, privacy_markdown
@@ -36,6 +37,12 @@ def parser() -> Parser:
     create.add_argument("--label", required=True)
     create.add_argument("--consent", choices=["self", "authorized"], required=True)
     case.add_parser("list")
+    collections = sub.add_parser("collection").add_subparsers(dest="action", required=True)
+    collection = collections.add_parser("import")
+    collection.add_argument("--case", required=True)
+    collection.add_argument("--synthetic", action="store_true")
+    collection.add_argument("source", type=Path)
+    collections.add_parser("inventory").add_argument("--case", required=True)
     imp = (
         sub.add_parser("evidence").add_subparsers(dest="action", required=True).add_parser("import")
     )
@@ -77,9 +84,29 @@ def parser() -> Parser:
     diagnostics = diagnostic_commands.add_parser("report")
     diagnostics.add_argument("--case", required=True)
     diagnostics.add_argument("--include-identifiers", action="store_true")
+    diagnostics.add_argument("--format", choices=["json", "markdown"], default="json")
+    diagnostics.add_argument(
+        "--all-events",
+        action="store_true",
+        help="Query the complete bounded case or fail; no chronological truncation",
+    )
+    diagnostics.add_argument(
+        "--diagnostic-details",
+        action="store_true",
+        help="Authorize process names, source symbols and exception/OS details; excludes paths and unrelated identifiers",
+    )
     coverage = diagnostic_commands.add_parser("coverage")
     coverage.add_argument("--case", required=True)
     coverage.add_argument("--max-events", type=int, default=2000)
+    timeline = (
+        sub.add_parser("timeline").add_subparsers(dest="action", required=True).add_parser("query")
+    )
+    timeline.add_argument("--case", required=True)
+    for flag in ("event-type", "process-ref", "start-time", "end-time", "text"):
+        timeline.add_argument("--" + flag)
+    timeline.add_argument("--cursor", type=int, default=0)
+    timeline.add_argument("--limit", type=int, default=25)
+    timeline.add_argument("--diagnostic-details", action="store_true")
     investigation = sub.add_parser("investigate").add_subparsers(dest="action", required=True)
     for name in ("preview", "run"):
         command = investigation.add_parser(name)
@@ -87,6 +114,8 @@ def parser() -> Parser:
         command.add_argument("--question", required=True)
         command.add_argument("--provider-config", type=Path)
         command.add_argument("--include-identifiers", action="store_true")
+        command.add_argument("--all-events", action="store_true")
+        command.add_argument("--diagnostic-details", action="store_true")
         command.add_argument("--max-events", type=int, default=2000)
         if name == "run":
             command.add_argument("--consent-sha256")
@@ -115,16 +144,53 @@ def execute(args: argparse.Namespace) -> Any:
             "external_tools": "not_configured",
         }
     store = CaseStore(args.root)
+    if args.command == "timeline":
+        snapshot = snapshot_case(
+            store, args.case, all_events=True, diagnostic_details=args.diagnostic_details
+        )
+        query = {
+            k: getattr(args, k)
+            for k in (
+                "event_type",
+                "process_ref",
+                "start_time",
+                "end_time",
+                "text",
+                "cursor",
+                "limit",
+            )
+            if getattr(args, k) is not None
+        }
+        return ReadOnlyTools(snapshot).call("timeline.query", query)
+    if args.command == "collection":
+        return (
+            store.collection_inventory(args.case)
+            if args.action == "inventory"
+            else store.import_collection(args.case, args.source, args.synthetic)
+        )
     if args.command == "diagnostics":
         if args.action == "coverage":
             return diagnostic_coverage(snapshot_case(store, args.case, max_events=args.max_events))
-        result = snapshot_case(store, args.case, args.include_identifiers)
-        return result
+        result = snapshot_case(
+            store,
+            args.case,
+            args.include_identifiers,
+            all_events=args.all_events,
+            diagnostic_details=args.diagnostic_details,
+        )
+        return narrative(result) if args.format == "markdown" else result
     if args.command == "investigate":
         config = load_config(args.provider_config)
         if args.action == "preview":
             return disclosure(
-                snapshot_case(store, args.case, args.include_identifiers, args.max_events),
+                snapshot_case(
+                    store,
+                    args.case,
+                    args.include_identifiers,
+                    args.max_events,
+                    all_events=args.all_events,
+                    diagnostic_details=args.diagnostic_details,
+                ),
                 args.question,
                 config,
             )
@@ -136,6 +202,8 @@ def execute(args: argparse.Namespace) -> Any:
             consent_sha256=args.consent_sha256,
             include_identifiers=args.include_identifiers,
             max_events=args.max_events,
+            all_events=args.all_events,
+            diagnostic_details=args.diagnostic_details,
         )
     if args.command == "privacy":
         if args.include_identifiers and args.format != "json":

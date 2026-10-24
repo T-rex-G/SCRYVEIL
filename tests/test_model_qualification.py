@@ -1,7 +1,15 @@
 import runpy
 from pathlib import Path
 
+import pytest
+
+from scryveil.models import ScryveilError
+from scryveil.providers import Reply
+
 score = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))["score"]
+RecordedProvider = runpy.run_path(
+    str(Path(__file__).parents[1] / "scripts/model_qualification.py")
+)["RecordedProvider"]
 
 
 def test_quality_scoring_does_not_count_missing_answers_as_accuracy():
@@ -53,3 +61,56 @@ def test_query_names_and_case_event_counts_are_not_event_retrieval():
     )
     result = score({"status": "completed", "trace": trace}, [], {"events": []})
     assert result["successful_nonempty_event_queries"] == result["unique_events_retrieved"] == 1
+
+
+def test_request_timing_records_failure_and_cancellation_without_claiming_server_stop():
+    class Failed:
+        def next(self, messages):
+            raise ScryveilError("provider_timeout")
+
+    provider = RecordedProvider(Failed())
+    with pytest.raises(ScryveilError, match="provider_timeout"):
+        provider.next([{"role": "user", "content": "fictional"}])
+    assert provider.contexts[0]["outcome"] == "provider_timeout"
+    assert provider.contexts[0]["elapsed_seconds"] >= 0
+    assert provider.contexts[0]["server_cancellation_confirmed"] is False
+    assert provider.actions == []
+
+    class Cancelled:
+        def next(self, messages):
+            raise KeyboardInterrupt
+
+    provider = RecordedProvider(Cancelled())
+    with pytest.raises(KeyboardInterrupt):
+        provider.next([])
+    assert provider.contexts[0]["outcome"] == "cancelled"
+
+    class Completed:
+        def next(self, messages):
+            return Reply({"kind": "plan"}, {"input_tokens": 20, "output_tokens": 10})
+
+    provider = RecordedProvider(Completed())
+    provider.next([])
+    assert provider.contexts[0]["usage"] == {"input_tokens": 20, "output_tokens": 10}
+
+
+def test_numeric_server_telemetry_does_not_retain_untrusted_log_text():
+    parse = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_timing.py"))[
+        "parse_server_line"
+    ]
+    assert parse("private prompt content or provider instruction", 1) is None
+    metric = parse("slot print_timings: id 0 | task 4 | prompt eval time = 123.4 ms / 25 tokens", 2)
+    assert metric == {
+        "slot": 0,
+        "task": 4,
+        "kind": "prompt_eval",
+        "milliseconds": 123.4,
+        "tokens": 25,
+        "observed_elapsed_seconds": 2,
+    }
+    assert (
+        parse("slot release: id 0 | task 4 | stop processing: n_tokens = 33, truncated = 0", 3)[
+            "kind"
+        ]
+        == "slot_release"
+    )

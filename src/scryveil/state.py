@@ -9,6 +9,7 @@ import re
 from datetime import datetime
 from typing import Any
 
+from .collection import MAX_ARCHIVE, MAX_ARTIFACTS, MAX_CASE_BYTES, ZIP
 from .models import SCHEMA, ScryveilError
 
 DECISIONS = {"review_needed", "accepted_benign", "inconclusive"}
@@ -45,18 +46,26 @@ def validate_metadata(state: dict[str, Any]) -> None:
     stamp(state["created_at"])
     for key in ("artifacts", "events", "audit", "reviews"):
         require(isinstance(state[key], list))
-    require(len(state["artifacts"]) <= 32 and len(state["events"]) <= 20000)
+    require(len(state["artifacts"]) <= MAX_ARTIFACTS and len(state["events"]) <= 20000)
     require(bool(state["audit"]))
     for artifact in state["artifacts"]:
         fields(
             artifact,
-            "schema_version artifact_id sha256 original_filename size format imported_at collection_time collection_mode synthetic tool_version capture_interval source_machine sensitivity warnings",
+            "schema_version artifact_id sha256 original_filename size format imported_at collection_time collection_mode synthetic tool_version capture_interval source_machine sensitivity warnings"
+            + (" collection_manifest" if artifact.get("format") == ZIP else ""),
         )
         require(artifact["schema_version"] == artifact["tool_version"] == SCHEMA)
         for key in ("artifact_id", "sha256", "original_filename", "format"):
             require(isinstance(artifact[key], str))
         require(type(artifact["synthetic"]) is bool)
-        require(type(artifact["size"]) is int and 0 <= artifact["size"] <= 8 * 1024 * 1024)
+        require(
+            type(artifact["size"]) is int
+            and 0
+            <= artifact["size"]
+            <= (MAX_ARCHIVE if artifact["format"] == ZIP else 8 * 1024 * 1024)
+        )
+        if artifact["format"] == ZIP:
+            require(isinstance(artifact["collection_manifest"], list))
         require(
             artifact["collection_mode"] == ("synthetic" if artifact["synthetic"] else "imported")
         )
@@ -64,6 +73,7 @@ def validate_metadata(state: dict[str, Any]) -> None:
         require(artifact["source_machine"] == "unknown" and artifact["sensitivity"] == "private")
         require(isinstance(artifact["warnings"], list))
         stamp(artifact["imported_at"])
+    require(sum(a["size"] for a in state["artifacts"]) <= MAX_CASE_BYTES)
     imported: list[str] = []
     audited_reviews = []
     analysis_current = False

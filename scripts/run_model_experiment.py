@@ -6,9 +6,12 @@ import resource
 import socket
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from pathlib import Path
+
+from model_timing import parse_server_line
 
 root = Path(__file__).resolve().parents[1]
 runtime = Path(sys.argv[1]).resolve()
@@ -28,6 +31,7 @@ finally:
 os.environ.clear()
 os.environ["LANG"] = "C.UTF-8"
 started = time.monotonic()
+server_metrics = []
 with (runtime / "model-server.log").open("wb") as log:
     child = subprocess.Popen(
         [
@@ -67,10 +71,24 @@ with (runtime / "model-server.log").open("wb") as log:
             "--no-webui",
             "--no-context-shift",
         ],
-        stdout=log,
-        stderr=log,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         env=dict(os.environ),
     )
+
+    def read_log():
+        assert child.stdout is not None
+        for line in child.stdout:
+            log.write(line)
+            if len(server_metrics) < 10000:
+                record = parse_server_line(
+                    line.decode("utf-8", errors="replace"), time.monotonic() - started
+                )
+                if record is not None:
+                    server_metrics.append(record)
+
+    reader = threading.Thread(target=read_log, daemon=True)
+    reader.start()
     try:
         deadline = time.monotonic() + 120
         while time.monotonic() < deadline:
@@ -86,15 +104,40 @@ with (runtime / "model-server.log").open("wb") as log:
             raise RuntimeError("model server readiness timeout")
         print("SCRYVEIL_NETWORK_BOUNDARY=loopback_only; external_route_unreachable", flush=True)
         subprocess.run(
-            [sys.executable, str(root / "scripts/model_qualification.py")], check=True, timeout=1200
+            [
+                sys.executable,
+                str(root / "scripts/model_qualification.py"),
+                "--scenario",
+                "recurrence",
+            ],
+            check=True,
+            timeout=800,
         )
     finally:
+        shutdown_started = time.monotonic()
         child.terminate()
+        killed = False
         try:
             child.wait(timeout=5)
         except subprocess.TimeoutExpired:
+            killed = True
             child.kill()
             child.wait()
+        reader.join(timeout=5)
+        print(
+            "SCRYVEIL_SERVER_TIMING="
+            + json.dumps(
+                {
+                    "events": server_metrics,
+                    "reader_finished": not reader.is_alive(),
+                    "server_returncode": child.returncode,
+                    "shutdown_seconds": time.monotonic() - shutdown_started,
+                    "required_kill": killed,
+                    "interpretation": "Server task IDs are not yet bound to adapter request IDs. Slot release alone does not identify cancellation cause; compare per-request deadlines and timing.",
+                }
+            ),
+            flush=True,
+        )
         usage = resource.getrusage(resource.RUSAGE_CHILDREN)
         print(
             "SCRYVEIL_MODEL_RESOURCES="

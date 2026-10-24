@@ -28,6 +28,23 @@ The original 30-report probe exhausted the mock context budget after six request
 
 [Resource-format continuation](validation/resource-format-continuation.md) adds a separate reader for observed sampling-duration annotations, preserves old v2 cases, and leaves v73 explicitly unqualified. The owner-facing diagnostic coverage report exposes omissions, partial/unqualified interpretation, source warnings and unknown unimported/rejected files. Types 202/206/509/120, sysdiagnose and backups remain unsupported.
 
+## Collection continuation at the next review checkpoint
+
+The eight owner observations were checked against `bceef32`: all held, with the qualification that snapshot omissions were already disclosed and generic configurable HTTP transport already existed. The following changes address selected product limitations, not all qualification gaps:
+
+| Observation | Current change / remaining limit |
+|---|---|
+| Basic detectors | Opt-in full-case signature recurrence, condition/incident contradictions, explicit Jetsam reasons and bounded temporal resource neighbors; no root-cause or malware classifier |
+| Hidden diagnostic detail | Explicit diagnostic-detail permission scope; process names/symbols/exception/OS fields available without executable paths or unrelated identifiers |
+| No qualified AI investigation | Still open; synthetic mock capacity is separate from actual-model quality |
+| One compatible JSON adapter | Still one implemented provider wire protocol; no universal GLM/Claude/GPT/Gemini interoperability claim |
+| 32 artifacts / earliest 2000 | Batched ZIP import, 1024-artifact bounded case, explicit complete-case query snapshot and paging; legacy default remains compatible; no persistent indexed database |
+| Partial Apple formats | Existing reader interpretations preserved; v73 still unqualified; new collection support does not qualify input semantics |
+| No archive pipeline | Bounded ZIP preservation/inventory/import implemented; unsupported members retained. TAR, complete sysdiagnose, backup, PCAP and live acquisition remain open |
+| Unauthenticated custody | Unchanged: local byte hashes/reparse/audit, no authenticated acquisition or hostile-owner protection |
+
+[Operational guide and bounds](collections.md). Initial large mock runs exhausted the unchanged 200000-unit budget with 40 references per finding and then with 25 event rows; smaller disclosed finding-reference lists and five-row full-case query defaults resolve this mechanical workload. All source events remain available for paged queries. Do not infer real-model quality from it.
+
 ## Comparison with inspected references
 
 The [original source review](research/upstream-assessment.md), [access matrix](research/source-access-matrix.md), [license matrix](research/license-matrix.md) and ADR-001 retain exact full SHAs, paths and untested claims. These are pinned historical observations, not assertions about every current head. No competing test suite or hardware path was executed. No upstream code or fixture was copied.
@@ -55,7 +72,7 @@ Additional research for the AI boundary: Apple crash/Jetsam documentation; 0xche
 | P0 | Resolve actual local model qualification failures | Pinned 1.5B and 4B profiles have no qualified evidence-grounded final result. Latest Qwen3 run retrieved three events in two scenarios, then timed out; other scenarios failed protocol recovery. Instrument per-request/server timing before another justified profile comparison; retain all failures. Fixed questions and expected evidence/alternatives; local weights pinned and licensed; server egress disabled; invalid-reference rate, completion rate and unsupported assertions measured. No cloud test inferred from HTTP compatibility |
 | P0 | Independent isolation/privacy review | Reproduce forbidden syscall, cross-case, disclosure-change and TLS tests; review parent/broker trust boundary; no prompt-only security claim |
 | P1 | Persistence and performance | Profile named reference hardware; compare indexed/streamed storage and a bounded native hot-path prototype only where measured; preserve exact report semantics and rollback. Current local five-run pass does not erase earlier failures |
-| P1 | Sysdiagnose member support | Start with a known plaintext member format; preserve parent archive and member hashes/locations. Before extraction: reject absolute/traversal/link/device entries; bound total expanded bytes, ratio, members, nesting and time in isolated worker; never use member names as output paths. Not implemented yet |
+| P1 | Sysdiagnose member support | Start with a known plaintext member format; preserve parent archive and member hashes/locations. Before extraction: reject absolute/traversal/link/device entries; bound total expanded bytes, ratio, members, nesting and time in isolated worker; never use member names as output paths. ZIP member preservation now implemented; isolated archive worker/TAR/sysdiagnose member interpretation remain open |
 | P1 | Backup SQLite/plist and profiles | Authorized acquisition method, encryption/password handling outside prompts, consistent SQLite/WAL snapshots, safe identifier/path handling and independent artifact fixtures; no mutation/remediation |
 | P1 | Network captures and richer intelligence | Packet timestamps and link-layer provenance; process association only when supplied by that capture source. Versioned STIX/indicator provenance, expiry/reliability and known-ground-truth false positives/negatives; no automatic IOC download |
 | P2 | Evidence graph and Android | Clock uncertainty, duplicate source lineage, competing explanations, scoped collection permissions and versioned Android artifact contracts. Nearby timestamps alone must not create causal edges |

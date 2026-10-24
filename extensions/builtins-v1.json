@@ -202,5 +202,55 @@
       "action_bytes": 65536
     },
     "qualification": "Pinned Qwen 1.5B and Qwen3 4B CPU configurations exercised the real adapter but have no qualified evidence-grounded final result. See docs/validation/qwen3-recovery-comparison.md. Other models and external providers remain untested."
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "extension_id": "scryveil_zip_collection_v1",
+    "kind": "parser",
+    "version": "1.0.0",
+    "implementation": "scryveil.collection:unpack",
+    "provenance": "SCRYVEIL original implementation; no incorporated upstream code",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "compatibility": [
+      "case 0.1.0; optional collection manifest and full-case snapshot profile"
+    ],
+    "capabilities": [
+      "bounded ZIP inventory without filesystem extraction",
+      "preserve archive/member relationships and unsupported bytes"
+    ],
+    "resource_budgets": {
+      "archive_bytes": 67108864,
+      "member_bytes": 8388608,
+      "expanded_bytes": 67108864,
+      "members": 1000,
+      "expansion_ratio": 200
+    },
+    "qualification": "independently generated collections only; genuine exports and independent security audit open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "extension_id": "scryveil.diagnostic-intelligence/1",
+    "kind": "detector",
+    "version": "1.0.0",
+    "implementation": "scryveil.diagnostic_intelligence:intelligence",
+    "provenance": "SCRYVEIL original implementation; no incorporated upstream code",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "compatibility": [
+      "case 0.1.0; optional collection manifest and full-case snapshot profile"
+    ],
+    "capabilities": [
+      "declared exception and symbol signature recurrence",
+      "explicit Jetsam reasons and report condition contradictions",
+      "bounded temporal proximity without causal claims"
+    ],
+    "resource_budgets": {
+      "events": 20000,
+      "references_per_finding_side": 8
+    },
+    "qualification": "independently generated collections only; genuine exports and independent security audit open"
   }
 ]
