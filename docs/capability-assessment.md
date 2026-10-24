@@ -1,6 +1,6 @@
 # Capability assessment and next evidence gates
 
-Reviewed 2026-10-23, continuing PR #1 through `cccacdd` and the [diagnostic/model milestone](validation/diagnostic-model-milestone.md). The existing 159-test core, APR privacy review, ADR-001 and pinned upstream research were inspected before extending them. The new slice uses an explicit IPS import route and separate investigation reports. Existing NDJSON parsing, stored analysis and report formats are retained. No existing functional component was replaced for style.
+Updated 2026-10-24, continuing PR #1 through `cccacdd` and the [diagnostic/model milestone](validation/diagnostic-model-milestone.md). The existing 159-test core, APR privacy review, ADR-001 and pinned upstream research were inspected before extending them. The new slice uses an explicit IPS import route and separate investigation reports. Existing NDJSON parsing, stored analysis and report formats are retained. No existing functional component was replaced for style.
 
 This platform remains substantially narrower than established forensic suites. No device was connected or private record examined. Pinned public model weights were downloaded before isolation; generated cases were evaluated with external routing disabled. No external inference provider was used. Green tests below demonstrate specified mechanical behavior on generated data; they do not establish real-world spyware accuracy.
 
@@ -24,7 +24,9 @@ This platform remains substantially narrower than established forensic suites. N
 | Persistence/integrity | Original bytes and event interpretation reverified before/after; unchanged source state; separate stdout report | Unsigned local audit, cooperative locks, no complete transaction recovery, no adversarial same-UID isolation |
 | Performance/packaging | Five fresh runs per bounded workload; wheel and installed CLI checks; no third-party Python runtime packages | Shared-runner variance and earlier failures; Linux-only AI isolation; system libseccomp; no desktop signing or large-case claim |
 
-The 30-record new-format volume probe parses and verifies quickly but exhausts the scripted mock's cumulative context budget at six requests. Query planning, compact context and whole-investigation capacity are open engineering limits; the historical 20,000-record deterministic timing pass does not qualify AI scale.
+The original 30-report probe exhausted the mock context budget after six requests. The bounded-context correction at `dd27bf6` completes eight steps under the same budget in three fresh-process samples (0.398–0.414 seconds). Historical failures remain retained. This is a scripted capacity regression, not an AI-scale or reasoning qualification. [Qwen3 reconciliation](validation/qwen3-reconciliation.md) verifies one empty mechanical completion and zero accepted facts at `948ec27`; the changed-runtime comparison is separately recorded.
+
+[Resource-format continuation](validation/resource-format-continuation.md) adds a separate reader for observed sampling-duration annotations, preserves old v2 cases, and leaves v73 explicitly unqualified. The owner-facing diagnostic coverage report exposes omissions, partial/unqualified interpretation, source warnings and unknown unimported/rejected files. Types 202/206/509/120, sysdiagnose and backups remain unsupported.
 
 ## Comparison with inspected references
 

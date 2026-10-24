@@ -9,7 +9,7 @@ from typing import Any, Never
 
 from .engine import RuleConfig
 from .investigation import disclosure, investigate
-from .investigation_tools import snapshot_case
+from .investigation_tools import diagnostic_coverage, snapshot_case
 from .models import SCHEMA, ScryveilError
 from .parse import canonical
 from .privacy import build_privacy_report, privacy_markdown
@@ -73,13 +73,13 @@ def parser() -> Parser:
     review.add_argument(
         "--decision", choices=["review_needed", "accepted_benign", "inconclusive"], required=True
     )
-    diagnostics = (
-        sub.add_parser("diagnostics")
-        .add_subparsers(dest="action", required=True)
-        .add_parser("report")
-    )
+    diagnostic_commands = sub.add_parser("diagnostics").add_subparsers(dest="action", required=True)
+    diagnostics = diagnostic_commands.add_parser("report")
     diagnostics.add_argument("--case", required=True)
     diagnostics.add_argument("--include-identifiers", action="store_true")
+    coverage = diagnostic_commands.add_parser("coverage")
+    coverage.add_argument("--case", required=True)
+    coverage.add_argument("--max-events", type=int, default=2000)
     investigation = sub.add_parser("investigate").add_subparsers(dest="action", required=True)
     for name in ("preview", "run"):
         command = investigation.add_parser(name)
@@ -116,6 +116,8 @@ def execute(args: argparse.Namespace) -> Any:
         }
     store = CaseStore(args.root)
     if args.command == "diagnostics":
+        if args.action == "coverage":
+            return diagnostic_coverage(snapshot_case(store, args.case, max_events=args.max_events))
         result = snapshot_case(store, args.case, args.include_identifiers)
         return result
     if args.command == "investigate":

@@ -162,6 +162,9 @@ def snapshot_case(
                 "limit_duration_seconds",
                 "duration_seconds",
                 "sampled_duration_seconds",
+                "sample_start_gap_seconds",
+                "sample_end_gap_seconds",
+                "header_duration_ms",
                 "field_locations",
             ):
                 if key in a:
@@ -219,6 +222,8 @@ def snapshot_case(
                     "exception_raw_codes",
                     "exception_message",
                     "writes_summary",
+                    "duration_text",
+                    "sampled_duration_text",
                 ):
                     if key in a:
                         row[key] = a[key]
@@ -279,6 +284,82 @@ def snapshot_case(
             raise ScryveilError("snapshot_too_large")
         result["snapshot_sha256"] = digest(canonical(result))
         return result
+
+
+def diagnostic_coverage(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Owner-facing inventory of the verified selection, not inferred device history.
+
+    Kept separate from the frozen default snapshot/tool projection so existing
+    cases and model action contracts retain their recorded interpretation.
+    """
+    events = snapshot["events"]
+    diagnostics = [e for e in events if e["event_type"].startswith("diagnostic.")]
+    categories = {
+        k: 0
+        for k in (
+            "diagnostic.crash",
+            "diagnostic.exception",
+            "diagnostic.resource",
+            "diagnostic.jetsam",
+        )
+    }
+    categories.update(Counter(e["event_type"] for e in diagnostics))
+    represented = {e["artifact_id"] for e in events}
+    return {
+        "schema_version": "scryveil.diagnostic-coverage/1",
+        "snapshot_sha256": snapshot["snapshot_sha256"],
+        "source_state_sha256": snapshot["source_state_sha256"],
+        "scope": "verified_selected_snapshot_only",
+        "coverage": deepcopy(snapshot["coverage"]),
+        "imported_artifacts": len(snapshot["artifacts"]),
+        "artifacts_without_selected_events": [
+            a["artifact_id"] for a in snapshot["artifacts"] if a["artifact_id"] not in represented
+        ],
+        "diagnostic_categories": categories,
+        "not_observed_in_snapshot": sorted(k for k, count in categories.items() if count == 0),
+        "profiles": dict(
+            sorted(
+                Counter(
+                    e.get("format_profile", "not_reported_by_reader") for e in diagnostics
+                ).items()
+            )
+        ),
+        "schema_status": dict(
+            sorted(
+                Counter(
+                    e.get("schema_status", "not_reported_by_reader") for e in diagnostics
+                ).items()
+            )
+        ),
+        "interpretation_status": dict(
+            sorted(
+                Counter(
+                    e.get("interpretation_status", "not_reported_by_reader") for e in diagnostics
+                ).items()
+            )
+        ),
+        "events_without_source_time": sum(e["event_time"] is None for e in events),
+        "source_warnings": [
+            {"artifact_id": a["artifact_id"], **warning}
+            for a in snapshot["artifacts"]
+            for warning in a["warnings"]
+        ],
+        "unimported_or_rejected_files": "unknown_not_recorded",
+        "rejected_record_count": None,
+        "limits": {
+            "case_artifacts": 32,
+            "case_events": 20000,
+            "snapshot_selection": "earliest_known_times_then_unknown",
+        },
+        "limitations": [
+            "Not observed means absent from this selected snapshot, not absent from the device or complete case.",
+            "Unimported and rejected files are outside the accepted-case inventory; their count and contents are unknown.",
+            "Warnings are reported warnings, not a complete rejected-record count. Parsers may interpret only a documented subset.",
+            "Legacy projections may omit profile/schema metadata; not_reported_by_reader is not qualified parsing.",
+            "Source clock accuracy, shared device identity, missing historical records and events after snapshot creation remain unverified.",
+            "A missing IOC or diagnostic category does not establish a clean device or exclude compromise.",
+        ],
+    }
 
 
 class ReadOnlyTools:

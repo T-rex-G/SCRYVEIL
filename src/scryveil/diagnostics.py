@@ -13,6 +13,7 @@ from .parse import MAX_BYTES, MAX_LINE, canonical, digest, load_json, text_field
 
 IPS = "apple_ips_json_v1"
 IPS_DIAGNOSTIC = "apple_ips_diagnostic_v2"
+IPS_RESOURCE = "apple_ips_resource_text_v1"
 APPLE_TIME = re.compile(r"^(\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d(?:\.\d{1,6})?) ([+-]\d\d)(\d\d)$")
 
 
@@ -308,7 +309,7 @@ def parse_ips(
 
 
 def parse_diagnostic(
-    data: bytes, aid: str, synthetic: bool
+    data: bytes, aid: str, synthetic: bool, *, resource_v1: bool = True
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
     """New imports dispatch by declared format, never by filename alone.
 
@@ -327,7 +328,7 @@ def parse_diagnostic(
     if bug == "145":
         from .diagnostic_text import parse_resource_text
 
-        return parse_resource_text(data, aid, synthetic)
+        return parse_resource_text(data, aid, synthetic, extended=resource_v1)
     if bug not in ("309", "308", "298"):
         raise ScryveilError("unsupported_ips_type")
     rec = load_json(body)
@@ -338,6 +339,13 @@ def parse_diagnostic(
         and rec["version"] == 104
     )
     return parse_ips(data, aid, synthetic, extended=not legacy)
+
+
+def parse_diagnostic_v2(
+    data: bytes, aid: str, synthetic: bool
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
+    """Recorded v2 cases retain their original text interpretation on verification."""
+    return parse_diagnostic(data, aid, synthetic, resource_v1=False)
 
 
 def diagnostic_findings(events: list[dict[str, Any]]) -> list[dict[str, Any]]:

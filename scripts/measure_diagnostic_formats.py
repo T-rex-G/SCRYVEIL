@@ -69,6 +69,9 @@ def sample():
             "query_limits": queries,
             "mock_status": first["status"],
             "mock_requests": first["requests"],
+            "mock_reserved_token_estimate": first["reserved_token_estimate"],
+            "max_total_tokens": config["max_total_tokens"],
+            "context_policy": first.get("context"),
             "mock_errors": [row["error"] for row in first["trace"] if not row["ok"]],
             "repeated_report_identical": True,
             "originals_and_state_unchanged": True,
@@ -101,6 +104,19 @@ if __name__ == "__main__":
                     .decode()
                     .strip(),
                     "runtime_sha256": hashes,
+                    "measured_working_tree_modified": bool(
+                        subprocess.check_output(
+                            [
+                                "git",
+                                "status",
+                                "--porcelain",
+                                "--",
+                                "src/scryveil",
+                                "scripts/measure_diagnostic_formats.py",
+                            ],
+                            cwd=ROOT,
+                        ).strip()
+                    ),
                     "measurement_script_sha256": digest(Path(__file__).read_bytes()),
                     "method": "Three sequential fresh processes on shared Linux host; no concurrent local benchmark; process wall includes imports; RSS per process, not aggregate; no real evidence or model.",
                     "samples": samples,

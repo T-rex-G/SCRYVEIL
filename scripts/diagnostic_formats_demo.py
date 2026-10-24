@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 
 from scryveil.investigation import investigate
-from scryveil.investigation_tools import ReadOnlyTools, snapshot_case
+from scryveil.investigation_tools import ReadOnlyTools, diagnostic_coverage, snapshot_case
 from scryveil.parse import canonical, digest
 from scryveil.providers import DEFAULT_CONFIG
 from scryveil.store import CaseStore
@@ -57,6 +57,41 @@ def main():
         second = investigate(store, cid, "Do all supplied reports establish fatal crashes?", config)
         assert first["status"] == "completed" and canonical(first) == canonical(second)
         assert snapshot_case(store, cid)["source_state_sha256"] == snapshot["source_state_sha256"]
+        # A separate fictional v73 case demonstrates partial shared fields; its
+        # version remains unqualified and is never promoted by this demo.
+        partial = store.create("synthetic-unqualified-version", "self")["case_id"]
+        store.import_file(partial, fixtures / "diagnostic-text-annotated.ips", True, "ips")
+        selection = snapshot_case(store, partial)
+        detail = diagnostic_coverage(selection)
+        assert detail["schema_status"] == {"unqualified_version": 1}
+        assert detail["coverage"]["real_export_qualification"] == "open"
+        viewed = ReadOnlyTools(selection)
+        row = viewed.call("diagnostics.search", {})["data"]["events"][0]
+        cited = viewed.ground_final(
+            {
+                "facts": [
+                    {
+                        "event_id": row["event_id"],
+                        "field": "sampled_duration_seconds",
+                        "value": "67.25",
+                    }
+                ],
+                "measurements": [],
+                "hypotheses": [],
+                "unanswered_questions": [],
+            }
+        )["observed_facts"][0]
+        annotation_raw = (fixtures / "diagnostic-text-annotated.ips").read_bytes()
+        assert annotation_raw[
+            cited["byte_offset"] : cited["byte_offset"] + cited["byte_length"]
+        ].startswith(b"Duration Sampled: 67.25s")
+        annotation_report = investigate(
+            store, partial, "Which observations are partial or unqualified?", config
+        )
+        assert annotation_report["status"] == "completed"
+        assert (
+            snapshot_case(store, partial)["source_state_sha256"] == selection["source_state_sha256"]
+        )
         print(
             json.dumps(
                 {
@@ -71,6 +106,14 @@ def main():
                     "fixture_sha256": digest(original),
                     "mock_steps": first["requests"],
                     "genuine_export_qualification": "OPEN",
+                    "annotated_resource": {
+                        "version_73": "unqualified",
+                        "sampled_duration_seconds": row["sampled_duration_seconds"],
+                        "exact_line_citation_checked": True,
+                        "unknown_rejected_record_count": detail["rejected_record_count"],
+                        "mock_status": annotation_report["status"],
+                        "original_sha256": digest(annotation_raw),
+                    },
                 },
                 indent=2,
             )

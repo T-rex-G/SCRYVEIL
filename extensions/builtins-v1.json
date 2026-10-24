@@ -36,7 +36,7 @@
     "side_effects": [],
     "extension_id": "apple_ips_diagnostic_v2",
     "kind": "parser",
-    "implementation": "scryveil.diagnostics:parse_diagnostic",
+    "implementation": "scryveil.diagnostics:parse_diagnostic_v2",
     "compatibility": [
       "case 0.1.0 additive diagnostic observations",
       "309 / 308 JSON body version 2; 145 disk writes text Report Version 29"
@@ -57,6 +57,32 @@
       "text_line_bytes": 65536
     },
     "qualification": "Apple documentation and public author-posted structures; independent synthetic regressions; owner exports not received or qualified"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; public structural research and fictional regression fixtures",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "apple_ips_resource_text_v1",
+    "kind": "parser",
+    "implementation": "scryveil.diagnostic_text:parse_resource_summary",
+    "compatibility": [
+      "case 0.1.0 additive reader identity; existing v2 text cases keep their recorded reader",
+      "145 disk-write summary shared fields; versions 29/55/60 structurally recognized; 73 unqualified"
+    ],
+    "capabilities": [
+      "bounded summary parsing and exact line locations",
+      "displayed quantities and separate body/header durations",
+      "observed sampling-duration annotations; unknown suffixes remain unparsed"
+    ],
+    "resource_budgets": {
+      "input_bytes": 8388608,
+      "text_summary_lines": 200,
+      "text_line_bytes": 65536
+    },
+    "qualification": "public author-posted structures and independently authored fixtures only; genuine Apple export/version 73 gate open"
   },
   {
     "schema_version": "scryveil.extension/1",

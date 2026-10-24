@@ -1,4 +1,4 @@
-"""Execute cccacdd's reader, then verify its synthetic IPS cases with current code.
+"""Execute historical readers, then verify their synthetic IPS cases with current code.
 
 Requires the checkpoint Git object. No existing case or checkout is modified.
 Includes a body-version-2 report that the old reader marked unqualified.
@@ -11,7 +11,21 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BASELINE = "cccacdd5d795570cea365cfcebe4e2a0ed4ce122"
+BASELINES = {
+    "cccacdd5d795570cea365cfcebe4e2a0ed4ce122": [
+        "diagnostic-0.ips",
+        "diagnostic-1.ips",
+        "diagnostic-2.ips",
+        "diagnostic-jetsam.ips",
+        "diagnostic-v2-crash.ips",
+    ],
+    "948ec27395765cdbde9f39fb38d1753ff24e2a8e": [
+        "diagnostic-v2-crash.ips",
+        "diagnostic-v2-exception.ips",
+        "diagnostic-text-resource.ips",
+        "diagnostic-text-annotated.ips",
+    ],
+}
 CODE = """
 import json,sys
 from pathlib import Path
@@ -22,8 +36,7 @@ from scryveil.report import build_report
 from scryveil.investigation_tools import snapshot_case
 root,fixtures=Path(sys.argv[2]),Path(sys.argv[3])
 store=CaseStore(root/'cases')
-names=['diagnostic-0.ips','diagnostic-1.ips','diagnostic-2.ips',
-       'diagnostic-jetsam.ips','diagnostic-v2-crash.ips']
+names=json.loads(sys.argv[5])
 if sys.argv[4]=='old':
     for group in [[n] for n in names]+[names]:
         cid=store.create('synthetic','self')['case_id']
@@ -47,12 +60,13 @@ else:
             assert digest((root/'cases'/cid/'originals'/a['sha256']).read_bytes())==a['sha256']
 """
 
-with tempfile.TemporaryDirectory(prefix="scryveil-checkpoint-contract-") as tmp:
+
+def check(baseline, names, tmp):
     root = Path(tmp)
     old = root / "baseline"
     paths = (
         subprocess.check_output(
-            ["git", "ls-tree", "-r", "--name-only", BASELINE, "src/scryveil"], cwd=ROOT
+            ["git", "ls-tree", "-r", "--name-only", baseline, "src/scryveil"], cwd=ROOT
         )
         .decode()
         .splitlines()
@@ -61,7 +75,7 @@ with tempfile.TemporaryDirectory(prefix="scryveil-checkpoint-contract-") as tmp:
     for path in paths:
         dest = old / Path(path).relative_to("src")
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_bytes(subprocess.check_output(["git", "show", BASELINE + ":" + path], cwd=ROOT))
+        dest.write_bytes(subprocess.check_output(["git", "show", baseline + ":" + path], cwd=ROOT))
     for src, mode in [(old, "old"), (ROOT / "src", "new")]:
         subprocess.run(
             [
@@ -72,13 +86,14 @@ with tempfile.TemporaryDirectory(prefix="scryveil-checkpoint-contract-") as tmp:
                 str(root),
                 str(ROOT / "fixtures/synthetic"),
                 mode,
+                json.dumps(names),
             ],
             check=True,
         )
     print(
         json.dumps(
             {
-                "baseline": BASELINE,
+                "baseline": baseline,
                 "cases": len(list(root.glob("*.report"))),
                 "old_analysis_reports_byte_equal": True,
                 "old_investigation_snapshots_byte_equal": True,
@@ -87,3 +102,8 @@ with tempfile.TemporaryDirectory(prefix="scryveil-checkpoint-contract-") as tmp:
             }
         )
     )
+
+
+for baseline, names in BASELINES.items():
+    with tempfile.TemporaryDirectory(prefix="scryveil-checkpoint-contract-") as tmp:
+        check(baseline, names, tmp)

@@ -85,7 +85,8 @@
             "apple_apr_experimental",
             "ioc_jsonl",
             "apple_ips_json_v1",
-            "apple_ips_diagnostic_v2"
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1"
           ]
         },
         "parser_version": {
@@ -184,7 +185,8 @@
             "apple_apr_experimental",
             "ioc_jsonl",
             "apple_ips_json_v1",
-            "apple_ips_diagnostic_v2"
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1"
           ]
         },
         "parser_version": {
@@ -256,7 +258,8 @@
             "mixed",
             "unknown",
             "apple_ips_json_v1",
-            "apple_ips_diagnostic_v2"
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1"
           ]
         },
         "synthetic": {
@@ -330,7 +333,8 @@
             "mixed",
             "unknown",
             "apple_ips_json_v1",
-            "apple_ips_diagnostic_v2"
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1"
           ]
         },
         "synthetic": {

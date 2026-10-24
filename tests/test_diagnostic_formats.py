@@ -7,6 +7,7 @@ from jsonschema import Draft202012Validator
 from scryveil.diagnostics import (
     IPS,
     IPS_DIAGNOSTIC,
+    IPS_RESOURCE,
     diagnostic_findings,
     parse_diagnostic,
     parse_ips,
@@ -45,7 +46,7 @@ def test_actual_requested_formats_have_distinct_baseline_and_new_states():
             parse_ips(raw, "artifact-" + digest(raw), True)
     for name in NAMES:
         events, warnings, family = parsed((FIXTURES / name).read_bytes())
-        assert family == IPS_DIAGNOSTIC and not warnings
+        assert family == (IPS_RESOURCE if name == NAMES[2] else IPS_DIAGNOSTIC) and not warnings
         assert events[0]["attributes"]["schema_status"] == "recognized_subset"
         assert events[0]["attributes"]["interpretation_status"] == "partial"
         assert "unqualified" in " ".join(events[0]["limitations"]) or "open" in " ".join(
@@ -128,7 +129,7 @@ def test_text_interval_and_rounded_accounting_are_not_crash_or_packets():
 @pytest.mark.parametrize(
     "before,after,code",
     [
-        (b"Report Version:   29", b"Report Version:   60", "ips_schema_version_unqualified"),
+        (b"Report Version:   29", b"Report Version:   73", "ips_schema_version_unqualified"),
         (b"12.50 MB", b"12.50 UNKNOWN", "unparsed_ips_text_quantity"),
         (b"60.00s", b"-1s", "invalid_ips_text_duration"),
         (b"14:35:00.000 +0230", b"14:00:00.000 +0230", "ips_text_reversed_interval"),

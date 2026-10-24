@@ -13,7 +13,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .diagnostics import IPS, IPS_DIAGNOSTIC, parse_diagnostic, parse_ips
+from .diagnostic_text import parse_resource_summary
+from .diagnostics import (
+    IPS,
+    IPS_DIAGNOSTIC,
+    IPS_RESOURCE,
+    parse_diagnostic,
+    parse_diagnostic_v2,
+    parse_ips,
+)
 from .engine import DEFAULT_CONFIG, RuleConfig, analyze
 from .models import SCHEMA, ScryveilError
 from .parse import MAX_BYTES, canonical, digest, load_json, parse
@@ -185,6 +193,8 @@ class CaseStore:
                         # Reimport is idempotent under its recorded reader;
                         # upgrading the executable never migrates old evidence.
                         events, warnings, family = parse_ips(data, aid, synthetic)
+                    elif input_format == "ips" and artifact["format"] == IPS_DIAGNOSTIC:
+                        events, warnings, family = parse_diagnostic_v2(data, aid, synthetic)
                     if artifact["format"] != family:
                         raise ScryveilError("parser_selection_conflict")
                     if artifact["synthetic"] != synthetic:
@@ -268,7 +278,9 @@ class CaseStore:
             if artifact["format"] == IPS:
                 reader = parse_ips
             elif artifact["format"] == IPS_DIAGNOSTIC:
-                reader = parse_diagnostic
+                reader = parse_diagnostic_v2
+            elif artifact["format"] == IPS_RESOURCE:
+                reader = parse_resource_summary
             else:
                 reader = parse
             events, warnings, family = reader(data, aid, artifact["synthetic"])
