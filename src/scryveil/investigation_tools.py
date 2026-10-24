@@ -287,6 +287,7 @@ class ReadOnlyTools:
         self.events = {e["event_id"]: e for e in snapshot["events"]}
         self.findings = {f["finding_id"]: f for f in snapshot["findings"]}
         self.seen_events: set[str] = set()
+        self.read_events: set[str] = set()
         self.seen_findings: set[str] = set()
 
     def call(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -305,6 +306,14 @@ class ReadOnlyTools:
             if len(canonical(result)) > MAX_RESULT:
                 raise ScryveilError("tool_result_too_large")
             self.seen_events.update(ids)
+            if name in {
+                "timeline.query",
+                "diagnostics.search",
+                "network.query",
+                "process.inspect",
+                "evidence.read_excerpt",
+            }:
+                self.read_events.update(ids)
             if name == "findings.inspect":
                 self.seen_findings.update(f["finding_id"] for f in data)
             if name == "hypotheses.compare":
@@ -413,7 +422,7 @@ class ReadOnlyTools:
         for fact in action["facts"]:
             eid, field = fact["event_id"], fact["field"]
             if (
-                eid not in self.seen_events
+                eid not in self.read_events
                 or field not in self.events[eid]
                 or not same_json(self.events[eid][field], fact["value"])
             ):

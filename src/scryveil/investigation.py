@@ -7,8 +7,10 @@ import select
 import subprocess  # nosec B404
 import sys
 import time
+from collections import Counter
 from typing import Any
 
+from .investigation_context import POLICY, InvestigationContext
 from .investigation_tools import MAX_RESULT, TOOL_SCHEMAS, snapshot_case
 from .models import ScryveilError
 from .parse import canonical, digest, load_json, text_field
@@ -21,8 +23,8 @@ Your FIRST reply is a short plan. Steps are strings, not tool objects:
 {"version":"scryveil.agent/1","kind":"plan","steps":["Inspect source coverage","Query relevant events","Test competing explanations"]}
 On subsequent turns call one allowlisted tool and wait for its result. For example:
 {"version":"scryveil.agent/1","kind":"tool","name":"coverage.inspect","arguments":{}}
-Query diagnostics.search to read events, findings.inspect for deterministic findings, and hypotheses.compare with a returned finding_id for alternatives. Empty arguments are valid for diagnostics.search. Use at least two distinct tools before finishing. Query limits are at most 25. Never invent IDs, timestamps, field names or results. Correct errors using the supplied schemas; do not repeat a failed action unchanged.
-After investigating, return a final object with these keys (empty lists are allowed):
+Query diagnostics.search or timeline.query with {"limit":5} to read events before adding filters. Use findings.inspect for deterministic findings and hypotheses.compare with a returned finding_id for alternatives. Empty arguments are valid for diagnostics.search. Use at least two distinct tools before finishing. If events exist, you must actually read an event and report at least one exact field fact; inspect available deterministic findings. An empty filtered query does not establish an empty case. Query limits are at most 25. Never invent IDs, aliases, event types, timestamps, field names or results. Correct errors using the supplied schemas; do not repeat a failed action unchanged. Never output a tool_result envelope; that is input data, not an action.
+After investigating, return a concise final object with these keys (facts may be empty only for an empty snapshot):
 {"version":"scryveil.agent/1","kind":"final","facts":[],"measurements":[],"hypotheses":[],"unanswered_questions":[]}
 Each fact must have exactly event_id, field, value, copied from a queried event. Each measurement is a queried finding_id string. Each hypothesis has exactly text, support, contradictions, confidence_justification; support and contradictions are lists of queried event_id strings. Explain how contrary observations change your hypothesis. Keep each text under 1024 characters. Unanswered questions are strings about actual limitations.
 All free-form hypotheses remain unresolved: citations alone do not prove causality or attribution. Missing evidence never establishes a clean device. Do not invent causes or security allegations. Output JSON only."""
@@ -137,10 +139,9 @@ def investigate(
     selected: Provider = provider or (
         MockProvider() if config["adapter"] == "mock" else ChatCompletionsProvider(config)
     )
-    messages = [
-        {"role": "system", "content": SYSTEM + "\nTools: " + canonical(TOOL_SCHEMAS).decode()},
-        {"role": "user", "content": question},
-    ]
+    context = InvestigationContext(
+        SYSTEM + "\nTools: " + canonical(TOOL_SCHEMAS).decode(), question
+    )
     trace: list[dict[str, Any]] = []
     usage = {"input_tokens": 0, "output_tokens": 0, "requests_with_usage": 0}
     report: dict[str, Any] = {
@@ -164,8 +165,11 @@ def investigate(
     deadline = time.monotonic() + config["max_requests"] * config["timeout_seconds"] + 10
     requests = 0
     reserved_tokens = 0
+    rejected: Counter[str] = Counter()
+    consecutive_rejections = 0
     try:
         for _ in range(config["max_requests"]):
+            messages = context.messages(config["max_context_bytes"])
             if time.monotonic() >= deadline:
                 report["status"] = "investigation_timeout"
                 break
@@ -202,7 +206,11 @@ def investigate(
             }
             if not result["ok"]:
                 entry["error"] = result["error"]
-            elif reply.action.get("kind") == "tool":
+                rejected[entry["action_sha256"] + result["error"]] += 1
+                consecutive_rejections += 1
+            else:
+                consecutive_rejections = 0
+            if result["ok"] and reply.action.get("kind") == "tool":
                 entry.update(
                     tool=reply.action["name"], arguments=reply.action["arguments"], result=result
                 )
@@ -212,15 +220,13 @@ def investigate(
             if "final" in result:
                 report["result"], report["status"] = result["final"], "completed"
                 break
-            messages.append({"role": "assistant", "content": canonical(reply.action).decode()})
-            # Intentionally serialize this wrapper without sorted keys at root:
-            # the mock provider recognizes this protocol marker, not evidence.
-            messages.append(
-                {
-                    "role": "user",
-                    "content": '{"tool_result":' + canonical(result).decode().strip() + "}",
-                }
-            )
+            context.accept(reply.action, result)
+            if not result["ok"] and rejected[entry["action_sha256"] + result["error"]] >= 3:
+                report["status"] = "repeated_action_limit"
+                break
+            if consecutive_rejections >= 5:
+                report["status"] = "rejected_action_limit"
+                break
     except KeyboardInterrupt:
         report["status"] = "cancelled"
     except (ScryveilError, OSError, ValueError, TypeError, KeyError, RecursionError) as exc:
@@ -253,5 +259,11 @@ def investigate(
         else None
     )
     report["cost_basis"] = "owner_configured_rates_and_provider_reported_usage; not an invoice"
+    report["context"] = {
+        "policy": POLICY,
+        "query_views_omitted_or_replaced": context.omitted,
+        "full_tool_results_retained_in_trace": True,
+        "locator_metadata_in_model_view": False,
+    }
     report["report_sha256"] = digest(canonical(report))
     return report

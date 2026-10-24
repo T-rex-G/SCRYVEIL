@@ -86,6 +86,13 @@ class Session:
                 return result
             if len(self.successful_queries) < 2:
                 raise ScryveilError("investigation_queries_required")
+            if self.tools.events:
+                if not self.tools.read_events:
+                    raise ScryveilError("event_retrieval_required")
+                if not action["facts"]:
+                    raise ScryveilError("grounded_fact_required")
+            if self.tools.findings and not self.tools.seen_findings:
+                raise ScryveilError("deterministic_review_required")
             return {"ok": True, "final": self.tools.ground_final(action)}
         except (ScryveilError, ValueError, TypeError, KeyError, RecursionError) as exc:
             return {

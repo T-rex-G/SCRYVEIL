@@ -484,6 +484,31 @@
     "token_reservation_basis": {
       "type": "string",
       "maxLength": 1024
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "const": "scryveil.context/1"
+        },
+        "query_views_omitted_or_replaced": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "full_tool_results_retained_in_trace": {
+          "const": true
+        },
+        "locator_metadata_in_model_view": {
+          "const": false
+        }
+      },
+      "required": [
+        "policy",
+        "query_views_omitted_or_replaced",
+        "full_tool_results_retained_in_trace",
+        "locator_metadata_in_model_view"
+      ],
+      "additionalProperties": false
     }
   },
   "required": [
