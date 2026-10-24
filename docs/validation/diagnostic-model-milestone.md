@@ -16,6 +16,8 @@ Research basis: Apple's [JSON crash documentation](https://developer.apple.com/d
 
 `python scripts/diagnostic_formats_demo.py` imports the three new fixtures, produces deterministic recurrence with two contrary records, grounds resource accounting to its source line, and completes an eight-step mock investigation while verifying original bytes and unchanged case state. This demonstrates mechanics, not actual model reasoning or authentic Apple-export compatibility.
 
+Subsequent checkpoints preserve the observations below as historical evidence. See the [Qwen3 reconciliation](qwen3-reconciliation.md), [changed-runtime comparisons](qwen3-recovery-comparison.md), [resource/coverage continuation](resource-format-continuation.md) and [current handoff](../continuity/SCRYVEIL_WORK_HANDOFF.md). Later text imports use a separate reader; old stored interpretations remain unchanged.
+
 ## Actual CPU model experiment
 
 The first real run used Qwen/Qwen2.5-1.5B-Instruct-GGUF Q4_K_M (Apache-2.0), pinned Hugging Face revision `a615a81362316d7b9f5a7a9c4313adfdf9b54588`, model SHA-256 `6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e`, with MIT llama.cpp revision `4231b23dc2c46661d01157aac5245bdcf03ce4b1`. Weights were hash-verified before use. See the [official model file](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/blob/a615a81362316d7b9f5a7a9c4313adfdf9b54588/qwen2.5-1.5b-instruct-q4_k_m.gguf) and [runtime source](https://github.com/ggml-org/llama.cpp/tree/4231b23dc2c46661d01157aac5245bdcf03ce4b1).

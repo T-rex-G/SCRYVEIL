@@ -201,6 +201,6 @@
       "response_bytes": 1048576,
       "action_bytes": 65536
     },
-    "qualification": "Actual pinned Qwen 1.5B CPU run exercised transport but failed investigation quality; see docs/validation/diagnostic-model-milestone.md. External providers untested."
+    "qualification": "Pinned Qwen 1.5B and Qwen3 4B CPU configurations exercised the real adapter but have no qualified evidence-grounded final result. See docs/validation/qwen3-recovery-comparison.md. Other models and external providers remain untested."
   }
 ]
