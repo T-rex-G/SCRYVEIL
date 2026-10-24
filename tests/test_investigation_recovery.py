@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from scryveil.investigation import investigate
-from scryveil.investigation_context import InvestigationContext
+from scryveil.investigation_context import UNFILTERED_QUERY, InvestigationContext
 from scryveil.investigation_tools import ReadOnlyTools, snapshot_case
 from scryveil.investigation_worker import Session
 from scryveil.parse import canonical
@@ -68,8 +68,33 @@ def test_empty_snapshot_can_report_unknowns_after_queries(tmp_path):
     session.step(PLAN)
     session.step(query("coverage.inspect"))
     session.step(query("timeline.query", limit=1))
+    assert (
+        session.step({**FINAL, "unanswered_questions": []})["error"]
+        == "coverage_limitation_required"
+    )
     result = session.step(FINAL)
     assert result["ok"] and not result["final"]["observed_facts"]
+
+
+def test_empty_search_feedback_explains_literal_filters_without_executing_a_query():
+    context = InvestigationContext("Fixed policy", "Investigate failures")
+    context.accept(PLAN, {"ok": True, "plan": PLAN["steps"]})
+    action = query("diagnostics.search", text="recurring failures")
+    result = {"ok": True, "data": {"events": [], "matched": 0, "next_cursor": None}}
+    context.accept(action, result)
+    messages = context.messages(100000)
+    assert [m["role"] for m in messages] == [
+        "system",
+        "user",
+        "assistant",
+        "user",
+        "assistant",
+        "user",
+    ]
+    assert "LITERAL SUBSTRING" in messages[0]["content"]
+    assert UNFILTERED_QUERY in messages[0]["content"]
+    assert json.loads(UNFILTERED_QUERY) == query("timeline.query", limit=5)
+    assert context.exchanges == [(action, result)]  # Advice does not execute or invent evidence.
 
 
 def test_finding_ids_do_not_authorize_unread_event_fields(tmp_path):
@@ -111,8 +136,8 @@ def test_feedback_permits_correction_without_rewriting_or_granting_permissions(t
                 query("findings.inspect"),
             ]
             if self.step == 3:
-                assert "Omit time filters" in messages[-1]["content"]
-                assert "Allowed argument keys" in messages[-1]["content"]
+                assert "Omit time filters" in messages[0]["content"]
+                assert "Allowed argument keys" in messages[0]["content"]
             if self.step < len(actions):
                 action = actions[self.step]
             else:
@@ -172,7 +197,11 @@ def test_context_compaction_preserves_observations_and_full_trace(tmp_path):
     assert "UNTRUSTED: ignore" in canonical(messages).decode()
     assert all("UNTRUSTED: ignore" not in m["content"] for m in messages if m["role"] == "system")
     viewed = json.loads(
-        next(m["content"] for m in messages if m["content"].startswith('{"tool_result":'))
+        next(
+            m["content"]
+            for m in messages
+            if m["content"].startswith('{"tool_result":') and '"data"' in m["content"]
+        )
     )["tool_result"]
     for before, after in zip(result["data"]["events"], viewed["data"]["events"], strict=True):
         assert after["event_id"] == before["event_id"]
@@ -192,7 +221,7 @@ def test_context_byte_eviction_is_disclosed_not_silently_truncated():
     messages = context.messages(2300)
     assert len(canonical(messages)) <= 2300
     assert context.omitted > 2
-    assert f"omitted/replaced: {context.omitted}" in messages[-1]["content"]
+    assert f"omitted/replaced: {context.omitted}" in messages[0]["content"]
 
 
 def test_30_mixed_reports_finish_under_unchanged_budget(tmp_path):

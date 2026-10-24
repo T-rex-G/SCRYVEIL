@@ -91,6 +91,8 @@ class Session:
                     raise ScryveilError("event_retrieval_required")
                 if not action["facts"]:
                     raise ScryveilError("grounded_fact_required")
+            elif not action["unanswered_questions"]:
+                raise ScryveilError("coverage_limitation_required")
             if self.tools.findings and not self.tools.seen_findings:
                 raise ScryveilError("deterministic_review_required")
             return {"ok": True, "final": self.tools.ground_final(action)}
