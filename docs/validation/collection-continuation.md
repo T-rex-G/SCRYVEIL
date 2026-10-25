@@ -29,3 +29,11 @@ New adversarial checks cover traversal, ambiguous paths, special files, nested a
 - Current persistence is bounded JSON with in-memory query indexes. Full-case selection fails above the snapshot budget; it does not silently truncate. There is no persistent database index or unbounded collection claim.
 
 Operator commands and precise limits: [collections](../collections.md). Latest commit/CI and next action: [handoff](../continuity/SCRYVEIL_WORK_HANDOFF.md).
+
+## Coverage retrieval follow-up
+
+The opt-in expanded snapshot now reports selected event-type and diagnostic schema-status counts, so the investigator can discover valid category filters before browsing thousands of records. Legacy default snapshot bytes remain unchanged. Missing qualification metadata from earlier readers is labeled `legacy_status_not_recorded`, never qualified by inference.
+
+The strengthened ordering test exposed an incorrect fixture precondition: it had used `timestamp` instead of the supported Jetsam `date`, producing unknown times. It now uses `date` and explicitly asserts that the legacy capped view contains 2,000 earlier Jetsam entries and omits the later crash, while full-case retrieval finds it. The independently generated collection demo already used `date`; its prior measurements stand. This corrects test evidence rather than broadening parser claims.
+
+Local follow-up: 360 tests in 11.55s, all static/hygiene checks, historical executable compatibility, five demos, package builds and five installed-wheel demos passed. A direct installed-CLI walkthrough retrieved a five-row page from 240 matching crashes, inventoried 266 members, produced all three signature groups in Markdown and preserved case state. [One smoke measurement](collection-coverage-smoke.json) records the new 4,884,256-byte snapshot and eight mock requests at 157,097/200,000 reserved units. It ran alongside a build and is not a new performance acceptance series. Actual-model results remain separately failed in [native continuation](native-provider-continuation.md).

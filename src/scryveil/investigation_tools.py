@@ -331,6 +331,21 @@ def snapshot_case(
                     ).items()
                 )
             )
+            # Counts describe only the explicitly selected projection. They
+            # reveal useful filter values without exposing names or originals;
+            # legacy snapshots retain their original byte contract.
+            result["coverage"]["selected_event_type_counts"] = dict(
+                sorted(Counter(e["event_type"] for e in projected).items())
+            )
+            result["coverage"]["selected_diagnostic_schema_status_counts"] = dict(
+                sorted(
+                    Counter(
+                        e.get("schema_status", "legacy_status_not_recorded")
+                        for e in projected
+                        if e["event_type"].startswith("diagnostic.")
+                    ).items()
+                )
+            )
         if len(canonical(result)) > MAX_SNAPSHOT:
             raise ScryveilError("snapshot_too_large")
         result["snapshot_sha256"] = digest(canonical(result))

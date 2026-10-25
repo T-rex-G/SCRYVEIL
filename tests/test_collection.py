@@ -164,7 +164,7 @@ def test_full_case_retrieval_and_graduated_details_beyond_earliest_cap(tmp_path)
     meta = {"bug_type": "298", "incident_id": "fictional-memory"}
     body = {
         "incident": "fictional-memory",
-        "timestamp": "2026-01-01 00:00:00 +0000",
+        "date": "2026-01-01 00:00:00 +0000",
         "processes": [
             {"name": f"com.example.process{i}", "pid": i, "rpages": 3} for i in range(2100)
         ],
@@ -175,8 +175,22 @@ def test_full_case_retrieval_and_graduated_details_beyond_earliest_cap(tmp_path)
     store.import_collection(cid, source, True)
     old = snapshot_case(store, cid)
     assert old["coverage"]["omitted_events"] == 101
+    assert "selected_event_type_counts" not in old["coverage"]
+    assert all(e["event_type"] == "diagnostic.jetsam" for e in old["events"])
+    assert all(e["event_time"] == "2026-01-01T00:00:00.000000Z" for e in old["events"])
+    capped_details = snapshot_case(store, cid, diagnostic_details=True)
+    assert capped_details["coverage"]["selected_event_type_counts"] == {"diagnostic.jetsam": 2000}
+    assert capped_details["coverage"]["omitted_events"] == 101
     full = snapshot_case(store, cid, all_events=True, diagnostic_details=True)
     assert full["coverage"]["omitted_events"] == 0
+    assert full["coverage"]["selected_event_type_counts"] == {
+        "diagnostic.crash": 1,
+        "diagnostic.jetsam": 2100,
+    }
+    assert full["coverage"]["selected_diagnostic_schema_status_counts"] == {
+        "legacy_status_not_recorded": 2100,
+        "recognized_subset": 1,
+    }
     assert "procPath" not in canonical(full).decode()
     assert "process_path" not in canonical(full).decode()
     tools = ReadOnlyTools(full)
@@ -321,6 +335,9 @@ def test_collection_keeps_unqualified_version_distinct_from_unsupported_type(tmp
         "unsupported": 1,
     }
     assert len(snapshot["events"]) == 1
+    assert snapshot["coverage"]["selected_diagnostic_schema_status_counts"] == {
+        "unqualified_version": 1
+    }
     assert source.read_bytes() == raw
 
 
