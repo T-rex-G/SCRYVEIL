@@ -14,7 +14,8 @@ permissions:
 jobs:
   measure:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    # Preparation may download 2.5 GB. This does not change inference budgets.
+    timeout-minutes: 65
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -40,7 +41,15 @@ jobs:
         run: |
           python -m pip install setuptools==83.0.0
           python -m pip install --no-build-isolation --no-deps .
-      - name: Prepare pinned CPU runtime and public weights before isolation
+      - name: Restore only pinned public weights
+        id: weights
+        if: steps.experiment.outputs.selected == 'true'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        timeout-minutes: 5
+        with:
+          path: ${{ runner.temp }}/scryveil-model/model.gguf
+          key: scryveil-public-weights-7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5
+      - name: Prepare pinned CPU runtime and verify public weights before isolation
         if: steps.experiment.outputs.selected == 'true'
         run: |
           mkdir -p "$RUNNER_TEMP/scryveil-model"
@@ -50,9 +59,23 @@ jobs:
           git -C "$RUNNER_TEMP/scryveil-model/llama" checkout --detach FETCH_HEAD
           cmake -S "$RUNNER_TEMP/scryveil-model/llama" -B "$RUNNER_TEMP/scryveil-model/llama/build" -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=OFF -DLLAMA_OPENSSL=OFF -DLLAMA_SUBPROCESS=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_UI=OFF -DLLAMA_BUILD_APP=OFF
           cmake --build "$RUNNER_TEMP/scryveil-model/llama/build" -j 2 --target llama-server
-          curl --fail --location --max-time 300 --proto '=https' --output "$RUNNER_TEMP/scryveil-model/model.gguf" https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/a9a60d009fa7ff9606305047c2bf77ac25dbec49/Qwen3-4B-Q4_K_M.gguf
+          if [ ! -e "$RUNNER_TEMP/scryveil-model/model.gguf" ]; then
+            curl --fail --location --silent --show-error --connect-timeout 30 --max-time 1800 --speed-time 120 --speed-limit 1024 --max-filesize 2497280256 --proto '=https' --proto-redir '=https' --output "$RUNNER_TEMP/scryveil-model/model.gguf.partial" https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/a9a60d009fa7ff9606305047c2bf77ac25dbec49/Qwen3-4B-Q4_K_M.gguf
+            mv "$RUNNER_TEMP/scryveil-model/model.gguf.partial" "$RUNNER_TEMP/scryveil-model/model.gguf"
+          fi
+          test -f "$RUNNER_TEMP/scryveil-model/model.gguf"
+          test ! -L "$RUNNER_TEMP/scryveil-model/model.gguf"
+          test "$(stat -c %s "$RUNNER_TEMP/scryveil-model/model.gguf")" = 2497280256
           printf '%s  %s\n' 7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5 "$RUNNER_TEMP/scryveil-model/model.gguf" | sha256sum --check
-      - name: Measure request and server timing for generated recurrence case with no external route
+          chmod 400 "$RUNNER_TEMP/scryveil-model/model.gguf"
+      - name: Cache verified public weights only
+        if: steps.experiment.outputs.selected == 'true' && steps.weights.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        timeout-minutes: 5
+        with:
+          path: ${{ runner.temp }}/scryveil-model/model.gguf
+          key: scryveil-public-weights-7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5
+      - name: Measure recurrence and gated collection with no external route
         if: steps.experiment.outputs.selected == 'true'
         run: |
           sudo unshare --net -- /bin/bash -c 'set -e; ip link set lo up; exec runuser -u runner -- "$1" "$2/scripts/run_model_experiment.py" "$3"' scryveil "$(command -v python)" "$GITHUB_WORKSPACE" "$RUNNER_TEMP/scryveil-model"
