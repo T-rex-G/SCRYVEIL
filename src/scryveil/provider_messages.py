@@ -50,17 +50,17 @@ FINAL = object_schema(
 )
 NAMES = {name.replace(".", "_"): name for name in TOOL_SCHEMAS}
 DESCRIPTIONS = {
-    "case.inspect": "Inspect counts of available events, artifacts and deterministic findings.",
-    "coverage.inspect": "Inspect examined sources, omissions and missing evidence coverage.",
-    "evidence.list": "Page through retained artifact metadata; no original-file access.",
-    "integrity.verify": "Inspect verification of the fixed case snapshot, not independent custody.",
-    "timeline.query": "Page events; filters combine with AND; text is a literal substring, not a question.",
-    "diagnostics.search": "Page diagnostic events, including flags, exceptions and authorized details.",
-    "network.query": "Page available network metadata; aggregates are not individual connections.",
-    "process.inspect": "Inspect one observed process_ref; use timeline_query for further pages.",
-    "evidence.read_excerpt": "Read one normalized event by observed event_id, never a file path.",
-    "findings.inspect": "Page authoritative deterministic measurements and contrary evidence references.",
-    "hypotheses.compare": "Inspect one observed finding_id, its support, alternatives and contrary evidence.",
+    "case.inspect": "Snapshot counts.",
+    "coverage.inspect": "Sources, omissions and missing families.",
+    "evidence.list": "Page artifact metadata, not raw files.",
+    "integrity.verify": "Snapshot verification, not authenticated custody.",
+    "timeline.query": "Page events. AND filters; text is literal substring.",
+    "diagnostics.search": "Page diagnostic events and authorized details.",
+    "network.query": "Page network metadata; aggregates are not packets.",
+    "process.inspect": "Query observed process_ref; timeline_query has pages.",
+    "evidence.read_excerpt": "Read observed event_id, never a file path.",
+    "findings.inspect": "Page deterministic findings and evidence references.",
+    "hypotheses.compare": "Compare observed finding_id and alternatives.",
 }
 ERROR_CODES = {
     "invalid_native_response",
@@ -98,14 +98,16 @@ def definitions() -> list[dict[str, Any]]:
 
 
 def compact_schema(value: Any) -> Any:
-    """Remove repeated string-length hints from the model's wire view only.
+    """Remove repeated string-length hints and redundant empty required lists.
 
     Names, argument types, required fields, numeric/page and array limits stay.
     The worker validates the complete original schemas and all byte limits.
     """
     if isinstance(value, dict):
         return {
-            k: compact_schema(v) for k, v in value.items() if k not in {"minLength", "maxLength"}
+            k: compact_schema(v)
+            for k, v in value.items()
+            if k not in {"minLength", "maxLength"} and not (k == "required" and v == [])
         }
     if isinstance(value, list):
         return [compact_schema(v) for v in value]
@@ -130,6 +132,8 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
     system = SYSTEM
     pending: str | None = None
     pending_plan = False
+    pending_name: str | None = None
+    successful_queries: set[str] = set()
     plan_accepted = False
     for index, message in enumerate(messages):
         role, content = message["role"], message["content"]
@@ -138,6 +142,7 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
         elif role == "assistant" and pending is None:
             action = load_json(content.encode())
             name, arguments = native_action(action)
+            pending_name = name
             pending_plan = action.get("kind") == "plan"
             pending = f"scryveil_call_{index}"
             history.append(
@@ -166,6 +171,8 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
                     and (result.get("plan_accepted") is True or "plan" in result)
                 ):
                     plan_accepted = True
+                if pending_name in NAMES and result.get("ok") is True:
+                    successful_queries.add(NAMES[pending_name])
                 history.append(
                     {
                         "role": "user",
@@ -184,6 +191,15 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
             raise ScryveilError("invalid_provider_history")
     if pending is not None:
         raise ScryveilError("invalid_provider_history")
+    available = definitions()[:1]
+    if plan_accepted:
+        available = definitions()[1:-1]
+        # Finishing cannot succeed before two distinct query tools. Defer its
+        # comparatively large schema, keeping all eleven read-only tools. The
+        # worker still enforces the stronger event/finding/claim requirements.
+        # Compacted query views may require re-querying to advertise it again.
+        if len(successful_queries) >= 2:
+            available.append(definitions()[-1])
     return {
         "model": config["model"],
         "system": system,
@@ -193,7 +209,7 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
         # The supervisor retains the accepted plan/result pair through context
         # compaction. Advertise only operations valid in that protocol phase;
         # the worker independently enforces every permission and state rule.
-        "tools": compact_schema(definitions()[1:] if plan_accepted else definitions()[:1]),
+        "tools": compact_schema(available),
         "tool_choice": {"type": "any", "disable_parallel_tool_use": True},
     }
 

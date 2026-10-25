@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Last committed checkpoint `39bf69c3aa1e11760670e886e03a6818dc205681`, tree `9ac50152ce9de6321138861a2cfd055355fe43ec`; [core CI 40204579116](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40204579116) passed 360 tests in 14.13s and all required checks. The coverage-count follow-up and reconciled model records belong to this document's enclosing commit; its CI must be checked separately. Run `git rev-parse HEAD` and inspect newer changes before continuing. Never merge automatically.
+Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified coverage checkpoint `9a57ef56e6a490fc2927c9a8e85e9c7e98c9951e`, tree `2674fe2fa7c779b4f2ec45b8660ee481a1de9f91`; [core CI 40205683698](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40205683698) passed 360 tests in 14.03s and all required checks. The smaller native-request follow-up belongs to this document's enclosing commit; its CI and selected actual-model run must be checked separately. Run `git rev-parse HEAD` and inspect newer changes before continuing. Never merge automatically.
 
 ## Working capability
 
@@ -13,7 +13,7 @@ Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.
 
 ## Validation and recovered defects
 
-Coverage follow-up: **360 tests passed in 11.55s**, Ruff/format, strict mypy over 22 modules, Bandit, hygiene, historical executable compatibility, all five demos, sdist/wheel and five installed-wheel demos. Direct installed-CLI commands find 240 crashes, return five queried rows, inventory 266 members and emit three signature groups without changing case state.
+Native request-cost follow-up: **361 tests passed in 17.21s**, Ruff/format, strict mypy over 22 modules, Bandit, hygiene, historical executable compatibility, all five demos, sdist/wheel and five installed-wheel demos. Direct installed-CLI commands find 240 crashes, return five queried rows, inventory 266 members and emit three signature groups without changing case state.
 
 A strengthened regression caught an inaccurate earlier fixture precondition: `timestamp` was not the supported Jetsam `date` field, so that test had unknown times. The corrected fixture now asserts the first 2,000 selected records are earlier Jetsam entries and the later crash is found through full-case retrieval. The separate collection demo already used `date`; its prior measurements remain valid. See [collection validation](../validation/collection-continuation.md).
 
@@ -41,7 +41,7 @@ Preparation now verifies size/hash before inference and permits a bounded 1,800s
 
 ## Next highest-priority action
 
-1. Verify this coverage checkpoint's CI and reconcile any newer changes. Improve native serving throughput or reduce native request cost while preserving all tool semantics and security; demonstrate that improvement before another actual-model investigation. Do not merely raise budgets. The generated large collection remains gated on recurrence completion with facts, coverage and contrary references; a skip is unmeasured.
+1. Recover the selected native request-cost experiment at this enclosing checkpoint and inspect its CI. Deferring the final schema until two distinct successful queries and shortening repeated descriptions reduces the exact failed request from 7,406 to 5,899 bytes (20.3%), retaining all eleven queries and full worker checks. Compacted views may require re-querying before the final schema reappears. Latency and reasoning improvement are not presumed. The same weights, server, 60s request bound and twelve-request ceiling are retained; the collection still requires recurrence facts, coverage and contrary citations. Do not repeat another unchanged investigation or raise budgets to conceal failures.
 2. Genuine Apple-export qualification remains open. Text version 73 is unqualified; types 202/206/509/120 unsupported. Owner records require separate explicit authorization.
 3. Full sysdiagnose, TAR, backups/SQLite/plist interpretation, profiles, PCAP, live acquisition and Android remain unsupported. Further storage/security migrations need measured justification.
 
