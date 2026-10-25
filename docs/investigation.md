@@ -74,7 +74,7 @@ scryveil investigate run --case "$CASE_ID" --question 'Why does the named servic
 
 Only literal `127.0.0.1`/`::1` HTTP endpoints are accepted in local mode; `localhost` DNS, LAN hosts and proxy settings are not used. Default snapshots replace app/process/domain identifiers with case-local references. If asking about a named process, explicitly add `--include-identifiers` to preview and run when that disclosure is appropriate. It also includes selected paths, OS fields, termination strings and stack symbols; review the resulting preview. Otherwise the model can correlate aliases but cannot identify them from their private names.
 
-The server must support non-streaming chat-completions with `response_format: {"type":"json_object"}` and return a JSON action inside `choices[0].message.content`. Native Responses, Messages, streaming, provider-native tool calls and arbitrary base paths are unsupported. A compatible HTTP endpoint does not guarantee that a model will follow the action schema or reason well.
+The server must support non-streaming chat-completions with `response_format: {"type":"json_object"}` and return a JSON action inside `choices[0].message.content`. This adapter does not support native Responses, streaming or tool calls. The separate experimental `messages-tools` adapter below supports a bounded Messages client-tool subset. Arbitrary base paths remain unsupported. A compatible HTTP endpoint does not guarantee that a model will follow the action schema or reason well.
 
 ## Optional external provider: preview and exact consent
 
@@ -92,12 +92,12 @@ All tools are `scryveil.tools/1`, and all errors are structured codes without ra
 |---|---|
 | `case.inspect` | No arguments; snapshot digest and counts |
 | `coverage.inspect` | No arguments; selected/omitted counts, families and absent sources |
-| `evidence.list` | No arguments; artifact hashes, format, size and warnings, never filenames |
+| `evidence.list` | Optional cursor/limit; artifact hashes, format, size and warnings, never filenames |
 | `integrity.verify` | No arguments; verification at snapshot creation, not a new filesystem read |
 | `timeline.query`, `diagnostics.search`, `network.query` | Optional type/process/app/domain reference, explicit-offset start/end, literal text ≤128 characters, cursor and limit 1–25; matched count and next cursor |
 | `process.inspect` | Required local process reference; bounded matching event page; no inferred identity |
 | `evidence.read_excerpt` | Required event ID; normalized/minimized event, never raw file access |
-| `findings.inspect` | No arguments; deterministic findings, support, contradictions and alternatives |
+| `findings.inspect` | Optional cursor/limit; deterministic findings, support, contradictions and alternatives |
 | `hypotheses.compare` | Required finding ID; that finding's deterministic alternatives and evidence; no model assertion becomes a fact |
 
 Snapshot: earliest 2,000 events by default, configurable 1–20,000 with `--max-events`, maximum 16 MiB. Unknown times sort last. Omitted count is explicit; this is selection, not representative sampling or a complete investigation. Queries are inclusive in UTC; missing source times do not match time ranges. Results cap at 64 KiB. Large findings/identifier-rich excerpts can return `tool_result_too_large`; they are not silently clipped into a misleading complete result. Source files retain the existing 8 MiB limit, with at most 1,024 artifacts/20,000 events per case (256 MiB total originals); the explicit ZIP route has separate bounded archive limits. The original 30-report probe exhausted its budget after six steps. With compact context, three fresh samples now complete eight mock steps using 185203 of an explicitly selected 200000-unit budget. This does not qualify the smaller default budget, larger cases or real-model reasoning. Prefer focused queries/pages and inspect incomplete status.
@@ -129,3 +129,16 @@ Model context retains up to eight unique recent successful query exchanges plus 
 See [Qwen3 reconciliation](validation/qwen3-reconciliation.md) and [continuity](continuity/SCRYVEIL_WORK_HANDOFF.md). The fixed 30-report mock workload now completes within the previous budget; it is not evidence of improved real-model reasoning. The [two changed-runtime comparisons](validation/qwen3-recovery-comparison.md) remain quality failures: the latest retrieved real records from its generated case in two scenarios, then timed out before conclusions. No actual-model factual claim was accepted.
 
 The [collection workflow](collections.md) adds `--all-events` (complete bounded case or failure), `--diagnostic-details` (separate permission scope), paged inventories and diagnostic signature/resource measurements. These options do not alter default historical snapshot projections. New full-case event queries default to five rows; all eleven tools remain read-only.
+
+
+## Experimental native Messages adapter
+
+Use `adapter: "messages-tools"` with an explicitly configured `http://127.0.0.1:PORT/v1/messages` local endpoint, or consent-controlled public HTTPS `/v1/messages` remote endpoint. The remaining model, budget and credential options are unchanged. No model is selected automatically. This is a wire-protocol capability, not a claim that Claude, Qwen or any other model is a qualified investigator.
+
+The adapter implements the [Messages client-tool lifecycle](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls): separate system instructions, `tool_use`/`tool_result` blocks, `x-api-key` credentials and explicit [API version](https://platform.claude.com/docs/en/api/versioning) `2023-06-01`. Public protocol documentation and the pinned local server's implementation informed this original translation; no SDK or agent framework was added. Native tool aliases replace dots with underscores; the worker still authorizes exactly the existing eleven tools. Plan/final operations remain bounded session actions, not additional evidence permissions.
+
+Only the plan definition is advertised until the supervisor records an accepted plan. Subsequent requests advertise the eleven queries plus final submission. This avoids advertising invalid-phase operations and reduces initial context. History compaction preserves complete call/result pairs; rejected arguments are retained for feedback, never silently repaired. Exactly one client call is accepted per response. Text beside a call is not a forensic claim and is discarded; thinking, server tools, parallel calls, truncation and text-only replies fail closed. Native HTTP/protocol errors are sanitized codes; response bodies are not disclosed.
+
+The native budget includes the complete serialized request, including tool definitions and message wrappers. Cached read/creation input tokens are included in input totals. Optional flat-rate cost estimates do not model distinct cache prices or provider fees. No automatic retry, tool execution, stream, caching policy or additional network permission is introduced. Remote disclosure requires a new preview/consent digest when changing the adapter. Hosted API execution remains untested; synthetic HTTP peers establish only transport/protocol behavior.
+
+The selected CI comparison uses the same pinned local Qwen3 weights and recurrence ground truth with native client tools, explicit Jinja support and improved numeric prompt/generation telemetry. It is justified by the prior invalid-action failures and first-request timeout, not a claim that native calls cure reasoning. Results must be assessed separately from successful CI exit.

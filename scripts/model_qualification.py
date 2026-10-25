@@ -18,7 +18,15 @@ from scryveil.investigation import SYSTEM, investigate
 from scryveil.investigation_tools import TOOL_SCHEMAS, snapshot_case
 from scryveil.models import ScryveilError
 from scryveil.parse import canonical, digest
-from scryveil.providers import DEFAULT_CONFIG, ChatCompletionsProvider, MockProvider, Reply
+from scryveil.provider_messages import SYSTEM as NATIVE_SYSTEM
+from scryveil.providers import (
+    DEFAULT_CONFIG,
+    ChatCompletionsProvider,
+    MessagesToolsProvider,
+    MockProvider,
+    Reply,
+    context_bytes,
+)
 from scryveil.state import same_json
 from scryveil.store import CaseStore
 
@@ -69,6 +77,8 @@ class RecordedProvider:
             }
         )
         measurement = self.contexts[-1]
+        if hasattr(self.inner, "config"):
+            measurement["budgeted_request_bytes"] = context_bytes(self.inner.config, supplied)
         measurement["request_sequence"] = len(self.contexts)
         measurement["started_monotonic_seconds"] = time.monotonic()
         try:
@@ -164,12 +174,13 @@ def score(report, actions, snapshot):
     }
 
 
-def evaluate(mock=False, scenarios=None):
+def evaluate(mock=False, scenarios=None, adapter="chat-completions-json"):
     config = {
         **DEFAULT_CONFIG,
-        "adapter": "chat-completions-json",
+        "adapter": adapter,
         "mode": "local",
-        "endpoint": "http://127.0.0.1:18080/v1/chat/completions",
+        "endpoint": "http://127.0.0.1:18080/v1/"
+        + ("messages" if adapter == "messages-tools" else "chat/completions"),
         "model": MODEL,
         "timeout_seconds": 60,
         "max_output_tokens": 1024,
@@ -213,7 +224,13 @@ def evaluate(mock=False, scenarios=None):
                     store.import_file(cid, source, True, "ips")
             snapshot = snapshot_case(store, cid, include_identifiers=True)
             run_config = {**config, "max_requests": 2 if name == "request_limit" else 12}
-            inner = MockProvider() if mock else ChatCompletionsProvider(run_config)
+            inner = (
+                MockProvider()
+                if mock
+                else MessagesToolsProvider(run_config)
+                if adapter == "messages-tools"
+                else ChatCompletionsProvider(run_config)
+            )
             provider = RecordedProvider(inner, name == "tool_failure")
             started = time.monotonic()
             report = investigate(
@@ -250,7 +267,10 @@ def evaluate(mock=False, scenarios=None):
         "evidence": "independently generated only; no private or device-export data",
         "model": None if mock else "Qwen/Qwen3-4B-GGUF Q4_K_M; enable_thinking=false",
         "expected_model_sha256": None if mock else MODEL_SHA256,
-        "system_prompt_sha256": digest(SYSTEM.encode()),
+        "system_prompt_sha256": digest(
+            (NATIVE_SYSTEM if not mock and adapter == "messages-tools" else SYSTEM).encode()
+        ),
+        "adapter": config["adapter"],
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT)
         .decode()
         .strip(),
@@ -267,8 +287,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mock", action="store_true")
     parser.add_argument("--scenario", action="append", choices=SCENARIOS)
+    parser.add_argument(
+        "--adapter",
+        choices=["chat-completions-json", "messages-tools"],
+        default="chat-completions-json",
+    )
     args = parser.parse_args()
     print(
         "SCRYVEIL_MODEL_RESULT="
-        + json.dumps(evaluate(args.mock, args.scenario), separators=(",", ":"))
+        + json.dumps(evaluate(args.mock, args.scenario, args.adapter), separators=(",", ":"))
     )

@@ -24,6 +24,8 @@
       "pattern": "^[0-9a-f]{64}$"
     },
     "provider": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "SCRYVEIL provider configuration v1",
       "type": "object",
       "properties": {
         "schema_version": {
@@ -32,7 +34,8 @@
         "adapter": {
           "enum": [
             "mock",
-            "chat-completions-json"
+            "chat-completions-json",
+            "messages-tools"
           ]
         },
         "mode": {
@@ -49,10 +52,6 @@
         "model": {
           "type": "string",
           "maxLength": 1024
-        },
-        "api_key_env": {
-          "type": "string",
-          "pattern": "^SCRYVEIL_[A-Z0-9_]{1,64}$"
         },
         "input_usd_per_million": {
           "type": "number",
@@ -98,7 +97,10 @@
           "if": {
             "properties": {
               "adapter": {
-                "const": "chat-completions-json"
+                "enum": [
+                  "chat-completions-json",
+                  "messages-tools"
+                ]
               }
             },
             "required": [
@@ -136,11 +138,6 @@
                 {
                   "required": [
                     "model"
-                  ]
-                },
-                {
-                  "required": [
-                    "api_key_env"
                   ]
                 },
                 {

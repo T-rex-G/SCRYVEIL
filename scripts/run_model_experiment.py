@@ -1,5 +1,6 @@
 """Launch the pinned CPU server inside an already isolated network namespace."""
 
+import hashlib
 import json
 import os
 import resource
@@ -32,6 +33,8 @@ os.environ.clear()
 os.environ["LANG"] = "C.UTF-8"
 started = time.monotonic()
 server_metrics = []
+log_metadata = {"bytes": 0, "saved_bytes": 0, "lines": 0}
+log_hash = hashlib.sha256()
 with (runtime / "model-server.log").open("wb") as log:
     child = subprocess.Popen(
         [
@@ -66,6 +69,7 @@ with (runtime / "model-server.log").open("wb") as log:
             "1.5",
             "--chat-template-kwargs",
             '{"enable_thinking":false}',
+            "--jinja",
             "--n-predict",
             "1024",
             "--no-webui",
@@ -78,9 +82,14 @@ with (runtime / "model-server.log").open("wb") as log:
 
     def read_log():
         assert child.stdout is not None
-        for line in child.stdout:
-            log.write(line)
-            if len(server_metrics) < 10000:
+        while line := child.stdout.readline(65537):
+            log_metadata["bytes"] += len(line)
+            log_metadata["lines"] += 1
+            log_hash.update(line)
+            saved = line[: max(0, 8 * 1024 * 1024 - log_metadata["saved_bytes"])]
+            log.write(saved)
+            log_metadata["saved_bytes"] += len(saved)
+            if len(line) <= 65536 and len(server_metrics) < 10000:
                 record = parse_server_line(
                     line.decode("utf-8", errors="replace"), time.monotonic() - started
                 )
@@ -109,6 +118,8 @@ with (runtime / "model-server.log").open("wb") as log:
                 str(root / "scripts/model_qualification.py"),
                 "--scenario",
                 "recurrence",
+                "--adapter",
+                "messages-tools",
             ],
             check=True,
             timeout=800,
@@ -129,6 +140,11 @@ with (runtime / "model-server.log").open("wb") as log:
             + json.dumps(
                 {
                     "events": server_metrics,
+                    "native_log": {
+                        **log_metadata,
+                        "sha256": log_hash.hexdigest(),
+                        "retained_in_public_record": False,
+                    },
                     "reader_finished": not reader.is_alive(),
                     "server_returncode": child.returncode,
                     "shutdown_seconds": time.monotonic() - shutdown_started,

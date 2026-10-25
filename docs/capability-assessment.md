@@ -78,3 +78,6 @@ Additional research for the AI boundary: Apple crash/Jetsam documentation; 0xche
 | P2 | Evidence graph and Android | Clock uncertainty, duplicate source lineage, competing explanations, scoped collection permissions and versioned Android artifact contracts. Nearby timestamps alone must not create causal edges |
 
 The sequence prioritizes independently qualified inputs and secure model usefulness before additional collectors or UI. The immediate vertical slice is implemented; these milestones identify the remaining work rather than treating architecture diagrams as completion.
+
+
+Native-provider follow-up (2026-10-25): `messages-tools` supplies a second wire protocol with synthetic HTTP/broker/worker conformance, phase-scoped native client calls, full request budgeting and cached-token accounting. This supersedes the earlier one-wire-protocol observation only at implementation level; no second hosted provider or successful actual-model reasoning is claimed. The instrumented JSON recurrence run 40137879901 timed out before its first reply. See [retained evidence and bounded next comparison](validation/native-provider-continuation.md).

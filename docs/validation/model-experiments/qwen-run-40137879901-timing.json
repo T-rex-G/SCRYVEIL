@@ -1,0 +1,8 @@
+{
+  "events": [],
+  "reader_finished": true,
+  "server_returncode": 0,
+  "shutdown_seconds": 0.16387188300006983,
+  "required_kill": false,
+  "interpretation": "Server task IDs are not yet bound to adapter request IDs. Slot release alone does not identify cancellation cause; compare per-request deadlines and timing."
+}

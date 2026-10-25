@@ -252,5 +252,42 @@
       "references_per_finding_side": 8
     },
     "qualification": "independently generated collections only; genuine exports and independent security audit open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [
+      "loopback connection after explicit run OR public HTTPS after exact disclosure consent",
+      "one named SCRYVEIL_ credential from owner environment"
+    ],
+    "side_effects": [
+      "explicitly authorized model requests disclose minimized context",
+      "provider may log requests or incur charges"
+    ],
+    "extension_id": "messages-tools",
+    "kind": "provider",
+    "implementation": "scryveil.providers:MessagesToolsProvider",
+    "compatibility": [
+      "scryveil.provider/1",
+      "scryveil.agent/1",
+      "non-streaming /v1/messages client-tool blocks; anthropic-version 2023-06-01"
+    ],
+    "capabilities": [
+      "phase-scoped native client-tool definitions mapped to the same eleven read-only tools",
+      "native tool_use/tool_result history with complete exchange pairs",
+      "single-call response requirement; server-side tools, thinking blocks and streaming unsupported",
+      "input usage includes cache read and creation tokens; no prompt-cache configuration",
+      "sanitized HTTP/protocol error codes; no provider error-body disclosure"
+    ],
+    "resource_budgets": {
+      "requests": 32,
+      "request_timeout_seconds": 60,
+      "context_bytes": 262144,
+      "response_bytes": 1048576,
+      "action_bytes": 65536
+    },
+    "qualification": "Synthetic HTTP broker/isolated-worker protocol tested; actual-model and hosted-provider qualification pending. Does not claim universal model compatibility."
   }
 ]

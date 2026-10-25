@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-24. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. This implementation descends from exact prior head `bceef32df32bfaa44cc68fa3dd9a77448bd5ba6c`. Runtime hashes in [collection measurements](../validation/collection-measurements.json) identify the code; a qualification descendant will anchor the published SHA and CI. Run `git rev-parse HEAD` and reconcile newer changes before continuing. Never merge automatically.
+Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified collection implementation: `f5676df2528e3b64c42f820dbffeb0a4a9087db6`, tree `a3d8c6577b6eefbca9047e864e288aae570b54d7`. The native-provider follow-up in this checkpoint is identified by its enclosing commit; a qualification descendant will anchor its SHA and CI. Collection measurements apply to f5676df, not later changed runtime files. Run `git rev-parse HEAD` and reconcile newer changes before continuing. Never merge automatically.
 
 ## Working capability
 
@@ -9,9 +9,11 @@ Updated 2026-10-24. Branch `feat/forensic-core-genesis`, [PR #1](https://github.
 - Opt-in `--diagnostic-details` exposes process/exception/termination/source-symbol/OS fields, excluding executable paths and unrelated identifier fields. Exact access profile is consent-bound. Embedded sensitive strings remain a disclosure concern.
 - Independent measurements group declared exception/termination/stack signatures, count condition flags, detect conflicting incident declarations, distinguish reasoned Jetsam entries from mere listings, and measure resource proximity without causality claims. Reference omissions are explicit. CLI produces source-linked JSON/Markdown.
 - Preserved offline NDJSON/APR, three source clocks, locators, legacy IPS/versioned resource readers, eleven read-only tools, Linux syscall isolation, claim validation, budgets and remote consent. No new framework, language, runtime dependency, acquisition or unrestricted plugin.
-- Instrumented model requests and allowlisted native-server timing. Next selected experiment is one generated recurrence scenario to recover missing latency evidence, not a repeated full quality suite.
+- Instrumented model requests and allowlisted native-server timing. Reconciled the first timed recurrence failure and added a separate native Messages client-tool adapter, same permissions and consent. Native protocol/usage/error tests pass; actual-model comparison is the next gate. Corrected pagination in the published action schema, which had lagged runtime/tool schemas.
 
 ## Executed validation
+
+Native follow-up local validation: **356 tests passed in 10.68s**, Ruff/format, strict mypy (22 modules), Bandit, hygiene, historical executable compatibility, all five demos, sdist/wheel and installed-wheel demos. The initial native recurrence request is 2,152 bytes including its plan schema; the previous failed JSON context was 6,331 bytes. Smaller input is not proof of improved reasoning.
 
 Local suite: **341 tests passed**, Ruff/check-format, strict mypy (21 modules), Bandit, hygiene, five demos, sdist/wheel and five installed-wheel demos outside checkout. Historical code creates ten NDJSON cases, six earlier IPS cases and five body-v2/text cases; current reports/snapshots remain byte-identical and reimports preserve interpretations/hashes.
 
@@ -19,7 +21,7 @@ Local suite: **341 tests passed**, Ruff/check-format, strict mypy (21 modules), 
 
 Security tests cover unsafe ZIP paths/types, nested/oversized content, false output lengths, CRC/descriptor/header mismatch, overlapping members, capacity rejection before state publication, forged lineage, injected symbols and forbidden calls through the worker. Archive parsing remains in the trusted owner process. IO interruption can leave checked content-addressed orphans; no automatic cleanup. Audit hashes are not independently authenticated custody.
 
-Prior green final-head CI: [40091914243](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40091914243). New code CI/model execution are pending publication; prior CI does not validate this patch.
+Collection [core CI 40137879807](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40137879807), job 121003172786, passed 341 tests in 11.65s plus all required static/compatibility/demo/build/wheel checks. Native-provider follow-up CI/model comparison are pending publication; this collection CI does not qualify the follow-up.
 
 ## Actual-model gate remains failed
 
@@ -29,12 +31,12 @@ Prior green final-head CI: [40091914243](https://github.com/T-rex-G/SCRYVEIL/act
 | `40070459394` | `dd27bf6` | Literal-search misuse; zero events/facts; unexplained empty-case completion subsequently rejected by the runtime. |
 | `40090072225` | `4f55541` | Recurrence/injection each queried three events then timed out; zero completions/facts; fabricated tool-result envelopes rejected. |
 
-Original records and earlier 1.5B failures remain in [reconciliation](../validation/qwen3-reconciliation.md) and [comparison](../validation/qwen3-recovery-comparison.md). Attack submission followed by timeout does not prove processing or resilience. Qwen3 4B CPU/non-thinking is unqualified. Native timings were absent; latency cannot be attributed solely to reasoning or host speed. Other models, native provider protocols and external providers remain untested.
+Original records and earlier 1.5B failures remain in [reconciliation](../validation/qwen3-reconciliation.md) and [comparison](../validation/qwen3-recovery-comparison.md). Attack submission followed by timeout does not prove processing or resilience. Qwen3 4B CPU/non-thinking is unqualified. Native timings were absent; latency cannot be attributed solely to reasoning or host speed. Other models and hosted providers remain untested. Native Messages now passes synthetic HTTP/broker/worker protocol tests; its actual-model quality remains unqualified.
 
 ## Next action
 
-1. Publish this checkpoint, inspect final-head core CI, recover the targeted instrumented model execution and compare request/prompt/generation timing. Do not repeat an unchanged full experiment. Separate workflow success from forensic quality.
-2. Use measured failures to select a bounded protocol/context correction. Native tool calling is a candidate, not demonstrated support. Preserve worker permissions and exact claim checks. The target is multi-query reasoning over the generated collection, not an empty final object.
+1. Publish the native-provider checkpoint, inspect final-head core CI and recover its targeted native recurrence run. The f5676df JSON-action timing run 40137879901 is reconciled: first request timed out at 60.028s; zero replies/events/facts; no numeric server events collected. Original records and resource limits are retained in [native continuation](../validation/native-provider-continuation.md).
+2. Native Messages translates only existing session/tool operations, accounts for cached inputs and full request bytes, and preserves complete call/result pairs. It has synthetic HTTP/worker validation, not actual-model qualification. The selected same-weight/native-protocol comparison has improved progress telemetry and phase-scoped schemas. Reconcile it before any further experiment; do not repeat an unchanged full suite. The target remains useful investigation over the generated collection.
 3. Genuine Apple-export qualification remains open. Text version 73 is unqualified; types 202/206/509/120 unsupported. Do not obtain owner records without separate authorization.
 4. Full sysdiagnose, TAR, backups/SQLite/plist interpretation, profiles, PCAP, live acquisition and Android remain unsupported. Storage/security migrations require measured justification.
 

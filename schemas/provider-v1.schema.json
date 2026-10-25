@@ -9,7 +9,8 @@
     "adapter": {
       "enum": [
         "mock",
-        "chat-completions-json"
+        "chat-completions-json",
+        "messages-tools"
       ]
     },
     "mode": {
@@ -75,7 +76,10 @@
       "if": {
         "properties": {
           "adapter": {
-            "const": "chat-completions-json"
+            "enum": [
+              "chat-completions-json",
+              "messages-tools"
+            ]
           }
         },
         "required": [

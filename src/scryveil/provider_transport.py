@@ -11,11 +11,28 @@ from urllib.parse import urlsplit
 from .isolation import restrict_worker
 from .models import ScryveilError
 from .parse import canonical, load_json
+from .provider_messages import payload as messages_payload
+from .provider_messages import response as messages_response
+from .provider_messages import safe_error
 from .providers import validate_config
 
 
 def exchange(request: dict[str, Any]) -> dict[str, Any]:
     config = validate_config(request["config"])
+    native = config["adapter"] == "messages-tools"
+    payload = canonical(
+        messages_payload(config, request["messages"])
+        if native
+        else {
+            "model": config["model"],
+            "messages": request["messages"],
+            "max_tokens": config["max_output_tokens"],
+            "stream": False,
+            "response_format": {"type": "json_object"},
+        }
+    )
+    if native and len(payload) > config["max_context_bytes"]:
+        raise ScryveilError("context_budget_exhausted")
     url = urlsplit(config["endpoint"])
     host, port = url.hostname, url.port or (443 if config["mode"] == "remote" else 80)
     if host is None:
@@ -46,31 +63,30 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
             sock.do_handshake()
         connection = http.client.HTTPConnection(host, port, timeout=config["timeout_seconds"])
         connection.sock = sock
-        payload = canonical(
-            {
-                "model": config["model"],
-                "messages": request["messages"],
-                "max_tokens": config["max_output_tokens"],
-                "stream": False,
-                "response_format": {"type": "json_object"},
-            }
-        )
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Connection": "close",
         }
-        if request["credential"]:
+        if native:
+            headers["anthropic-version"] = "2023-06-01"
+            if request["credential"]:
+                headers["x-api-key"] = request["credential"]
+        elif request["credential"]:
             headers["Authorization"] = "Bearer " + request["credential"]
         connection.request("POST", url.path, body=payload, headers=headers)
         response = connection.getresponse()
         # No redirects, proxies, cookies, downloads or provider-supplied URLs.
         if response.status != 200:
-            raise ScryveilError("provider_http_error")
+            raise ScryveilError(
+                f"provider_http_{response.status}" if native else "provider_http_error"
+            )
         raw = response.read(1024 * 1024 + 1)
         if len(raw) > 1024 * 1024:
             raise ScryveilError("provider_response_too_large")
         data = load_json(raw)
+        if native:
+            return messages_response(data)
         content = data["choices"][0]["message"]["content"]
         if not isinstance(content, str) or len(content.encode()) > 65536:
             raise ScryveilError("invalid_provider_response")
@@ -93,9 +109,13 @@ def main() -> None:
         if len(raw) > 524288:
             raise ScryveilError("provider_request_too_large")
         result = exchange(load_json(raw))
+    except ScryveilError as exc:
+        result = {
+            "ok": False,
+            "error": exc.code if safe_error(exc.code) else "provider_transport_failed",
+        }
     except (
         OSError,
-        ScryveilError,
         ValueError,
         KeyError,
         IndexError,

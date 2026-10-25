@@ -1,4 +1,4 @@
-"""Small provider contract and explicit OpenAI-compatible JSON-action adapter.
+"""Small provider contract and explicitly configured wire adapters.
 
 No provider SDK/framework or dynamic plugin imports. Network transport executes
 in a disposable broker; responses are data and never host tool invocations.
@@ -17,6 +17,8 @@ from urllib.parse import urlsplit
 
 from .models import ScryveilError
 from .parse import canonical, load_json, text_field
+from .provider_messages import payload as messages_payload
+from .provider_messages import safe_error
 from .store import read_regular
 
 CONFIG_VERSION = "scryveil.provider/1"
@@ -52,7 +54,9 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         if result["mode"] != "offline" or set(result) & extra:
             raise ScryveilError("invalid_provider_config")
         return result
-    if result["adapter"] != "chat-completions-json" or result["mode"] not in ("local", "remote"):
+    if result["adapter"] not in ("chat-completions-json", "messages-tools") or result[
+        "mode"
+    ] not in ("local", "remote"):
         raise ScryveilError("unsupported_provider")
     text_field(result.get("model"))
     endpoint = text_field(result.get("endpoint"))
@@ -68,7 +72,8 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         or url.password
         or url.query
         or url.fragment
-        or url.path != "/v1/chat/completions"
+        or url.path
+        != ("/v1/messages" if result["adapter"] == "messages-tools" else "/v1/chat/completions")
         or not url.hostname
         or (port is not None and not 1 <= port <= 65535)
     ):
@@ -188,7 +193,19 @@ class MockProvider:
         return Reply(action)
 
 
-class ChatCompletionsProvider:
+def context_bytes(config: dict[str, Any], messages: list[dict[str, str]]) -> int:
+    # Native tools/schemas/history wrappers are part of the budget, not free
+    # hidden context. Keep historical JSON-action reservations unchanged.
+    return len(
+        canonical(
+            messages_payload(config, messages)
+            if config["adapter"] == "messages-tools"
+            else messages
+        )
+    )
+
+
+class BrokerProvider:
     def __init__(self, config: dict[str, Any]):
         self.config = validate_config(config)
 
@@ -203,7 +220,7 @@ class ChatCompletionsProvider:
             ):
                 raise ScryveilError("provider_credential_unavailable")
         request = {"config": self.config, "credential": credential, "messages": messages}
-        if len(canonical(messages)) > self.config["max_context_bytes"]:
+        if context_bytes(self.config, messages) > self.config["max_context_bytes"]:
             raise ScryveilError("context_budget_exhausted")
         # Fixed interpreter/module and an empty credential environment.
         child = subprocess.Popen(  # nosec B603
@@ -228,5 +245,19 @@ class ChatCompletionsProvider:
             raise ScryveilError("provider_failed")
         response = load_json(output)
         if not isinstance(response, dict) or not response.get("ok"):
+            if (
+                self.config["adapter"] == "messages-tools"
+                and isinstance(response, dict)
+                and safe_error(response.get("error"))
+            ):
+                raise ScryveilError(response["error"])
             raise ScryveilError("provider_failed")
         return Reply(response["action"], response["usage"])
+
+
+class ChatCompletionsProvider(BrokerProvider):
+    """Existing explicit JSON-action contract; no implied vendor compatibility."""
+
+
+class MessagesToolsProvider(BrokerProvider):
+    """Native Messages client tools; execution still belongs to the fixed worker."""

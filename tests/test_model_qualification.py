@@ -114,3 +114,17 @@ def test_numeric_server_telemetry_does_not_retain_untrusted_log_text():
         ]
         == "slot_release"
     )
+    assert (
+        parse(
+            "slot print_timings_pp: id  0 | task 4 | prompt processing, n_tokens =    512, progress = 0.25, t =   6.00 s / 85.33 tokens per second",
+            4,
+        )["tokens"]
+        == 512
+    )
+    assert (
+        parse(
+            "slot print_timings_tg: id  0 | task 4 | n_gen =    100, tg =  10.00 t/s, tg_3s =   9.50 t/s",
+            5,
+        )["kind"]
+        == "generation_progress"
+    )
