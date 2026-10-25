@@ -10,7 +10,7 @@ import time
 from collections import Counter
 from typing import Any
 
-from .investigation_context import POLICY, InvestigationContext
+from .investigation_context import NATIVE_POLICY, POLICY, InvestigationContext
 from .investigation_tools import MAX_RESULT, TOOL_SCHEMAS, snapshot_case
 from .models import ScryveilError
 from .parse import canonical, digest, load_json, text_field
@@ -170,6 +170,7 @@ def investigate(
         if config["adapter"] == "messages-tools"
         else SYSTEM + "\nTools: " + canonical(TOOL_SCHEMAS).decode(),
         question,
+        native=config["adapter"] == "messages-tools",
     )
     trace: list[dict[str, Any]] = []
     usage = {"input_tokens": 0, "output_tokens": 0, "requests_with_usage": 0}
@@ -292,7 +293,7 @@ def investigate(
     )
     report["cost_basis"] = "owner_configured_rates_and_provider_reported_usage; not an invoice"
     report["context"] = {
-        "policy": POLICY,
+        "policy": NATIVE_POLICY if config["adapter"] == "messages-tools" else POLICY,
         "query_views_omitted_or_replaced": context.omitted,
         "full_tool_results_retained_in_trace": True,
         "locator_metadata_in_model_view": False,

@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified collection implementation: `f5676df2528e3b64c42f820dbffeb0a4a9087db6`, tree `a3d8c6577b6eefbca9047e864e288aae570b54d7`. The native-provider follow-up in this checkpoint is identified by its enclosing commit; a qualification descendant will anchor its SHA and CI. Collection measurements apply to f5676df, not later changed runtime files. Run `git rev-parse HEAD` and reconcile newer changes before continuing. Never merge automatically.
+Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified collection implementation: `f5676df2528e3b64c42f820dbffeb0a4a9087db6`, tree `a3d8c6577b6eefbca9047e864e288aae570b54d7`. Verified native-provider implementation: `4040436af2a893bc9853bcb384024f018042b76a`, tree `801b7b5452b7091f01f9934a79ffceb45fdc7efe`; its CI 40181063602 passed 356 tests in 16.24s and all required checks. The current compact-context/batch follow-up is identified by its enclosing commit pending qualification. Collection measurements apply to f5676df, not later changed runtime files. Run `git rev-parse HEAD` and reconcile newer changes before continuing. Never merge automatically.
 
 ## Working capability
 
@@ -13,7 +13,7 @@ Updated 2026-10-25. Branch `feat/forensic-core-genesis`, [PR #1](https://github.
 
 ## Executed validation
 
-Native follow-up local validation: **356 tests passed in 10.68s**, Ruff/format, strict mypy (22 modules), Bandit, hygiene, historical executable compatibility, all five demos, sdist/wheel and installed-wheel demos. The initial native recurrence request is 2,152 bytes including its plan schema; the previous failed JSON context was 6,331 bytes. Smaller input is not proof of improved reasoning.
+Compact-native follow-up local validation: **360 tests passed in 11.26s**, Ruff/format, strict mypy (22 modules), Bandit, hygiene, historical executable compatibility, all five demos, sdist/wheel and installed-wheel demos. The preceding native checkpoint passed 356 tests locally and in CI. Its initial recurrence request was 2,152 bytes including its plan schema; the previous failed JSON context was 6,331 bytes. Smaller input is not proof of improved reasoning.
 
 Local suite: **341 tests passed**, Ruff/check-format, strict mypy (21 modules), Bandit, hygiene, five demos, sdist/wheel and five installed-wheel demos outside checkout. Historical code creates ten NDJSON cases, six earlier IPS cases and five body-v2/text cases; current reports/snapshots remain byte-identical and reimports preserve interpretations/hashes.
 
@@ -21,7 +21,7 @@ Local suite: **341 tests passed**, Ruff/check-format, strict mypy (21 modules), 
 
 Security tests cover unsafe ZIP paths/types, nested/oversized content, false output lengths, CRC/descriptor/header mismatch, overlapping members, capacity rejection before state publication, forged lineage, injected symbols and forbidden calls through the worker. Archive parsing remains in the trusted owner process. IO interruption can leave checked content-addressed orphans; no automatic cleanup. Audit hashes are not independently authenticated custody.
 
-Collection [core CI 40137879807](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40137879807), job 121003172786, passed 341 tests in 11.65s plus all required static/compatibility/demo/build/wheel checks. Native-provider follow-up CI/model comparison are pending publication; this collection CI does not qualify the follow-up.
+Collection [core CI 40137879807](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40137879807), job 121003172786, passed 341 tests in 11.65s plus all required static/compatibility/demo/build/wheel checks. Native [core CI 40181063602](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40181063602) passed; the newer compact-context/batch follow-up requires its own CI.
 
 ## Actual-model gate remains failed
 
@@ -35,8 +35,8 @@ Original records and earlier 1.5B failures remain in [reconciliation](../validat
 
 ## Next action
 
-1. Publish the native-provider checkpoint, inspect final-head core CI and recover its targeted native recurrence run. The f5676df JSON-action timing run 40137879901 is reconciled: first request timed out at 60.028s; zero replies/events/facts; no numeric server events collected. Original records and resource limits are retained in [native continuation](../validation/native-provider-continuation.md).
-2. Native Messages translates only existing session/tool operations, accounts for cached inputs and full request bytes, and preserves complete call/result pairs. It has synthetic HTTP/worker validation, not actual-model qualification. The selected same-weight/native-protocol comparison has improved progress telemetry and phase-scoped schemas. Reconcile it before any further experiment; do not repeat an unchanged full suite. The target remains useful investigation over the generated collection.
+1. Publish the compact-native checkpoint, inspect core CI and recover its gated recurrence/collection run. Native run 40181063497 is reconciled: accepted plan after 35.117s, second request timed out at 60.061s, zero queries/facts/completions; forced server shutdown after five seconds. Original records and prompt/generation measurements are retained. The f5676df JSON-action timing run 40137879901 is reconciled: first request timed out at 60.028s; zero replies/events/facts; no numeric server events collected. Original records and resource limits are retained in [native continuation](../validation/native-provider-continuation.md).
+2. Native Messages translates only existing session/tool operations, accounts for cached inputs and full request bytes, and preserves complete call/result pairs. It has synthetic HTTP/worker validation, not actual-model qualification. The next comparison uses a smaller native schema view, stable policy prefix, exact same question/weights/budgets and 128-token server batches. Exact prior-plan replay is 7,393 bytes versus 8,813. Full worker validation remains unchanged. The 6,260-event model scenario is gated on a completed recurrence report with facts, coverage and contrary citations; skipped means unmeasured. Reconcile it before any further experiment; do not repeat an unchanged full suite. The target remains useful investigation over the generated collection.
 3. Genuine Apple-export qualification remains open. Text version 73 is unqualified; types 202/206/509/120 unsupported. Do not obtain owner records without separate authorization.
 4. Full sysdiagnose, TAR, backups/SQLite/plist interpretation, profiles, PCAP, live acquisition and Android remain unsupported. Storage/security migrations require measured justification.
 

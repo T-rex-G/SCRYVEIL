@@ -299,6 +299,31 @@ def test_streaming_descriptor_and_overlapping_member_boundaries():
         unpack(bytes(tampered), True)
 
 
+def test_collection_keeps_unqualified_version_distinct_from_unsupported_type(tmp_path):
+    annotated = (FIXTURES / "diagnostic-text-annotated.ips").read_bytes()
+    raw = zipped(
+        [
+            ("unqualified-v73.ips", annotated),
+            ("unsupported-202.ips", b'{"bug_type":"202"}\n{}'),
+        ]
+    )
+    store, cid, source = case(tmp_path, raw)
+    store.import_collection(cid, source, True)
+    inventory = store.collection_inventory(cid)
+    statuses = {m["path"]: m["status"] for m in inventory["archives"][0]["members"]}
+    assert statuses == {
+        "unqualified-v73.ips": "unqualified_version",
+        "unsupported-202.ips": "unsupported",
+    }
+    snapshot = snapshot_case(store, cid, all_events=True)
+    assert snapshot["coverage"]["collection_member_status_counts"] == {
+        "unqualified_version": 1,
+        "unsupported": 1,
+    }
+    assert len(snapshot["events"]) == 1
+    assert source.read_bytes() == raw
+
+
 def test_paged_inventory_full_retrieval_and_fail_closed_capacity(tmp_path, monkeypatch):
     import scryveil.store as module
 

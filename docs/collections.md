@@ -36,6 +36,8 @@ Traversal, absolute/backslash/ambiguous names, links/special files, encryption, 
 
 Unsupported/malformed regular members remain preserved and inventoried. Interpretation status distinguishes parsed subsets, partial results, unqualified versions, no parsed events, unsupported and malformed input. None means independently qualified. No recursion, executable plugin, acquisition library or additional runtime dependency is introduced. Parsing/decompression still runs in the trusted owner process; bounds are not a separately audited archive sandbox. The existing investigator and provider syscall boundaries are unchanged. Local hashes/audit chains are not independently authenticated custody.
 
+The supported ZIP layout requires central-directory entries in physical member order. An otherwise valid archive with reordered entries is rejected by this strict subset; it is not thereby classified as malicious.
+
 ## Queries, privacy and conclusions
 
 `--all-events` supplies the whole bounded case to the isolated read-only worker, or fails on the 16 MiB snapshot limit. It does not put the whole case into model context. Exact-match indexes and paged tools select results, defaulting to five event rows in this mode. `timeline query` also uses full-case scope. Legacy snapshot defaults/reader outputs remain unchanged. `evidence.list` and `findings.inspect` accept optional `cursor`/`limit`; when `truncated` is true, advance the cursor by the returned count.

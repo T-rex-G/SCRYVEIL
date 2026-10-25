@@ -97,6 +97,21 @@ def definitions() -> list[dict[str, Any]]:
     ]
 
 
+def compact_schema(value: Any) -> Any:
+    """Remove repeated string-length hints from the model's wire view only.
+
+    Names, argument types, required fields, numeric/page and array limits stay.
+    The worker validates the complete original schemas and all byte limits.
+    """
+    if isinstance(value, dict):
+        return {
+            k: compact_schema(v) for k, v in value.items() if k not in {"minLength", "maxLength"}
+        }
+    if isinstance(value, list):
+        return [compact_schema(v) for v in value]
+    return value
+
+
 def native_action(action: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     kind = action["kind"]
     if kind == "tool":
@@ -135,7 +150,14 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
             )
         elif role == "user":
             if pending is None:
-                history.append({"role": "user", "content": content})
+                if history and history[-1]["role"] == "user":
+                    previous = history[-1]["content"]
+                    if isinstance(previous, str):
+                        previous = [{"type": "text", "text": previous}]
+                        history[-1]["content"] = previous
+                    previous.append({"type": "text", "text": content})
+                else:
+                    history.append({"role": "user", "content": content})
             else:
                 result = load_json(content.encode())["tool_result"]
                 if (
@@ -171,7 +193,7 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
         # The supervisor retains the accepted plan/result pair through context
         # compaction. Advertise only operations valid in that protocol phase;
         # the worker independently enforces every permission and state rule.
-        "tools": definitions()[1:] if plan_accepted else definitions()[:1],
+        "tools": compact_schema(definitions()[1:] if plan_accepted else definitions()[:1]),
         "tool_choice": {"type": "any", "disable_parallel_tool_use": True},
     }
 

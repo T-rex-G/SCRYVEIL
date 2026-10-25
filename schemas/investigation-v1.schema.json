@@ -486,7 +486,10 @@
       "type": "object",
       "properties": {
         "policy": {
-          "const": "scryveil.context/1"
+          "enum": [
+            "scryveil.context/1",
+            "scryveil.context.native/1"
+          ]
         },
         "query_views_omitted_or_replaced": {
           "type": "integer",

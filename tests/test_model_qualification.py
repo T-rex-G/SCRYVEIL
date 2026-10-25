@@ -128,3 +128,14 @@ def test_numeric_server_telemetry_does_not_retain_untrusted_log_text():
         )["kind"]
         == "generation_progress"
     )
+
+
+def test_large_actual_model_scenario_is_skipped_when_baseline_floor_is_missing():
+    evaluate = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))[
+        "evaluate"
+    ]
+    result = evaluate(mock=True, scenarios=["collection"], require_recurrence=True)
+    assert result["runs"] == []
+    assert result["skipped_scenarios"] == [
+        {"scenario": "collection", "reason": "recurrence_fact_coverage_contradiction_floor_not_met"}
+    ]

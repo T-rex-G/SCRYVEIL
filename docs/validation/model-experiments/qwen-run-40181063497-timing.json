@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 3.460462027999995,
+      "kind": "task_started"
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 38.482605965999994,
+      "kind": "prompt_eval",
+      "milliseconds": 18090.39,
+      "tokens": 497
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 38.48265054799998,
+      "kind": "eval",
+      "milliseconds": 16931.6,
+      "tokens": 95
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 38.48266204599997,
+      "kind": "total",
+      "milliseconds": 35021.99,
+      "tokens": 592
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 38.483015715999954,
+      "kind": "slot_release",
+      "tokens": 591,
+      "truncated": false
+    },
+    {
+      "slot": 0,
+      "task": 96,
+      "observed_elapsed_seconds": 38.612446137999996,
+      "kind": "task_started"
+    }
+  ],
+  "native_log": {
+    "bytes": 2292,
+    "saved_bytes": 2292,
+    "lines": 23,
+    "sha256": "34364f44b3e952c98a3264829967ad0ca773c5b6fff72954d53e5d8b0a0ee848",
+    "retained_in_public_record": false
+  },
+  "reader_finished": true,
+  "server_returncode": -9,
+  "shutdown_seconds": 5.046784502000037,
+  "required_kill": true,
+  "interpretation": "Server task IDs are not yet bound to adapter request IDs. Slot release alone does not identify cancellation cause; compare per-request deadlines and timing."
+}
