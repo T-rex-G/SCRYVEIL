@@ -1,0 +1,49 @@
+{
+  "source_run": 40229335744,
+  "inference_performed": false,
+  "interpretation": "Wire bytes are not tokenizer counts, latency or reasoning quality.",
+  "requests": [
+    {
+      "request": 1,
+      "historical_request_bytes": 2121,
+      "current_unfactored_bytes": 2281,
+      "current_wire_bytes": 2281,
+      "lossless_reconstruction": true
+    },
+    {
+      "request": 2,
+      "historical_request_bytes": 5899,
+      "current_unfactored_bytes": 7052,
+      "current_wire_bytes": 7052,
+      "lossless_reconstruction": true
+    },
+    {
+      "request": 3,
+      "historical_request_bytes": 6612,
+      "current_unfactored_bytes": 7765,
+      "current_wire_bytes": 7765,
+      "lossless_reconstruction": true
+    },
+    {
+      "request": 4,
+      "historical_request_bytes": 8420,
+      "current_unfactored_bytes": 9573,
+      "current_wire_bytes": 9573,
+      "lossless_reconstruction": true
+    },
+    {
+      "request": 5,
+      "historical_request_bytes": 8834,
+      "current_unfactored_bytes": 9987,
+      "current_wire_bytes": 9987,
+      "lossless_reconstruction": true
+    },
+    {
+      "request": 6,
+      "historical_request_bytes": 11719,
+      "current_unfactored_bytes": 12872,
+      "current_wire_bytes": 11402,
+      "lossless_reconstruction": true
+    }
+  ]
+}

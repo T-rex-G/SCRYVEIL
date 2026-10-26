@@ -31,6 +31,20 @@ finally:
     probe.close()
 os.environ.clear()
 os.environ["LANG"] = "C.UTF-8"
+available_cpus = len(os.sched_getaffinity(0))
+model_threads = min(4, available_cpus)
+assert model_threads >= 1
+print(
+    "SCRYVEIL_CPU_PROFILE="
+    + json.dumps(
+        {
+            "affinity_cpus": available_cpus,
+            "logical_cpus": os.cpu_count(),
+            "model_threads": model_threads,
+        }
+    ),
+    flush=True,
+)
 started = time.monotonic()
 server_metrics = []
 log_metadata = {"bytes": 0, "saved_bytes": 0, "lines": 0}
@@ -52,9 +66,9 @@ with (runtime / "model-server.log").open("wb") as log:
             "--parallel",
             "1",
             "--threads",
-            "2",
+            str(model_threads),
             "--threads-batch",
-            "2",
+            str(model_threads),
             "--batch-size",
             "128",
             "--ubatch-size",
@@ -171,7 +185,9 @@ with (runtime / "model-server.log").open("wb") as log:
                     "user_cpu_seconds": usage.ru_utime,
                     "system_cpu_seconds": usage.ru_stime,
                     "largest_child_peak_rss_kib": usage.ru_maxrss,
-                    "model_threads": 2,
+                    "model_threads": model_threads,
+                    "affinity_cpus": available_cpus,
+                    "logical_cpus": os.cpu_count(),
                     "logical_batch_tokens": 128,
                     "physical_batch_tokens": 128,
                     "enable_thinking": False,

@@ -78,3 +78,37 @@ Originals and state remained unchanged. Reported usage for the five replies was 
 Offline verification reproduced all five action/result hashes through the isolated worker, all six model-context hashes/request sizes, all three event values/source references and the recomputed metrics. The report hash and all 22 runtime source hashes match. This replay uses only the three committed fictional fixtures and performs no inference. It establishes record consistency, not an independent parser-accuracy or model-quality qualification.
 
 The next experiment must first demonstrate a serving-throughput or request-cost improvement for the exact sixth request, while retaining relevant diagnostic detail, contrary observations, source identity and worker grounding. Replaying the same full investigation or merely raising budgets is not justified. Literal-search selection and delayed review of deterministic findings are separate observed investigation weaknesses; the existing feedback did not prevent two empty queries. A complete evidence-grounded actual-model investigation and genuine Apple-export qualification remain open.
+
+## Lossless event factoring and measured serving profile
+
+The native model view now factors exactly identical fields shared by every event
+in a page into `data.shared_event_fields`. Each event keeps its own ID and every
+differing field; merge the shared object into each row to reconstruct the exact
+previous view. Missing fields differ from null, and boolean/numeric JSON values
+are compared by canonical bytes. An identical envelope ID list may be omitted
+because those IDs remain in the rows; differing lists remain intact. Small pages
+that do not save at least 128 bytes retain their existing representation. Original
+tool results, claim validation, reports, disclosure boundaries and all eleven
+queries remain unchanged. Evidence strings remain untrusted even when shared.
+
+`python scripts/replay_native_request.py` reproduces all six contexts from the
+preserved fictional run, checks action/result hashes and requires exact
+reconstruction of every transformed result. [Measurements](native-wire-replay.json):
+request six is 11,402 bytes versus 12,872 without factoring at the same current
+schema/policy, a 1,470-byte reduction. Historical request six was 11,719 bytes.
+Earlier requests are larger than that historical run because diagnostic filters
+were added; this change alone does not establish a latency improvement. The
+native HTTP mock independently reconstructs the view and completes grounded
+facts/contrary references through the real broker and isolated worker.
+
+The selected follow-up also replaces the harness's hardcoded two-thread serving
+profile with at most four CPUs, bounded by observed Linux affinity, and records
+actual affinity/logical CPU counts. GitHub's [runner specification](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
+lists four CPUs for public-repository Ubuntu runners; actual execution records
+must confirm availability and throughput. This is a serving-resource comparison,
+not a controlled single-variable speedup experiment. Weights, model size,
+request timeout, context/output/request budgets, sampling, fixed questions and
+loopback-only isolation remain unchanged. No paid/larger runner is selected.
+Local 373 tests, static/security checks, executable historical compatibility,
+five source demos and package builds pass. Actual-model results must be recovered
+before claiming any investigation improvement.

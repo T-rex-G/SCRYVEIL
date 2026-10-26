@@ -81,3 +81,21 @@ continuing. Last reconciled remote head was
 The next priority remains reducing measured native prompt cost without hiding
 contrary observations, followed by an actual-model completion gate. GLM/native
 protocol differences require tested adapters, not a provider-name alias.
+
+## Native wire/serving follow-up after a8aeafe
+
+Baseline implementation `a8aeafede3ba46f94250a37096fd45861828204f` has green
+[core CI 40284145637](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40284145637):
+371 tests and all required checks. This enclosing follow-up losslessly shares
+identical fields in native event pages. Offline replay exactly reconstructs all
+results and cuts the recorded sixth request by 1,470 bytes at current schemas.
+Reports, source bytes, worker permissions and exact-fact validation are unchanged.
+Local 373 tests pass. See native-provider validation for limits and reproduction.
+
+A selected actual-model follow-up uses up to four affinity-available CPUs in the
+same standard runner, records actual availability, and retains all inference
+budgets/weights and isolation. Recover this enclosing commit's CI and model run
+before continuing; a successful workflow is not a reasoning pass. Both serving
+resources and wire presentation change, so do not attribute any outcome to one
+change without further controlled evidence. No private records or credentials
+were used. Genuine Apple-export qualification remains open.
