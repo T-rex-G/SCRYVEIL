@@ -112,3 +112,24 @@ def test_report_escapes_evidence_text():
             ],
         }
     )
+
+
+def test_signature_contrary_evidence_cannot_cross_declared_build_or_bundle():
+    rows = events()
+    for field, value in [
+        ("os_build", "OTHER"),
+        ("os_version", "Other OS"),
+        ("bundle_id", "com.example.other"),
+    ]:
+        changed = copy.deepcopy(rows)
+        changed[2]["attributes"][field] = value
+        finding = matching(changed, "signature_recurrence")[0]
+        assert finding["statistics"]["distinct_reported_incidents"] == 2
+        assert finding["contradictory_evidence_ids"] == []
+        # Broad per-name coverage still discloses the observation; it is not
+        # silently lost merely because it cannot contradict this identity group.
+        conditions = matching(changed, "report_conditions")[0]
+        assert changed[2]["event_id"] in conditions["contradictory_evidence_ids"]
+    assert matching(rows, "signature_recurrence")[0]["contradictory_evidence_ids"] == [
+        rows[2]["event_id"]
+    ]

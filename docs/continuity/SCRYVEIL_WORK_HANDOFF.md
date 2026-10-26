@@ -99,3 +99,14 @@ before continuing; a successful workflow is not a reasoning pass. Both serving
 resources and wire presentation change, so do not attribute any outcome to one
 change without further controlled evidence. No private records or credentials
 were used. Genuine Apple-export qualification remains open.
+
+Native implementation is published as `c0645134523e2be54ee3840e51767d09ec68179d`
+(tree `c587adff0f7ac85a67c5d3032eb90ecc206e3c85`). Core CI 40323111774 passed
+373 tests in 16.39s and all required checks. Actual-model run 40323112109 is
+being recovered separately; do not infer quality from core CI.
+
+A subsequent precision correction scopes signature-recurrence contrary
+references to matching declared OS/build/bundle, rather than process name alone.
+Unrelated observations remain in the per-name inventory and queries. Local
+374-test, static/security, historical compatibility, source-demo and packaging
+checks pass. No additional model inference is requested for this correction.

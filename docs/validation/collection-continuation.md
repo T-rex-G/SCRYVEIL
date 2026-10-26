@@ -66,3 +66,16 @@ actual-model experiment was repeated. Old case/report/snapshot compatibility,
 371 tests, static/security checks, five source demos and packaging checks pass.
 No new parser qualification, provider qualification or third-party dependency
 is implied.
+
+### Contrary-evidence identity correction
+
+Signature recurrence groups already required matching declared process,
+OS/build and bundle, but their contrary-reference lookup previously used only
+process name. A nonfatal observation from a different build/bundle could therefore
+appear to contradict a specific signature group. The lookup now applies the
+same OS/build/bundle identity scope. Other observations remain available in the
+per-name condition inventory and full-case queries. A regression changes each
+identity field independently and verifies that relevant contrary evidence is
+retained while unrelated groups are excluded. Equal declarations still do not
+authenticate device identity; missing values remain unknown. This corrects
+correlation precision without changing parser outputs or report field contracts.

@@ -112,9 +112,13 @@ def intelligence(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
         contrary = [
             e
             for e in by_process[a["process"]]
-            if e["attributes"].get("nonfatal") is True
-            or e["attributes"].get("simulated") is True
-            or e["attributes"].get("action_taken") == "none"
+            if os_key(e["attributes"]) == os_key(a)
+            and e["attributes"].get("bundle_id") == a.get("bundle_id")
+            and (
+                e["attributes"].get("nonfatal") is True
+                or e["attributes"].get("simulated") is True
+                or e["attributes"].get("action_taken") == "none"
+            )
         ]
         results.append(
             _measurement(
