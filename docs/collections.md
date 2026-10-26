@@ -49,3 +49,23 @@ The expanded coverage view lists selected event-type counts as valid query filte
 `--diagnostic-details` separately authorizes process names, exception/termination details, source symbols and OS/build fields. It excludes executable paths, bundle/domain identifiers and unrelated source text; `--include-identifiers` remains the broader existing option. Evidence strings can still contain sensitive data or malicious instructions. The exact snapshot and access profile change the remote-consent digest. Configuration alone never transmits evidence. A loopback model is not independently private unless its own egress is controlled.
 
 Source semantics: Apple's [crash JSON field reference](https://developer.apple.com/documentation/xcode/interpreting-the-json-format-of-a-crash-report) and [Jetsam interpretation](https://developer.apple.com/documentation/xcode/identifying-high-memory-use-with-jetsam-event-reports). These document field meanings, not execution qualification of this implementation. No upstream implementation or genuine diagnostic fixture was incorporated.
+
+### Exact diagnostic queries
+
+Use `timeline query --case CASE_ID --where '{"nonfatal":true}' --limit 5`
+to retrieve explicit nonfatal observations, or `--where '{"reason":"vm-pageshortage"}'`
+for source-declared Jetsam reasons. `--where '{"action_taken":"none"}'` selects
+resource reports explicitly recording no action. These queries work without AI.
+
+The same optional `where` object is available to `timeline.query`,
+`diagnostics.search` and `network.query`. Its closed fields are `exception_type`,
+`termination_namespace`, `action_taken`, `resource_kind`, `reason`, `os_build`,
+`nonfatal` and `simulated`. All conditions combine with AND; strings compare
+exactly and booleans require JSON `true`/`false`. Missing/null values match neither
+boolean. A false nonfatal flag alone is not proof of a fatal termination.
+
+Filters inspect only the authorized snapshot, never hidden originals. For
+example OS build requires diagnostic detail authorization; a zero-match result
+in a minimized view cannot establish its absence in the source. Original event
+IDs, source locators and page ordering are retained. No SQL, regex, arbitrary
+field, file path or model-supplied expression is accepted.

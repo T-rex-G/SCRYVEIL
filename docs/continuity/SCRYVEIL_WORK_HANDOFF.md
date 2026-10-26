@@ -57,3 +57,27 @@ Install pinned Python 3.12 developer dependencies and the original package; exec
 Actual-model CI requires `[model-qualification]` in the selected head commit message. Documentation/coverage checkpoints omit it. Pinned public runtime/weights are prepared before loopback-only network isolation; inherited environment is cleared and only generated inputs are accepted. No private files/API credentials belong in this harness, Git or CI.
 
 Separate owner authorization remains required for private diagnostics, device connection/acquisition and private external disclosure. None occurred. Continue independently authorized work without accessing owner files or unrelated projects.
+
+## Exact-filter continuation after 079f8db
+
+This enclosing implementation commit adds bounded `where` diagnostic filters,
+smallest-posting-first retrieval and stable pagination to the existing tools,
+plus CLI `timeline query --where`. The 6,260-event demo now retrieves 24 explicit
+nonfatal, 20 no-action and three memory-shortage observations with source links.
+The worker still sees only its authorized snapshot. Unknown/null is not false;
+no parser, permission or persisted case format changed. JSON-action query
+schemas share definitions to retain the unchanged budgets. Native expanded
+schemas cost more; actual-model effectiveness is untested and no run is pending.
+
+Local validation: 371 tests in 12.74s, Ruff/format, mypy, Bandit, hygiene,
+historical executable compatibility, all source demos, sdist/wheel and all five installed-wheel demos passed.
+Installed CLI queries independently returned the expected 24/20/3 counts and
+left case state unchanged.
+See the collection validation's single-process smoke, including limits and the
+two caught-and-fixed budget regressions. Check this enclosing commit's CI before
+continuing. Last reconciled remote head was
+`079f8dbd2efaefa8375f5675b8292cd5e79caaee`; obtain the enclosing SHA with
+`git rev-parse HEAD`. No private evidence or inference credential was used.
+The next priority remains reducing measured native prompt cost without hiding
+contrary observations, followed by an actual-model completion gate. GLM/native
+protocol differences require tested adapters, not a provider-name alias.

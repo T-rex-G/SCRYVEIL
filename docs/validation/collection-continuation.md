@@ -37,3 +37,32 @@ The opt-in expanded snapshot now reports selected event-type and diagnostic sche
 The strengthened ordering test exposed an incorrect fixture precondition: it had used `timestamp` instead of the supported Jetsam `date`, producing unknown times. It now uses `date` and explicitly asserts that the legacy capped view contains 2,000 earlier Jetsam entries and omits the later crash, while full-case retrieval finds it. The independently generated collection demo already used `date`; its prior measurements stand. This corrects test evidence rather than broadening parser claims.
 
 Local follow-up: 360 tests in 11.55s, all static/hygiene checks, historical executable compatibility, five demos, package builds and five installed-wheel demos passed. A direct installed-CLI walkthrough retrieved a five-row page from 240 matching crashes, inventoried 266 members, produced all three signature groups in Markdown and preserved case state. [One smoke measurement](collection-coverage-smoke.json) records the new 4,884,256-byte snapshot and eight mock requests at 157,097/200,000 reserved units. It ran alongside a build and is not a new performance acceptance series. Actual-model results remain separately failed in [native continuation](native-provider-continuation.md).
+
+## Indexed diagnostic retrieval follow-up (2026-10-26)
+
+The exact-filter increment retrieves 24 explicit nonfatal declarations, 20
+no-action resource observations and three source-declared memory-shortage
+reasons from the 6,260-event fictional collection. Each bounded result preserves
+full event/source references; `collection_demo.py` now saves those queries as
+`contrary-and-memory-queries.json`. These are source observations, not causal or
+malware conclusions. Typed index keys distinguish booleans from strings, and
+null/absent values are never treated as false. Candidate intersections begin
+with the smallest posting list and restore snapshot order before pagination;
+a regression forbids scanning unmatched records on an indexed query.
+
+[Single-process smoke](indexed-retrieval-smoke.json): the three exact queries
+completed in 1.254ms combined; parent peak RSS 102,524 KiB. Index construction is
+outside that query measurement. This is not a maximum-capacity or comparative
+speedup qualification. Mock investigation completed eight requests using
+151,769/200,000 reservation units; original bytes/state remained unchanged.
+
+Initial schema duplication caused two existing mock-budget regressions. Shared
+JSON-action query definitions reduce the current schema view from 4,617 to
+2,474 bytes, restoring both tests without changing budgets. Executable schemas
+remain fully expanded; a regression checks reference resolution and rejected
+inputs. Native Messages schemas remain expanded and are larger with the added
+filters; this change does not resolve its measured inference bottleneck. No
+actual-model experiment was repeated. Old case/report/snapshot compatibility,
+371 tests, static/security checks, five source demos and packaging checks pass.
+No new parser qualification, provider qualification or third-party dependency
+is implied.

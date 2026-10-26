@@ -427,3 +427,103 @@ def test_config_file_must_be_private_and_has_no_inline_secret(tmp_path):
     assert load_config(path) == DEFAULT_CONFIG
     with pytest.raises(ScryveilError):
         validate_config({**DEFAULT_CONFIG, "api_key": "synthetic"})
+
+
+def test_exact_diagnostic_filters_keep_null_false_and_hidden_fields_distinct(case):
+    store, cid = case
+    snap = snapshot_case(store, cid)
+    tools = ReadOnlyTools(snap)
+    yes = tools.call("diagnostics.search", {"where": {"nonfatal": True}})
+    no = tools.call("diagnostics.search", {"where": {"nonfatal": False}})
+    assert yes["data"]["matched"] == 1
+    assert no["data"]["matched"] == 0  # unknown is not false
+    assert yes["data"]["events"][0]["exception_type"] == "EXC_RESOURCE"
+    assert (
+        tools.call("timeline.query", {"where": {"os_build": "synthetic-build"}})["data"]["matched"]
+        == 0
+    )
+    schema = Draft202012Validator(
+        json.loads((FIXTURES.parents[1] / "schemas/investigator-tools-v1.schema.json").read_text())
+    )
+    schema.validate(
+        {
+            "schema_version": "scryveil.tools/1",
+            "name": "diagnostics.search",
+            "arguments": {"where": {"nonfatal": True}},
+        }
+    )
+    worker = Worker(snap, 5)
+    try:
+        assert worker.request(PLAN)["ok"]
+        assert (
+            worker.request(
+                {
+                    **BASE,
+                    "kind": "tool",
+                    "name": "diagnostics.search",
+                    "arguments": {"where": {"nonfatal": True}},
+                }
+            )
+            == yes
+        )
+    finally:
+        worker.close()
+
+
+@pytest.mark.parametrize(
+    "where",
+    [
+        {"nonfatal": 1},
+        {"nonfatal": "true"},
+        {"nonfatal": None},
+        {"path": "/etc/passwd"},
+        {"os_build": {"regex": ".*"}},
+        {"os_build": "x" * 129},
+        [],
+    ],
+)
+def test_diagnostic_filters_reject_unbounded_or_unauthorized_predicates(case, where):
+    store, cid = case
+    result = ReadOnlyTools(snapshot_case(store, cid)).call("timeline.query", {"where": where})
+    assert result["error"] == "invalid_tool_arguments"
+
+
+def test_indexed_subset_does_not_scan_unmatched_events_and_preserves_order(case):
+    store, cid = case
+    snap = snapshot_case(store, cid, include_identifiers=True)
+    tools = ReadOnlyTools(snap)
+    expected = [e for e in snap["events"] if e.get("exception_type") == "EXC_BAD_ACCESS"]
+
+    class NoScan(dict):
+        def items(self):
+            raise AssertionError("unmatched events scanned")
+
+        def values(self):
+            raise AssertionError("unmatched events scanned")
+
+    tools.events = NoScan(tools.events)
+    rows = []
+    for cursor in range(len(expected)):
+        result = tools.call(
+            "diagnostics.search",
+            {
+                "where": {"exception_type": "EXC_BAD_ACCESS", "os_build": "synthetic-build"},
+                "limit": 1,
+                "cursor": cursor,
+            },
+        )
+        assert result["data"]["matched"] == len(expected)
+        rows.extend(result["data"]["events"])
+    assert rows == expected
+
+
+def test_shared_prompt_schemas_enforce_same_query_shapes():
+    from scryveil.investigation_tools import TOOL_SCHEMAS, prompt_schemas
+
+    document = prompt_schemas()
+    assert len(canonical(document)) < len(canonical(TOOL_SCHEMAS))
+    for name in ("timeline.query", "diagnostics.search", "network.query"):
+        validator = Draft202012Validator({**document, "$ref": "#/tools/" + name})
+        validator.validate({"where": {"nonfatal": True}, "limit": 5})
+        assert not validator.is_valid({"where": {"nonfatal": 1}})
+        assert not validator.is_valid({"where": {"path": "/etc/passwd"}})

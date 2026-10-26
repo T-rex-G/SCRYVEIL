@@ -12,7 +12,7 @@ from .engine import RuleConfig
 from .investigation import disclosure, investigate
 from .investigation_tools import ReadOnlyTools, diagnostic_coverage, snapshot_case
 from .models import SCHEMA, ScryveilError
-from .parse import canonical
+from .parse import canonical, load_json
 from .privacy import build_privacy_report, privacy_markdown
 from .providers import load_config
 from .report import build_report, markdown
@@ -107,6 +107,7 @@ def parser() -> Parser:
     timeline.add_argument("--cursor", type=int, default=0)
     timeline.add_argument("--limit", type=int, default=25)
     timeline.add_argument("--diagnostic-details", action="store_true")
+    timeline.add_argument("--where", help="JSON object of exact diagnostic field filters")
     investigation = sub.add_parser("investigate").add_subparsers(dest="action", required=True)
     for name in ("preview", "run"):
         command = investigation.add_parser(name)
@@ -161,6 +162,10 @@ def execute(args: argparse.Namespace) -> Any:
             )
             if getattr(args, k) is not None
         }
+        if args.where is not None:
+            if len(args.where) > 4096:
+                raise ScryveilError("invalid_tool_arguments")
+            query["where"] = load_json(args.where.encode())
         return ReadOnlyTools(snapshot).call("timeline.query", query)
     if args.command == "collection":
         return (

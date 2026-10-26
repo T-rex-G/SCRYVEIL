@@ -161,6 +161,49 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 25
+            },
+            "where": {
+              "type": "object",
+              "properties": {
+                "exception_type": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "termination_namespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "action_taken": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "resource_kind": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "os_build": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "nonfatal": {
+                  "type": "boolean"
+                },
+                "simulated": {
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "additionalProperties": false
             }
           },
           "required": [],
@@ -230,6 +273,49 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 25
+            },
+            "where": {
+              "type": "object",
+              "properties": {
+                "exception_type": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "termination_namespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "action_taken": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "resource_kind": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "os_build": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "nonfatal": {
+                  "type": "boolean"
+                },
+                "simulated": {
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "additionalProperties": false
             }
           },
           "required": [],
@@ -299,6 +385,49 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 25
+            },
+            "where": {
+              "type": "object",
+              "properties": {
+                "exception_type": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "termination_namespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "action_taken": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "resource_kind": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "os_build": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "nonfatal": {
+                  "type": "boolean"
+                },
+                "simulated": {
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "additionalProperties": false
             }
           },
           "required": [],

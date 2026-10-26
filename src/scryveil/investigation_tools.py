@@ -45,6 +45,24 @@ def object_schema(properties: dict[str, Any], required: list[str] | None = None)
     }
 
 
+DIAGNOSTIC_FILTERS = {
+    **{
+        key: STRING
+        for key in (
+            "exception_type",
+            "termination_namespace",
+            "action_taken",
+            "resource_kind",
+            "reason",
+            "os_build",
+        )
+    },
+    "nonfatal": {"type": "boolean"},
+    "simulated": {"type": "boolean"},
+}
+QUERY["where"] = object_schema(DIAGNOSTIC_FILTERS)
+
+
 TOOL_SCHEMAS = {
     name: object_schema(props, required)
     for name, props, required in [
@@ -61,6 +79,18 @@ TOOL_SCHEMAS = {
         ("hypotheses.compare", {"finding_id": ID}, ["finding_id"]),
     ]
 }
+
+
+def prompt_schemas() -> dict[str, Any]:
+    """Share identical query definitions in the JSON-action model view only."""
+    query = object_schema(QUERY)
+    return {
+        "$defs": {"query": query},
+        "tools": {
+            name: {"$ref": "#/$defs/query"} if schema == query else schema
+            for name, schema in TOOL_SCHEMAS.items()
+        },
+    }
 
 
 def validate(value: Any, schema: dict[str, Any]) -> None:
@@ -436,12 +466,13 @@ class ReadOnlyTools:
         self.seen_events: set[str] = set()
         self.read_events: set[str] = set()
         self.seen_findings: set[str] = set()
-        self.indexes: dict[str, dict[str, set[str]]] = {}
-        for field in ("event_type", "process_ref", "app_ref", "domain_ref"):
-            index: dict[str, set[str]] = {}
+        self.order = {eid: position for position, eid in enumerate(self.events)}
+        self.indexes: dict[str, dict[bytes, set[str]]] = {}
+        for field in ("event_type", "process_ref", "app_ref", "domain_ref", *DIAGNOSTIC_FILTERS):
+            index: dict[bytes, set[str]] = {}
             for eid, event in self.events.items():
                 if event.get(field) is not None:
-                    index.setdefault(event[field], set()).add(eid)
+                    index.setdefault(canonical(event[field]), set()).add(eid)
             self.indexes[field] = index
 
     def call(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
@@ -540,11 +571,24 @@ class ReadOnlyTools:
             )
             return selected, ids, truncated
         candidates: set[str] | None = None
-        for field, index in self.indexes.items():
-            if field in args:
-                matched = index.get(args[field], set())
-                candidates = matched if candidates is None else candidates & matched
-        rows = [e for eid, e in self.events.items() if candidates is None or eid in candidates]
+        filters = {
+            k: args[k] for k in ("event_type", "process_ref", "app_ref", "domain_ref") if k in args
+        }
+        filters.update(args.get("where", {}))
+        postings = [
+            self.indexes[field].get(canonical(value), set()) for field, value in filters.items()
+        ]
+        for matched in sorted(postings, key=len):
+            candidates = matched if candidates is None else candidates & matched
+            if not candidates:
+                break
+        # Visit only matching IDs, then restore immutable snapshot order for
+        # stable pagination. Never iterate hash-set order or scan all events.
+        rows = (
+            list(self.events.values())
+            if candidates is None
+            else [self.events[eid] for eid in sorted(candidates, key=self.order.__getitem__)]
+        )
         if name == "diagnostics.search":
             rows = [e for e in rows if e["event_type"].startswith("diagnostic.")]
         if name == "network.query":

@@ -11,7 +11,7 @@ from collections import Counter
 from typing import Any
 
 from .investigation_context import NATIVE_POLICY, POLICY, InvestigationContext
-from .investigation_tools import MAX_RESULT, TOOL_SCHEMAS, snapshot_case
+from .investigation_tools import MAX_RESULT, prompt_schemas, snapshot_case
 from .models import ScryveilError
 from .parse import canonical, digest, load_json, text_field
 from .provider_messages import SYSTEM as NATIVE_SYSTEM
@@ -168,7 +168,7 @@ def investigate(
     context = InvestigationContext(
         NATIVE_SYSTEM
         if config["adapter"] == "messages-tools"
-        else SYSTEM + "\nTools: " + canonical(TOOL_SCHEMAS).decode(),
+        else SYSTEM + "\nTools: " + canonical(prompt_schemas()).decode(),
         question,
         native=config["adapter"] == "messages-tools",
     )

@@ -107,6 +107,19 @@ def run(base):
     assert result["data"]["matched"] == 240 and len(result["data"]["events"]) == 5
     # Six thousand earlier process rows are not allowed to hide later crashes.
     assert result["data"]["events"][0]["process"] == "com.example.searchd"
+    start = time.perf_counter()
+    diagnostic_queries = {}
+    for field, value, expected in (
+        ("nonfatal", True, 24),
+        ("action_taken", "none", 20),
+        ("reason", "vm-pageshortage", 3),
+    ):
+        answer = tools.call("diagnostics.search", {"where": {field: value}, "limit": 5})
+        assert answer["data"]["matched"] == expected
+        assert all(e[field] == value for e in answer["data"]["events"])
+        diagnostic_queries[field] = answer
+    timings["three_exact_queries_seconds"] = time.perf_counter() - start
+    (base / "contrary-and-memory-queries.json").write_bytes(canonical(diagnostic_queries))
     before = (store.path(cid) / "state.json").read_bytes()
     start = time.perf_counter()
     report = investigate(
