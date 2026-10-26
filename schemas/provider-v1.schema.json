@@ -66,6 +66,12 @@
       "type": "integer",
       "minimum": 1024,
       "maximum": 200000
+    },
+    "native_tool_layout": {
+      "enum": [
+        "individual-v1",
+        "routed-v1"
+      ]
     }
   },
   "required": [],
@@ -135,6 +141,23 @@
               ]
             }
           ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "native_tool_layout"
+        ]
+      },
+      "then": {
+        "required": [
+          "adapter"
+        ],
+        "properties": {
+          "adapter": {
+            "const": "messages-tools"
+          }
         }
       }
     }

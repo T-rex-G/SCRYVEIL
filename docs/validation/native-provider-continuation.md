@@ -112,3 +112,50 @@ loopback-only isolation remain unchanged. No paid/larger runner is selected.
 Local 373 tests, static/security checks, executable historical compatibility,
 five source demos and package builds pass. Actual-model results must be recovered
 before claiming any investigation improvement.
+
+## Four-CPU execution and compact native routing
+
+[Run 40323112109](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40323112109)
+at `c0645134523e2be54ee3840e51767d09ec68179d` confirmed four affinity CPUs and
+four serving threads. [Original result](model-experiments/qwen-run-40323112109.json),
+[timing](model-experiments/qwen-run-40323112109-timing.json) and
+[resources](model-experiments/qwen-run-40323112109-resources.json) preserve the
+execution evidence. The model returned a six-step plan after 25.887s (510 input,
+74 output tokens), then timed out after 60.067s on the 6,895-byte second request.
+There were **zero evidence queries, accepted facts or completed reports**; the
+collection was explicitly skipped. Last second-task prompt progress recorded
+1,408 tokens at 58.5s, 24.07 tokens/s, displayed progress 0.93. No second-response
+generation was observed. Four CPUs did not resolve this prompt bottleneck.
+
+Originals/state remained unchanged. Server/evaluation wall time was 93.117s,
+user CPU time 362.234s and largest-child RSS 6,604,616 KiB. Shutdown exited normally
+in 4.422s; request-specific cancellation remains unconfirmed. Report digest was
+verified against the preserved JSON. Factual precision is unmeasured with zero
+claims; this run did not test adversarial exposure or hypothesis revision.
+Changes in plan, wire schemas and resources prevent a controlled speedup claim.
+
+The next bounded correction adds optional `native_tool_layout: "routed-v1"`
+for the existing Messages adapter. One `forensic_query` client definition takes
+an allowlisted dotted tool name and a bounded argument object. This is a compact
+superset of query argument schemas; the isolated worker still validates each
+selected tool's exact schema, references and limits. Plan/final schemas remain
+separate. No tool, permission, evidence field or inference budget was added.
+Default `individual-v1` behavior remains unchanged when the option is omitted.
+The layout is part of the exact disclosure consent and provider report contract.
+
+`python scripts/replay_native_request.py --layout routed-v1 --run 40323112109`
+reconstructs the last failed context: [second request](native-routed-latest-replay.json)
+is now **5,050 versus 6,895 bytes (26.8% less)**. The first request grows by 177
+bytes for routing guidance. Replaying the older six-request trace with
+`--layout routed-v1` yields [9,709 bytes for request six](native-routed-replay.json),
+versus 11,402 in the current individual layout. These are wire-byte measurements,
+not tokenizer, speed or reasoning results. Exact result reconstruction passes.
+
+Both layouts complete an eight-step synthetic HTTP/broker/isolated-worker
+investigation with exact facts and contrary references. Injected artifact text,
+unknown tools, inappropriate arguments, excess result limits, cross-case IDs and
+premature finals remain rejected. The first routed end-to-end test caught and
+fixed a missing optional field in the embedded report-provider schema. Genuine
+provider/model support requires actual execution; this change does not claim
+Claude, GLM or universal provider compatibility. The next selected run retains
+four available CPUs, pinned model/runtime, 60s requests and all existing budgets.

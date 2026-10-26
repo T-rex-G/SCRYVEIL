@@ -35,7 +35,14 @@ DEFAULT_CONFIG: dict[str, Any] = {
 
 
 def validate_config(config: dict[str, Any]) -> dict[str, Any]:
-    extra = {"endpoint", "model", "api_key_env", "input_usd_per_million", "output_usd_per_million"}
+    extra = {
+        "endpoint",
+        "model",
+        "api_key_env",
+        "input_usd_per_million",
+        "output_usd_per_million",
+        "native_tool_layout",
+    }
     if not isinstance(config, dict) or set(config) - (set(DEFAULT_CONFIG) | extra):
         raise ScryveilError("invalid_provider_config")
     result = {**DEFAULT_CONFIG, **config}
@@ -58,6 +65,11 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         "mode"
     ] not in ("local", "remote"):
         raise ScryveilError("unsupported_provider")
+    if "native_tool_layout" in result and (
+        result["adapter"] != "messages-tools"
+        or result["native_tool_layout"] not in ("individual-v1", "routed-v1")
+    ):
+        raise ScryveilError("unsupported_native_tool_layout")
     text_field(result.get("model"))
     endpoint = text_field(result.get("endpoint"))
     if endpoint is None:

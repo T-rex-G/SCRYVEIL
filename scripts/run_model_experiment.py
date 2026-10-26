@@ -141,6 +141,8 @@ with (runtime / "model-server.log").open("wb") as log:
                 "--require-recurrence",
                 "--adapter",
                 "messages-tools",
+                "--native-layout",
+                "routed-v1",
             ],
             check=True,
             timeout=1600,

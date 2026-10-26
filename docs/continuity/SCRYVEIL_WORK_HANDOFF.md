@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-26. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified implementation checkpoint `fecbb7a9ae41be5e8d74a4d9ebb4cf802dd0bf69`, tree `2768261c6c9b2c64aed2a35afb55348bf500b622`; [core CI 40229335698](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40229335698) passed 361 tests in 12.36s and all required checks. Actual-model run 40229335744 is reconciled below: partial retrieval, no completed investigation. This documentation checkpoint preserves its original records without another inference run. Run `git rev-parse HEAD` and inspect newer changes before continuing. Never merge automatically.
+Updated 2026-10-26. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Last published verified checkpoint `4780efe3d42f6a7fbaa047996ddf395cedf264b8`, tree `2d777720b5ef60309207a349812dec162d24deaa`; core CI 40323901975 passed 374 tests and all required checks. This enclosing continuation reconciles failed actual-model run 40323112109 and adds an optional compact native tool layout. Obtain its exact SHA with `git rev-parse HEAD`; inspect newer changes before continuing. Never merge automatically.
 
 ## Working capability
 
@@ -44,7 +44,7 @@ Preparation verifies size/hash before inference and permits a bounded 1,800s pub
 
 ## Next highest-priority action
 
-1. Profile/replay the exact sixth native request from run 40229335744 before another model investigation. Preserve diagnostic/contrary detail and all worker checks; demonstrate reduced request cost or better serving throughput under the fixed budgets. Partial retrieval is now observed, but literal-search selection and delayed findings review remain weaknesses despite existing feedback. Do not treat this as a completed investigation, repeatedly rerun the unchanged profile, or raise budgets to conceal failures. The collection still requires recurrence facts, coverage and contrary citations. No inference is currently pending.
+1. Recover the enclosing routed-layout model run before further experiments. The latest reconciled four-CPU run 40323112109 failed after a plan, with no queries/facts; compact routing reduces its exact second request from 6,895 to 5,050 bytes. This is the technical justification for a new bounded run, not a quality pass. Preserve all original execution records and assess claims/contradictions manually if any final report is accepted. Do not repeat an unchanged profile or raise budgets to conceal failures.
 2. Genuine Apple-export qualification remains open. Text version 73 is unqualified; types 202/206/509/120 unsupported. Owner records require separate explicit authorization.
 3. Full sysdiagnose, TAR, backups/SQLite/plist interpretation, profiles, PCAP, live acquisition and Android remain unsupported. Further storage/security migrations need measured justification.
 
@@ -110,3 +110,21 @@ references to matching declared OS/build/bundle, rather than process name alone.
 Unrelated observations remain in the per-name inventory and queries. Local
 374-test, static/security, historical compatibility, source-demo and packaging
 checks pass. No additional model inference is requested for this correction.
+
+## Optional compact routing checkpoint
+
+The latest four-CPU run 40323112109 at `c0645134523e2be54ee3840e51767d09ec68179d`
+returned a plan, then timed out during prompt processing; zero queries/facts/finals.
+Original JSON, timing and resource records are preserved with the native validation.
+Optional Messages `routed-v1` shares query argument definitions behind a fixed
+name enum; worker per-tool authorization, isolation and exact grounding remain
+unchanged. Default separate definitions and legacy snapshots are preserved.
+Both layouts pass full mocked HTTP/worker investigation and injected-evidence
+rejection; this is not actual-model security/quality qualification.
+
+Local full suite passed 378 tests; the 28 focused provider/contract checks also
+passed. Static/security checks, historical
+compatibility, all five source/installed-wheel demos and build passed. The report
+schema omission detected in testing was corrected. No private evidence or external
+inference was used. The selected model job uses only generated fixtures and the
+existing pinned local model with unchanged budgets. Reconcile its result next.

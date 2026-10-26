@@ -144,3 +144,13 @@ The native budget includes the complete serialized request, including tool defin
 The selected CI comparison uses the same pinned local Qwen3 weights and recurrence ground truth with native client tools, explicit Jinja support and improved numeric prompt/generation telemetry. It is justified by the prior invalid-action failures and first-request timeout, not a claim that native calls cure reasoning. Results must be assessed separately from successful CI exit.
 
 Native compact context is reported as `scryveil.context.native/1`: a stable system policy plus a bounded owner-state text block after the latest native tool result. Full worker string/byte limits remain enforced; repeated string-length hints and redundant empty `required` lists are omitted only from model-facing schemas. Page/numeric/array limits and nonempty required/type/unknown-key checks remain in the wire schema. The public collection benchmark is gated on a completed recurrence report with facts, coverage and contrary citations; a skipped collection is not a pass. See the [reconciled native measurements](validation/native-provider-continuation.md).
+
+For servers with expensive tool-schema prefill, the Messages adapter also accepts
+`"native_tool_layout": "routed-v1"`. It advertises one `forensic_query` client tool
+with an allowlisted dotted name and bounded arguments instead of eleven repeated
+query schemas. The same eleven worker operations and exact per-tool validation
+remain authoritative; this does not enable arbitrary tools. Plan/final calls are
+unchanged. Omitting the setting (or selecting `individual-v1`) retains separate
+native definitions. The choice changes the disclosure digest and requires fresh
+remote consent. This is experimental protocol configuration, not a qualified
+model recommendation. See the measured native validation before selecting it.

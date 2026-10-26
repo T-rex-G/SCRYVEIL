@@ -19,7 +19,7 @@ from scryveil.investigation import SYSTEM, investigate
 from scryveil.investigation_tools import TOOL_SCHEMAS, snapshot_case
 from scryveil.models import ScryveilError
 from scryveil.parse import canonical, digest
-from scryveil.provider_messages import SYSTEM as NATIVE_SYSTEM
+from scryveil.provider_messages import payload as native_payload
 from scryveil.providers import (
     DEFAULT_CONFIG,
     ChatCompletionsProvider,
@@ -176,7 +176,13 @@ def score(report, actions, snapshot):
     }
 
 
-def evaluate(mock=False, scenarios=None, adapter="chat-completions-json", require_recurrence=False):
+def evaluate(
+    mock=False,
+    scenarios=None,
+    adapter="chat-completions-json",
+    require_recurrence=False,
+    native_layout=None,
+):
     config = {
         **DEFAULT_CONFIG,
         "adapter": adapter,
@@ -188,6 +194,8 @@ def evaluate(mock=False, scenarios=None, adapter="chat-completions-json", requir
         "max_output_tokens": 1024,
         "max_total_tokens": 200000,
     }
+    if native_layout is not None:
+        config["native_tool_layout"] = native_layout
     if mock:
         config = {**DEFAULT_CONFIG, "max_total_tokens": 200000}
     records = []
@@ -304,7 +312,11 @@ def evaluate(mock=False, scenarios=None, adapter="chat-completions-json", requir
         "model": None if mock else "Qwen/Qwen3-4B-GGUF Q4_K_M; enable_thinking=false",
         "expected_model_sha256": None if mock else MODEL_SHA256,
         "system_prompt_sha256": digest(
-            (NATIVE_SYSTEM if not mock and adapter == "messages-tools" else SYSTEM).encode()
+            (
+                native_payload(config, [])["system"]
+                if not mock and adapter == "messages-tools"
+                else SYSTEM
+            ).encode()
         ),
         "adapter": config["adapter"],
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT)
@@ -334,11 +346,14 @@ if __name__ == "__main__":
         choices=["chat-completions-json", "messages-tools"],
         default="chat-completions-json",
     )
+    parser.add_argument("--native-layout", choices=["individual-v1", "routed-v1"])
     args = parser.parse_args()
     print(
         "SCRYVEIL_MODEL_RESULT="
         + json.dumps(
-            evaluate(args.mock, args.scenario, args.adapter, args.require_recurrence),
+            evaluate(
+                args.mock, args.scenario, args.adapter, args.require_recurrence, args.native_layout
+            ),
             separators=(",", ":"),
         )
     )

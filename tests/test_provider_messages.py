@@ -31,8 +31,8 @@ def config(base):
     )
 
 
-def native_response(action=PLAN):
-    name, arguments = native_action(action)
+def native_response(action=PLAN, *, routed=False):
+    name, arguments = native_action(action, routed=routed)
     return {
         "type": "message",
         "role": "assistant",
@@ -77,7 +77,8 @@ def test_native_headers_separate_system_and_usage_without_credential_disclosure(
     assert context_bytes(cfg, messages) > len(canonical(messages))
 
 
-def test_native_full_broker_worker_loop_grounding_and_evidence_preservation(tmp_path):
+@pytest.mark.parametrize("routed", [False, True])
+def test_native_full_broker_worker_loop_grounding_and_evidence_preservation(tmp_path, routed):
     store, cid = case(tmp_path)
     before = (store.path(cid) / "state.json").read_bytes()
     mock = MockProvider()
@@ -102,7 +103,7 @@ def test_native_full_broker_worker_loop_grounding_and_evidence_preservation(tmp_
                                 + "}",
                             }
                         )
-        result = native_response(mock.next(messages).action)
+        result = native_response(mock.next(messages).action, routed=routed)
         call = result["content"][0]
         advertised = {tool["name"]: tool for tool in request[2]["tools"]}
         assert call["name"] in advertised
@@ -114,14 +115,16 @@ def test_native_full_broker_worker_loop_grounding_and_evidence_preservation(tmp_
             store,
             cid,
             "Compare failure declarations and contrary evidence",
-            config(base),
+            {**config(base), **({"native_tool_layout": "routed-v1"} if routed else {})},
             all_events=True,
             diagnostic_details=True,
         )
     assert report["status"] == "completed", report["status"]
     assert len(observed) == 8 and report["usage_complete"]
-    assert {t["name"] for t in observed[1][2]["tools"]} == set(NAMES)
-    assert len(observed[-1][2]["tools"]) == 12
+    assert {t["name"] for t in observed[1][2]["tools"]} == (
+        {"forensic_query"} if routed else set(NAMES)
+    )
+    assert len(observed[-1][2]["tools"]) == (2 if routed else 12)
     assert "investigation_plan" not in {t["name"] for t in observed[1][2]["tools"]}
     assert report["result"]["observed_facts"] and report["result"]["derived_measurements"]
     assert report["result"]["hypotheses"][0]["contradictions"]
@@ -308,15 +311,19 @@ def test_native_context_compaction_retains_complete_tool_result_pairs():
     assert {t["name"] for t in body["tools"]} == set(NAMES)
 
 
-def test_native_finish_schema_waits_for_distinct_successful_queries(tmp_path):
+@pytest.mark.parametrize("routed", [False, True])
+def test_native_finish_schema_waits_for_distinct_successful_queries(tmp_path, routed):
     ctx = InvestigationContext(SYSTEM, "fictional", native=True)
     ctx.accept(PLAN, {"ok": True, "plan": PLAN["steps"]})
     cfg = {"model": "fictional", "max_output_tokens": 1024}
+    if routed:
+        cfg["native_tool_layout"] = "routed-v1"
+    query_names = {"forensic_query"} if routed else set(NAMES)
 
     def names():
         return {t["name"] for t in payload(cfg, ctx.messages(131072))["tools"]}
 
-    assert names() == set(NAMES)
+    assert names() == query_names
     action = {
         "version": "scryveil.agent/1",
         "kind": "tool",
@@ -329,9 +336,9 @@ def test_native_finish_schema_waits_for_distinct_successful_queries(tmp_path):
         {**action, "name": "diagnostics.search"},
         {"ok": False, "error": "invalid_tool_arguments"},
     )
-    assert names() == set(NAMES)
+    assert names() == query_names
     ctx.accept({**action, "name": "case.inspect"}, {"ok": True, "data": {}})
-    assert names() == set(NAMES) | {"investigation_finish"}
+    assert names() == query_names | {"investigation_finish"}
     # Advertising the final schema grants no exception to worker requirements.
     store, cid = case(tmp_path)
     session = Session(snapshot_case(store, cid))
@@ -351,7 +358,8 @@ def test_native_finish_schema_waits_for_distinct_successful_queries(tmp_path):
     assert rejected["error"] == "event_retrieval_required"
 
 
-def test_native_injected_artifact_cannot_escalate_through_real_broker_and_worker(tmp_path):
+@pytest.mark.parametrize("routed", [False, True])
+def test_native_injected_artifact_cannot_escalate_through_real_broker_and_worker(tmp_path, routed):
     store, cid = case(tmp_path)
     raw = (ROOT / "fixtures/synthetic/diagnostic-1.ips").read_bytes()
     header, body = raw.split(b"\n", 1)
@@ -380,12 +388,19 @@ def test_native_injected_artifact_cannot_escalate_through_real_broker_and_worker
             },
         ]
     )
-    with peer(lambda _: (200, canonical(native_response(next(proposals))))) as (base, observed):
+    with peer(lambda _: (200, canonical(native_response(next(proposals), routed=routed)))) as (
+        base,
+        observed,
+    ):
         report = investigate(
             store,
             cid,
             "Inspect the fictional reports",
-            {**config(base), "max_requests": 4},
+            {
+                **config(base),
+                "max_requests": 4,
+                **({"native_tool_layout": "routed-v1"} if routed else {}),
+            },
             include_identifiers=True,
         )
     assert report["status"] == "request_budget_exhausted"
@@ -495,3 +510,33 @@ def test_native_factoring_keeps_injected_text_as_untrusted_data(tmp_path):
         == "tool_not_allowed"
     )
     assert wire_result({"ok": False, "error": attack}) == {"ok": False, "error": attack}
+
+
+def test_routed_calls_preserve_tool_specific_authorization_and_consent(tmp_path):
+    store, cid = case(tmp_path)
+    snap = snapshot_case(store, cid)
+    session = Session(snap)
+    session.step(PLAN)
+    for name, arguments, error in (
+        ("shell.exec", {}, "tool_not_allowed"),
+        ("coverage.inspect", {"event_id": "invented"}, "invalid_tool_arguments"),
+        ("timeline.query", {"limit": 26}, "invalid_tool_arguments"),
+        ("evidence.read_excerpt", {"event_id": "../../other-case"}, "reference_out_of_scope"),
+    ):
+        raw = native_response(
+            {"version": "scryveil.agent/1", "kind": "tool", "name": name, "arguments": arguments},
+            routed=True,
+        )
+        assert session.step(response(raw)["action"])["error"] == error
+    with peer(lambda _: (200, canonical(native_response()))) as (base, _):
+        cfg = config(base)
+        changed = {**cfg, "native_tool_layout": "routed-v1"}
+        assert validate_config(changed)["native_tool_layout"] == "routed-v1"
+        assert (
+            disclosure(snap, "fictional", cfg)["consent_sha256"]
+            != disclosure(snap, "fictional", changed)["consent_sha256"]
+        )
+        with pytest.raises(ScryveilError, match="unsupported_native_tool_layout"):
+            validate_config({**cfg, "native_tool_layout": "arbitrary-plugins"})
+        with pytest.raises(ScryveilError, match="unsupported_native_tool_layout"):
+            validate_config({**base, "native_tool_layout": "routed-v1"})

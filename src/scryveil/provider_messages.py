@@ -9,7 +9,7 @@ import re
 from copy import deepcopy
 from typing import Any
 
-from .investigation_tools import ID, STRING, TOOL_SCHEMAS, object_schema
+from .investigation_tools import ID, QUERY, STRING, TOOL_SCHEMAS, object_schema
 from .models import ScryveilError
 from .parse import canonical, load_json
 
@@ -116,10 +116,12 @@ def compact_schema(value: Any) -> Any:
     return value
 
 
-def native_action(action: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+def native_action(action: dict[str, Any], *, routed: bool = False) -> tuple[str, dict[str, Any]]:
     kind = action["kind"]
     if kind == "tool":
         name = action["name"]
+        if routed:
+            return "forensic_query", {"name": name, "arguments": action["arguments"]}
         return (name.replace(".", "_") if name in TOOL_SCHEMAS else name), action["arguments"]
     if kind not in {"plan", "final"}:
         raise ScryveilError("invalid_provider_history")
@@ -161,7 +163,24 @@ def wire_result(result: dict[str, Any]) -> dict[str, Any]:
     return view if len(canonical(view)) + 128 < len(canonical(result)) else result
 
 
+def routed_definition() -> dict[str, Any]:
+    return {
+        "name": "forensic_query",
+        "description": "Call one read-only tool. "
+        + " ".join(name + ": " + description for name, description in DESCRIPTIONS.items())
+        + " process.inspect requires process_ref; evidence.read_excerpt requires event_id; hypotheses.compare requires finding_id. case.inspect, coverage.inspect and integrity.verify require empty arguments. The worker enforces each tool's exact schema.",
+        "input_schema": object_schema(
+            {
+                "name": {"type": "string", "enum": list(TOOL_SCHEMAS)},
+                "arguments": object_schema({**QUERY, "event_id": ID, "finding_id": ID}),
+            },
+            ["name", "arguments"],
+        ),
+    }
+
+
 def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str, Any]:
+    routed = config.get("native_tool_layout") == "routed-v1"
     history: list[dict[str, Any]] = []
     system = SYSTEM
     pending: str | None = None
@@ -175,8 +194,8 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
             system = content
         elif role == "assistant" and pending is None:
             action = load_json(content.encode())
-            name, arguments = native_action(action)
-            pending_name = name
+            name, arguments = native_action(action, routed=routed)
+            pending_name = action.get("name") if action.get("kind") == "tool" else None
             pending_plan = action.get("kind") == "plan"
             pending = f"scryveil_call_{index}"
             history.append(
@@ -205,8 +224,8 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
                     and (result.get("plan_accepted") is True or "plan" in result)
                 ):
                     plan_accepted = True
-                if pending_name in NAMES and result.get("ok") is True:
-                    successful_queries.add(NAMES[pending_name])
+                if pending_name in TOOL_SCHEMAS and result.get("ok") is True:
+                    successful_queries.add(pending_name)
                 history.append(
                     {
                         "role": "user",
@@ -227,13 +246,15 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
         raise ScryveilError("invalid_provider_history")
     available = definitions()[:1]
     if plan_accepted:
-        available = definitions()[1:-1]
+        available = [routed_definition()] if routed else definitions()[1:-1]
         # Finishing cannot succeed before two distinct query tools. Defer its
         # comparatively large schema, keeping all eleven read-only tools. The
         # worker still enforces the stronger event/finding/claim requirements.
         # Compacted query views may require re-querying to advertise it again.
         if len(successful_queries) >= 2:
             available.append(definitions()[-1])
+    if routed:
+        system += "\nFor queries use forensic_query with the dotted tool name and arguments. Underscored query names in guidance refer to those dotted names. Plan and finish remain separate tools."
     return {
         "model": config["model"],
         "system": system,
@@ -277,7 +298,11 @@ def response(data: Any) -> dict[str, Any]:
     ):
         raise ScryveilError("invalid_native_response")
     action: dict[str, Any] = {"version": "scryveil.agent/1"}
-    if name in {"investigation_plan", "investigation_finish"}:
+    if name == "forensic_query":
+        if set(arguments) != {"name", "arguments"}:
+            raise ScryveilError("invalid_native_response")
+        action.update(kind="tool", **arguments)
+    elif name in {"investigation_plan", "investigation_finish"}:
         if set(arguments) & {"version", "kind"}:
             raise ScryveilError("invalid_native_response")
         action.update(kind="plan" if name == "investigation_plan" else "final", **arguments)
