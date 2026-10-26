@@ -159,3 +159,43 @@ fixed a missing optional field in the embedded report-provider schema. Genuine
 provider/model support requires actual execution; this change does not claim
 Claude, GLM or universal provider compatibility. The next selected run retains
 four available CPUs, pinned model/runtime, 60s requests and all existing budgets.
+
+## Routed execution: retrieval recovered, completion still fails
+
+[Run 40325749077](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40325749077)
+at `05e2e56f30960d55d5e64b0d6d0a99a8925a6541` used the same four-CPU ceiling,
+pinned weights/runtime and inference budgets. [Original record](model-experiments/qwen-run-40325749077.json),
+[timing](model-experiments/qwen-run-40325749077-timing.json) and
+[resources](model-experiments/qwen-run-40325749077-resources.json) are retained.
+Core CI 40325748917 separately passed 378 tests in 16.60s and all checks.
+
+| Request | Result | Wire bytes | Seconds |
+|---|---|---:|---:|
+| 1 | Six-step plan | 2,458 | 27.896 |
+| 2 | Empty diagnostic query with speculative text/exception filters | 5,056 | 36.303 |
+| 3 | Unfiltered timeline page: three events | 5,900 | 13.367 |
+| 4 | Timeout after evidence entered context and final schema became available | 8,422 | 60.067 |
+
+The model recovered from one empty search through bounded feedback. It read the
+nonfatal contrary observation, but did not query coverage/findings or propose
+any factual claim or final report. The collection was explicitly skipped.
+**Actual-model investigation quality remains unqualified.** No narrative fact
+accuracy, hypothesis revision or adversarial resilience can be inferred from
+this partial trace. Free text beside native calls is discarded and unscored.
+
+Second-request prompt evaluation was 30.521s with 753 newly processed tokens.
+The last fourth-request progress was 1,152 new tokens at 51.38s, displayed
+progress 0.95; no completed fourth-response timing is available. Final-schema
+advertising changes the prompt prefix, but these records do not isolate its
+cost from the added evidence. Three replies reported 2,964 input/159 output
+tokens; timed-out request usage remains unknown. Server/evaluation wall time
+140.572s, user CPU 550.215s, largest-child RSS 6,622,632 KiB. Normal shutdown took
+0.214s; request-specific cancellation is still unconfirmed. Sources/state stayed
+unchanged. No remote provider or private input was used.
+
+Offline reconciliation checked the report digest, all 22 source hashes against
+the recorded Git commit, replayed three actions/results through the isolated
+worker, reproduced four context hashes/native request sizes and recomputed all
+metrics from the original fictional fixtures. It performed no inference.
+The next serving experiment must profile this exact failure before another full
+investigation; an unchanged rerun or a higher deadline is not justified.

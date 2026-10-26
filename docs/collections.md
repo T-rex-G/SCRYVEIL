@@ -69,3 +69,9 @@ example OS build requires diagnostic detail authorization; a zero-match result
 in a minimized view cannot establish its absence in the source. Original event
 IDs, source locators and page ordering are retained. No SQL, regex, arbitrary
 field, file path or model-supplied expression is accepted.
+
+Resource neighbors use reported start/end intervals when both are valid, with a
+300-second margin; missing ends remain point observations and reversed intervals
+are excluded. Reports separate interval-contained pairs from nearby observations.
+These counts do not establish continuous activity, a common device or causation.
+Original interval fields and their byte locations remain available for review.

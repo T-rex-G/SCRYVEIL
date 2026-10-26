@@ -100,6 +100,12 @@ def run(base):
     ]
     assert len(signatures) == 3
     assert all(f["statistics"]["distinct_reported_incidents"] == 80 for f in signatures)
+    neighbors = [
+        f for f in snapshot["findings"] if f["rule"] == "diagnostics.resource_temporal_neighbors/1"
+    ]
+    assert len(neighbors) == 1
+    assert neighbors[0]["statistics"]["observation_pairs"] == 220
+    assert neighbors[0]["statistics"]["pairs_inside_reported_intervals"] == 40
     tools = ReadOnlyTools(snapshot)
     start = time.perf_counter()
     result = tools.call("diagnostics.search", {"event_type": "diagnostic.crash", "limit": 5})
@@ -149,6 +155,10 @@ def run(base):
         "events": len(snapshot["events"]),
         "snapshot_bytes": len(canonical(snapshot)),
         "signature_groups": len(signatures),
+        "resource_temporal_observation_pairs": neighbors[0]["statistics"]["observation_pairs"],
+        "pairs_inside_reported_intervals": neighbors[0]["statistics"][
+            "pairs_inside_reported_intervals"
+        ],
         "incidents_per_signature": [
             f["statistics"]["distinct_reported_incidents"] for f in signatures
         ],

@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-26. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Last published verified checkpoint `4780efe3d42f6a7fbaa047996ddf395cedf264b8`, tree `2d777720b5ef60309207a349812dec162d24deaa`; core CI 40323901975 passed 374 tests and all required checks. This enclosing continuation reconciles failed actual-model run 40323112109 and adds an optional compact native tool layout. Obtain its exact SHA with `git rev-parse HEAD`; inspect newer changes before continuing. Never merge automatically.
+Updated 2026-10-26. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Last published implementation `05e2e56f30960d55d5e64b0d6d0a99a8925a6541`, tree `66c4b6158c10906ab7919b4aaae6ab1f470d7d46`; core CI 40325748917 passed 378 tests in 16.60s and all required checks. Actual-model run 40325749077 is reconciled: three events retrieved, no accepted facts or completed report. This enclosing checkpoint adds interval-aware resource correlation and preserves the original experiment records. Obtain its exact SHA with `git rev-parse HEAD`; inspect newer changes before continuing. Never merge automatically.
 
 ## Working capability
 
@@ -35,6 +35,8 @@ Security checks cover unsafe ZIP paths/types, nested/oversized content, false ou
 | `40182871736` | `38e7b33` | Weight download timeout before inference; no model-quality measurement. |
 | `40204579155` | `39bf69c` | Compact native plan after 31.769s; second request timed out during prompt evaluation, zero queries/facts; large collection skipped. |
 | `40229335744` | `fecbb7a` | Plan plus four valid queries across three tools; two empty literal searches, then three retrieved events; sixth request timed out during prompt evaluation. Zero accepted facts/final reports; collection skipped. |
+| `40323112109` | `c064513` | Four CPUs: plan then second-request prompt timeout, zero queries/facts/finals. |
+| `40325749077` | `05e2e56` | Routed layout: empty speculative query then three events retrieved; fourth request timed out, zero facts/finals, coverage/findings unread. |
 
 [Latest original records, timing and resource evidence](../validation/native-provider-continuation.md). The corrected second request was 5,899 bytes and returned coverage after 59.390s. Four valid queries followed the plan; two used the same ineffective literal phrase before an unfiltered page retrieved all three events, including the nonfatal contrary observation. Findings were never queried and no final hypothesis/fact was proposed. The sixth request was 11,719 bytes and timed out after 60.063s; server prompt progress at 56.65s showed 1,024 newly processed tokens and displayed progress 0.97. This is prompt-cost evidence, not proof of completed reasoning or a controlled speedup. Total/request budgets were not exhausted. Shutdown exited normally in 3.722s; request-cancellation attribution remains unmeasured. Largest-child RSS 6,606,572 KiB. Workflow success is not a forensic pass. Hosted APIs, hypothesis revision and actual-model injection resilience remain unqualified.
 
@@ -44,7 +46,7 @@ Preparation verifies size/hash before inference and permits a bounded 1,800s pub
 
 ## Next highest-priority action
 
-1. Recover the enclosing routed-layout model run before further experiments. The latest reconciled four-CPU run 40323112109 failed after a plan, with no queries/facts; compact routing reduces its exact second request from 6,895 to 5,050 bytes. This is the technical justification for a new bounded run, not a quality pass. Preserve all original execution records and assess claims/contradictions manually if any final report is accepted. Do not repeat an unchanged profile or raise budgets to conceal failures.
+1. The routed actual-model run 40325749077 is fully recovered. It made an empty speculative search, recovered to an unfiltered query and read three events, then timed out on request four (8,422 bytes). Coverage and findings were never inspected; zero facts/finals. Profile the exact request/serving bottleneck before further full investigations. Do not repeat an unchanged profile, raise budgets, or treat valid tool calls as successful reasoning. A complete actual-model investigation, hypothesis revision and actual-model injection qualification remain open.
 2. Genuine Apple-export qualification remains open. Text version 73 is unqualified; types 202/206/509/120 unsupported. Owner records require separate explicit authorization.
 3. Full sysdiagnose, TAR, backups/SQLite/plist interpretation, profiles, PCAP, live acquisition and Android remain unsupported. Further storage/security migrations need measured justification.
 
@@ -128,3 +130,26 @@ compatibility, all five source/installed-wheel demos and build passed. The repor
 schema omission detected in testing was corrected. No private evidence or external
 inference was used. The selected model job uses only generated fixtures and the
 existing pinned local model with unchanged budgets. Reconcile its result next.
+
+## Interval correlation and reconciled routing result
+
+Resource correlation now uses the parsed start/end interval, not only its start.
+Sorted endpoint counts avoid materializing all crash/resource pairs. Reversed
+intervals are excluded; missing ends remain point observations, never inferred
+from duration or tracking time. All source bytes/locators and legacy snapshots
+remain unchanged. The 6,260-event fictional demo measures 220 neighbor pairs
+(previously 200 from starts alone), including 40 inside reported intervals.
+These are supplied-record pairs, not unique incidents or proof of simultaneous
+writes/causation. No new parser format is claimed.
+
+Local 380 tests, static/security checks, historical compatibility, five source
+demos, build and five installed-wheel demos pass. The single-process collection
+smoke records 0.392s import, 0.651s verified snapshot, 101,960 KiB parent RSS,
+eight mock requests and unchanged originals/state. Exact boundary/source-locator
+and independent brute-force interval comparisons pass. Check the enclosing CI.
+
+Run 40325749077 at 05e2e56 is preserved with original result/timing/resources.
+Offline verification checked the report digest, 22 historical source hashes,
+three isolated-worker actions/results, four contexts/request sizes and recomputed
+metrics. No model inference was repeated during reconciliation. No private
+records, devices or external model credentials were accessed.

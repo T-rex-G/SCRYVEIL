@@ -1,0 +1,69 @@
+{
+  "synthetic": true,
+  "case_id": "case-abe2773300d94461b76fc31fe83559f9",
+  "archive_sha256": "53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+  "archive_bytes": 183905,
+  "import": {
+    "status": "collection_imported",
+    "artifact_id": "artifact-53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+    "members": 266,
+    "new_artifacts": 267,
+    "event_count": 6260,
+    "warning_count": 3,
+    "member_status_counts": {
+      "parsed_subset": 263,
+      "unsupported": 2,
+      "malformed": 1
+    },
+    "synthetic": true
+  },
+  "events": 6260,
+  "snapshot_bytes": 4884484,
+  "signature_groups": 3,
+  "resource_temporal_observation_pairs": 220,
+  "pairs_inside_reported_intervals": 40,
+  "incidents_per_signature": [
+    80,
+    80,
+    80
+  ],
+  "timings": {
+    "import_seconds": 0.3915055930001472,
+    "verified_snapshot_seconds": 0.6505534299999454,
+    "filtered_query_seconds": 0.0005295559999467514,
+    "three_exact_queries_seconds": 0.0010464340000453376,
+    "mock_investigation_seconds": 1.369404329999952
+  },
+  "parent_peak_rss_kib": 101960,
+  "mock_status": "completed",
+  "mock_requests": 8,
+  "reserved_token_units": 152477,
+  "originals_and_state_unchanged": true,
+  "actual_model_quality": "NOT_TESTED",
+  "genuine_export_qualification": "OPEN",
+  "runtime_sha256": {
+    "__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+    "__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "cli.py": "a3255cc65a0f4c34dec280eb850381022d4850508878f6e2d47cf8cb38199286",
+    "collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+    "diagnostic_intelligence.py": "05c4d9c6f51283af3b00964397546de7e9655726e3b18607b361b8640848510e",
+    "diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+    "diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+    "engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+    "investigation.py": "f2391ed38c53ac43cc00384286edaa5d482cffe70c18693db89457eb53732700",
+    "investigation_context.py": "df568c44665f1a8b0ffdc3efa60b7d132912af7a3202c3fb5231b86b5a2d6820",
+    "investigation_tools.py": "8f3b7d4052b12ea6a69540b6e8d4702774cd7b9b46a94d8aea46d256095588a4",
+    "investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+    "isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+    "models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+    "parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+    "privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+    "provider_messages.py": "c078c886d170f42115c57b0000fc295cdcec79184ebd6507ca8132ca10def227",
+    "provider_transport.py": "015dcd22d3f921c279e83593d00d8002bd88565df005f90c0c0a2195ff12587e",
+    "providers.py": "b9079c27722c84ffc220de722210cf676ca3ef46e8be8e3d00ab4c873ee6f1e0",
+    "report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+    "state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+    "store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5"
+  },
+  "qualification_scope": "Single-process fictional collection smoke; not maximum-volume or genuine-export qualification"
+}

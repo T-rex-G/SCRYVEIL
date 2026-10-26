@@ -1,0 +1,326 @@
+{
+  "events": [
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 2.743309867999983,
+      "kind": "task_started"
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 7.331058890000008,
+      "kind": "prompt_progress",
+      "tokens": 128,
+      "progress": 0.24,
+      "seconds": 4.59,
+      "tokens_per_second": 27.91
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 12.043209686999944,
+      "kind": "prompt_progress",
+      "tokens": 256,
+      "progress": 0.47,
+      "seconds": 9.3,
+      "tokens_per_second": 27.53
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 16.837103405999983,
+      "kind": "prompt_progress",
+      "tokens": 384,
+      "progress": 0.71,
+      "seconds": 14.09,
+      "tokens_per_second": 27.25
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 21.781980438999994,
+      "kind": "prompt_progress",
+      "tokens": 512,
+      "progress": 0.94,
+      "seconds": 19.04,
+      "tokens_per_second": 26.89
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 30.535512018999952,
+      "kind": "prompt_eval",
+      "milliseconds": 20589.13,
+      "tokens": 544
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 30.535556201999952,
+      "kind": "eval",
+      "milliseconds": 7202.99,
+      "tokens": 76
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 30.53557249200003,
+      "kind": "total",
+      "milliseconds": 27792.12,
+      "tokens": 620
+    },
+    {
+      "slot": 0,
+      "task": 0,
+      "observed_elapsed_seconds": 30.535667540999953,
+      "kind": "slot_release",
+      "tokens": 619,
+      "truncated": false
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 30.642852436999988,
+      "kind": "task_started"
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 35.53306749700005,
+      "kind": "prompt_progress",
+      "tokens": 128,
+      "progress": 0.44,
+      "seconds": 4.89,
+      "tokens_per_second": 26.19
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 40.55811403400003,
+      "kind": "prompt_progress",
+      "tokens": 256,
+      "progress": 0.56,
+      "seconds": 9.91,
+      "tokens_per_second": 25.82
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 45.65311266200001,
+      "kind": "prompt_progress",
+      "tokens": 384,
+      "progress": 0.67,
+      "seconds": 15.01,
+      "tokens_per_second": 25.59
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 50.89489502599997,
+      "kind": "prompt_progress",
+      "tokens": 512,
+      "progress": 0.79,
+      "seconds": 20.25,
+      "tokens_per_second": 25.28
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 56.21723586099995,
+      "kind": "prompt_progress",
+      "tokens": 640,
+      "progress": 0.9,
+      "seconds": 25.57,
+      "tokens_per_second": 25.03
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 66.83906183399995,
+      "kind": "prompt_eval",
+      "milliseconds": 30521.4,
+      "tokens": 753
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 66.83915960699994,
+      "kind": "eval",
+      "milliseconds": 5674.71,
+      "tokens": 52
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 66.83922134199997,
+      "kind": "total",
+      "milliseconds": 36196.11,
+      "tokens": 805
+    },
+    {
+      "slot": 0,
+      "task": 81,
+      "observed_elapsed_seconds": 66.83990988999994,
+      "kind": "slot_release",
+      "tokens": 1177,
+      "truncated": false
+    },
+    {
+      "slot": 0,
+      "task": 139,
+      "observed_elapsed_seconds": 66.950434202,
+      "kind": "task_started"
+    },
+    {
+      "slot": 0,
+      "task": 139,
+      "observed_elapsed_seconds": 72.412063494,
+      "kind": "prompt_progress",
+      "tokens": 128,
+      "progress": 0.93,
+      "seconds": 5.46,
+      "tokens_per_second": 23.45
+    },
+    {
+      "slot": 0,
+      "task": 139,
+      "observed_elapsed_seconds": 80.20650595999996,
+      "kind": "prompt_eval",
+      "milliseconds": 9885.29,
+      "tokens": 224
+    },
+    {
+      "slot": 0,
+      "task": 139,
+      "observed_elapsed_seconds": 80.206550784,
+      "kind": "eval",
+      "milliseconds": 3370.71,
+      "tokens": 31
+    },
+    {
+      "slot": 0,
+      "task": 139,
+      "observed_elapsed_seconds": 80.20656399799998,
+      "kind": "total",
+      "milliseconds": 13256,
+      "tokens": 255
+    },
+    {
+      "slot": 0,
+      "task": 139,
+      "observed_elapsed_seconds": 80.20668019599998,
+      "kind": "slot_release",
+      "tokens": 1324,
+      "truncated": false
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 80.31849165899996,
+      "kind": "task_started"
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 85.67107878499996,
+      "kind": "prompt_progress",
+      "tokens": 128,
+      "progress": 0.47,
+      "seconds": 5.35,
+      "tokens_per_second": 23.93
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 91.06907891499998,
+      "kind": "prompt_progress",
+      "tokens": 256,
+      "progress": 0.53,
+      "seconds": 10.75,
+      "tokens_per_second": 23.81
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 96.56548744700001,
+      "kind": "prompt_progress",
+      "tokens": 384,
+      "progress": 0.59,
+      "seconds": 16.25,
+      "tokens_per_second": 23.64
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 102.16869574099996,
+      "kind": "prompt_progress",
+      "tokens": 512,
+      "progress": 0.65,
+      "seconds": 21.85,
+      "tokens_per_second": 23.43
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 107.86482837699998,
+      "kind": "prompt_progress",
+      "tokens": 640,
+      "progress": 0.71,
+      "seconds": 27.55,
+      "tokens_per_second": 23.23
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 113.67472038899996,
+      "kind": "prompt_progress",
+      "tokens": 768,
+      "progress": 0.77,
+      "seconds": 33.36,
+      "tokens_per_second": 23.02
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 119.56603213300002,
+      "kind": "prompt_progress",
+      "tokens": 896,
+      "progress": 0.83,
+      "seconds": 39.25,
+      "tokens_per_second": 22.83
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 125.59081580899999,
+      "kind": "prompt_progress",
+      "tokens": 1024,
+      "progress": 0.89,
+      "seconds": 45.27,
+      "tokens_per_second": 22.62
+    },
+    {
+      "slot": 0,
+      "task": 172,
+      "observed_elapsed_seconds": 131.69607526699997,
+      "kind": "prompt_progress",
+      "tokens": 1152,
+      "progress": 0.95,
+      "seconds": 51.38,
+      "tokens_per_second": 22.42
+    }
+  ],
+  "native_log": {
+    "bytes": 7020,
+    "saved_bytes": 7020,
+    "lines": 59,
+    "sha256": "6becb1d3e7f46bb879f0f33611078ce5edfdaa888ae919edb413bab837c254d5",
+    "retained_in_public_record": false
+  },
+  "reader_finished": true,
+  "server_returncode": 0,
+  "shutdown_seconds": 0.21404339900004743,
+  "required_kill": false,
+  "interpretation": "Server task IDs are not yet bound to adapter request IDs. Slot release alone does not identify cancellation cause; compare per-request deadlines and timing."
+}

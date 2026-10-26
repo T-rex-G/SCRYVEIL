@@ -266,30 +266,59 @@ def intelligence(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 buckets.setdefault(os_key(a), [[], []])[side].append(e)
         pair_count = 0
         related: dict[str, dict[str, Any]] = {}
+        interval_count = 0
+        start_only_count = 0
+        reversed_count = 0
+        overlap_count = 0
         for left, right in buckets.values():
-            times = [
-                sorted(datetime.fromisoformat(e["event_time"]).timestamp() for e in rows)
-                for rows in (left, right)
-            ]
-            for side, rows in enumerate((left, right)):
-                for e in rows:
-                    stamp = datetime.fromisoformat(e["event_time"]).timestamp()
-                    opposite = times[1 - side]
-                    count = bisect_right(opposite, stamp + 300) - bisect_left(opposite, stamp - 300)
-                    if count:
-                        related[e["event_id"]] = e
-                        if side == 0:
-                            pair_count += count
+            crash_times = sorted(datetime.fromisoformat(e["event_time"]).timestamp() for e in left)
+            spans = []
+            for e in right:
+                start = datetime.fromisoformat(e["event_time"]).timestamp()
+                end_value = (
+                    e["attributes"].get("event_end_time")
+                    if e["event_type"] == "diagnostic.resource"
+                    else None
+                )
+                end = datetime.fromisoformat(end_value).timestamp() if end_value else start
+                if end < start:
+                    reversed_count += 1
+                    continue
+                spans.append((start, end, e))
+                count = bisect_right(crash_times, end + 300) - bisect_left(crash_times, start - 300)
+                if count:
+                    related[e["event_id"]] = e
+                    if end_value is not None:
+                        interval_count += 1
+                        overlap_count += bisect_right(crash_times, end) - bisect_left(
+                            crash_times, start
+                        )
+                    else:
+                        start_only_count += 1
+            # Count intersecting intervals with sorted endpoints, without
+            # materializing the potentially quadratic set of observation pairs.
+            starts = sorted(start for start, _, _ in spans)
+            ends = sorted(end for _, end, _ in spans)
+            for e in left:
+                stamp = datetime.fromisoformat(e["event_time"]).timestamp()
+                count = bisect_right(starts, stamp + 300) - bisect_left(ends, stamp - 300)
+                if count:
+                    related[e["event_id"]] = e
+                    pair_count += count
         if pair_count:
             results.append(
                 _measurement(
                     "diagnostics.resource_temporal_neighbors/1",
                     process,
                     list(related.values()),
-                    "Crash/exception and explicit resource observations share a declared process/OS/build and occur within five minutes on their reported clocks. This is temporal proximity, not a demonstrated causal relationship.",
+                    "Crash/exception times fall within, or at most five minutes outside, reported resource intervals or point observations in the same declared process/OS/build group. This is temporal proximity, not a demonstrated causal relationship or proof of resource activity at the crash time.",
                     {
                         "window_seconds": 300,
                         "observation_pairs": pair_count,
+                        "pairs_inside_reported_intervals": overlap_count,
+                        "related_resources_with_end_time": interval_count,
+                        "related_resource_points_or_unknown_end": start_only_count,
+                        "reversed_resource_intervals_excluded": reversed_count,
                         "clock_accuracy": "unknown",
                         "same_device_identity": "unverified",
                     },

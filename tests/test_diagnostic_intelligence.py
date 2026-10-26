@@ -133,3 +133,86 @@ def test_signature_contrary_evidence_cannot_cross_declared_build_or_bundle():
     assert matching(rows, "signature_recurrence")[0]["contradictory_evidence_ids"] == [
         rows[2]["event_id"]
     ]
+
+
+def test_resource_interval_correlation_uses_parsed_end_time_and_exact_boundaries():
+    rows = events()[:1]
+    raw = (ROOT / "fixtures/synthetic/diagnostic-text-resource.ips").read_bytes()
+    # Fictional interval spans the crash, but begins thirty minutes earlier.
+    raw = raw.replace(b"14:34:00.000", b"14:00:00.000").replace(b"14:35:00.000", b"15:00:00.000")
+    resource = parse_diagnostic(raw, "artifact-" + digest(raw), True)[0][0]
+    before = canonical([rows[0], resource])
+    finding = matching(rows + [resource], "resource_temporal_neighbors")[0]
+    assert finding["statistics"]["observation_pairs"] == 1
+    assert finding["statistics"]["pairs_inside_reported_intervals"] == 1
+    assert finding["statistics"]["related_resources_with_end_time"] == 1
+    assert set(finding["supporting_evidence_ids"]) == {rows[0]["event_id"], resource["event_id"]}
+    assert resource["event_id"] in finding["contradictory_evidence_ids"]  # no action
+    location = resource["attributes"]["field_locations"]["event_end_time"]
+    assert (
+        b"15:00:00.000"
+        in raw[location["byte_offset"] : location["byte_offset"] + location["byte_length"]]
+    )
+    assert canonical([rows[0], resource]) == before
+    for stamp, expected in (
+        ("2026-02-03T11:25:00.000000Z", 1),
+        ("2026-02-03T11:24:59.999999Z", 0),
+        ("2026-02-03T12:35:00.000000Z", 1),
+        ("2026-02-03T12:35:00.000001Z", 0),
+    ):
+        crash = copy.deepcopy(rows[0])
+        crash["event_time"] = stamp
+        assert len(matching([crash, resource], "resource_temporal_neighbors")) == expected
+    resource["attributes"]["event_end_time"] = None
+    assert not matching(rows + [resource], "resource_temporal_neighbors")
+    resource["attributes"]["event_end_time"] = "2026-02-03T11:00:00.000000Z"
+    assert not matching(rows + [resource], "resource_temporal_neighbors")
+
+
+def test_interval_index_matches_brute_force_with_overlapping_nested_and_point_records():
+    from datetime import UTC, datetime, timedelta
+    from random import Random
+
+    rng = Random(917)
+    epoch = datetime(2026, 2, 3, 12, tzinfo=UTC)
+    rows = []
+    template = events()[0]
+    for i in range(180):
+        event = copy.deepcopy(template)
+        event["event_id"] = "evt-" + f"{i:064x}"
+        event["event_time"] = (epoch + timedelta(seconds=rng.randrange(-800, 800))).isoformat()
+        if i >= 80:
+            event["event_type"] = "diagnostic.resource"
+            event["attributes"]["event_end_time"] = (
+                (
+                    datetime.fromisoformat(event["event_time"])
+                    + timedelta(seconds=rng.randrange(-100, 1500))
+                ).isoformat()
+                if i % 3
+                else None
+            )
+        rows.append(event)
+    expected_pairs = []
+    inside = 0
+    reversed_count = 0
+    for resource in rows[80:]:
+        start = datetime.fromisoformat(resource["event_time"])
+        end = datetime.fromisoformat(
+            resource["attributes"].get("event_end_time") or resource["event_time"]
+        )
+        if end < start:
+            reversed_count += 1
+            continue
+        for crash in rows[:80]:
+            when = datetime.fromisoformat(crash["event_time"])
+            if start - timedelta(seconds=300) <= when <= end + timedelta(seconds=300):
+                expected_pairs.append((crash["event_id"], resource["event_id"]))
+            if resource["attributes"].get("event_end_time") and start <= when <= end:
+                inside += 1
+    finding = matching(rows, "resource_temporal_neighbors")[0]
+    assert finding["statistics"]["observation_pairs"] == len(expected_pairs)
+    assert finding["statistics"]["pairs_inside_reported_intervals"] == inside
+    assert finding["statistics"]["reversed_resource_intervals_excluded"] == reversed_count
+    assert finding["reference_counts"]["supporting"] == len(
+        {eid for pair in expected_pairs for eid in pair}
+    )

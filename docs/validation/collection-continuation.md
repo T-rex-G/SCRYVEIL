@@ -79,3 +79,28 @@ identity field independently and verifies that relevant contrary evidence is
 retained while unrelated groups are excluded. Equal declarations still do not
 authenticate device identity; missing values remain unknown. This corrects
 correlation precision without changing parser outputs or report field contracts.
+
+## Resource intervals instead of start-only neighbors
+
+The parser already preserves separate `Date/Time` and `End time` source fields.
+The full-case detector previously compared crashes only with the first timestamp,
+missing a crash inside a longer reported interval. It now compares each crash
+with the declared closed interval plus the existing 300-second margin. Missing
+end times remain point comparisons; reversed intervals are excluded and counted
+when a neighbor finding exists (parser warnings remain visible independently).
+No end is inferred from rounded duration, sampling duration or tracking time.
+The report distinguishes pairs inside intervals from nearby point/interval pairs.
+A reported interval does not prove continuous writes or causation at the crash.
+
+Sorted start/end indexes count pairs without enumerating their Cartesian product.
+Tests compare the result with an independent brute-force implementation on 180
+fictional mixed observations, including nested/overlapping/point/reversed spans;
+parsed-text tests verify source bytes and exact inclusive five-minute boundaries.
+The existing 6,260-event collection yields 220 neighbor pairs rather than 200
+start-only pairs, including 40 inside intervals. Counts are observation pairs,
+not unique incidents or independent device activity.
+[Single-process smoke](interval-collection-smoke.json): 0.392s import, 0.651s
+verified snapshot, eight mock requests, unchanged archive/originals/state.
+Historical case/report compatibility and all source/installed-wheel demos pass.
+This corrects analysis of supported fields; it does not qualify genuine Apple
+exports or any additional report version.
