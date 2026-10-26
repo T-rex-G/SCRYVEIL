@@ -1,6 +1,6 @@
 # Capability assessment and next evidence gates
 
-Updated 2026-10-26, continuing PR #1 through implementation checkpoint `fecbb7a` and the [collection](validation/collection-continuation.md) and [native-provider](validation/native-provider-continuation.md) qualification records. The original 159-test core, APR privacy review, ADR-001 and pinned upstream research were inspected before extension; current core CI passes 361 tests. Existing NDJSON parsing, stored analysis and report formats are retained. No existing functional component was replaced for style.
+Updated 2026-10-26 through verified implementation `55fd3a32d9a3dacc76604d8a3963f8278a77073b`; core CI 40387249887 passed 380 tests and all required checks. The [collection](validation/collection-continuation.md) and [native-provider](validation/native-provider-continuation.md) records separate functional validation from unresolved qualifications. Original NDJSON parsing, stored analysis, report contracts and historical snapshots remain compatible. No component was replaced for style.
 
 This platform remains substantially narrower than established forensic suites. No device was connected or private record examined. Pinned public model weights were downloaded before isolation; generated cases were evaluated with external routing disabled. No external inference provider was used. Green tests below demonstrate specified mechanical behavior on generated data; they do not establish real-world spyware accuracy.
 
@@ -17,8 +17,8 @@ This platform remains substantially narrower than established forensic suites. N
 | Area | Working behavior | Qualification gap |
 |---|---|---|
 | Diagnostics | Explicit two-object IPS JSON envelope; process/exception/termination fields; bounded faulting frames; resource/nonfatal flags; Jetsam victim reason and pages × page size; byte region + JSON pointer | Original generated fixtures only; 309/308 JSON body v2 and 145 text v29/55/60 have structurally recognized partial profiles; v73 remains unqualified; legacy 104/309 and 298 behavior remains compatible, not all `.ips` |
-| Deterministic usefulness | Distinct reported incident IDs for a declared process, contrary nonfatal/simulated/action-none evidence, alternatives and coverage | Same process name does not prove same device/version; no crash-root-cause or spyware classifier |
-| Cross-artifact queries | Time/type/process/app/domain filters, pagination, coverage, finding support and contradictions; opt-in full-case snapshot | No clock correction or inferred process↔app↔packet join; legacy capped snapshot discloses omissions; full-case mode fails above its byte bound |
+| Deterministic usefulness | Declared process/OS/build/exception/stack signature recurrence; scoped contrary references; interval-aware resource neighbors; incident conflicts and reasoned Jetsam observations | Same process name does not prove same device/version; no crash-root-cause or spyware classifier |
+| Cross-artifact queries | Time/type/process/app/domain and typed diagnostic filters, indexed intersections and pagination; coverage, finding support and contradictions; opt-in full-case snapshot | No clock correction or inferred process↔app↔packet join; legacy capped snapshot discloses omissions; full-case mode fails above its byte bound |
 | Autonomous workflow | Plan → model-selected bounded queries → comparison → exact-field facts and trusted measurements → unresolved hypotheses/report | Mock is scripted; actual small-model failures measured; see preserved runs. Mock success does not establish useful model reasoning |
 | Privacy/security | No default egress; one-case snapshot; OS-denied file/network/process capabilities; explicit remote disclosure binding; private config | Parent/host trusted; local model server can forward unless independently offline; semantic prompt injection remains possible within allowed data |
 | Persistence/integrity | Original bytes and event interpretation reverified before/after; unchanged source state; separate stdout report | Unsigned local audit, cooperative locks, no complete transaction recovery, no adversarial same-UID isolation |
@@ -81,3 +81,12 @@ The sequence prioritizes independently qualified inputs and secure model usefuln
 
 
 Native-provider reconciliation (2026-10-26): `messages-tools` supplies a second wire protocol with synthetic HTTP/broker/worker conformance, phase-scoped native client calls, full request budgeting and cached-token accounting. Actual native plan/query execution and original-state preservation were observed; no complete actual-model investigation or hosted API was qualified. Expanded coverage lists selected event-type/schema-status counts to support retrieval. See [retained execution evidence and next gate](validation/native-provider-continuation.md).
+
+Latest actual-model evidence: run 40325749077 at `05e2e56` uses optional compact
+native query routing. It recovered from an empty speculative query and read all
+three fictional events, including the nonfatal observation, but timed out before
+coverage/findings review or final submission. Zero accepted facts/final reports;
+collection explicitly skipped. It does not qualify reasoning or actual-model
+injection resistance. Both native layouts pass mocked HTTP/worker boundary tests;
+all eleven worker tools and exact consent/grounding checks remain unchanged.
+The interval correction adds no genuine-format qualification or acquisition.

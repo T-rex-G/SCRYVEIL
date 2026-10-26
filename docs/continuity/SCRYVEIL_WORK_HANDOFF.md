@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-26. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Last published implementation `05e2e56f30960d55d5e64b0d6d0a99a8925a6541`, tree `66c4b6158c10906ab7919b4aaae6ab1f470d7d46`; core CI 40325748917 passed 378 tests in 16.60s and all required checks. Actual-model run 40325749077 is reconciled: three events retrieved, no accepted facts or completed report. This enclosing checkpoint adds interval-aware resource correlation and preserves the original experiment records. Obtain its exact SHA with `git rev-parse HEAD`; inspect newer changes before continuing. Never merge automatically.
+Updated 2026-10-26. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified implementation `55fd3a32d9a3dacc76604d8a3963f8278a77073b`, tree `9dff629333d5cb7e790a969eaf680b8c766fb711`; [core CI 40387249887](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40387249887) passed 380 tests in 10.72s and every required static/security, compatibility, source-demo, build and installed-wheel check. Model job 40387249813 correctly skipped inference. Actual-model run 40325749077 at `05e2e56f30960d55d5e64b0d6d0a99a8925a6541` is fully reconciled: three events retrieved, no accepted facts or completed report. This enclosing documentation checkpoint records those results without changing runtime code. Obtain its SHA with `git rev-parse HEAD`; inspect newer changes before continuing. Never merge automatically.
 
 ## Working capability
 
@@ -146,7 +146,7 @@ Local 380 tests, static/security checks, historical compatibility, five source
 demos, build and five installed-wheel demos pass. The single-process collection
 smoke records 0.392s import, 0.651s verified snapshot, 101,960 KiB parent RSS,
 eight mock requests and unchanged originals/state. Exact boundary/source-locator
-and independent brute-force interval comparisons pass. Check the enclosing CI.
+and independent brute-force interval comparisons pass. Core CI 40387249887 verifies the published implementation.
 
 Run 40325749077 at 05e2e56 is preserved with original result/timing/resources.
 Offline verification checked the report digest, 22 historical source hashes,
