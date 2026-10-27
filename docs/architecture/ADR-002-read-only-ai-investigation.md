@@ -83,3 +83,12 @@ an exact offline-generated disclosure-plan approval before remote execution;
 ordinary case execution retains its exact snapshot consent. See
 [qualification](../validation/provider-qualification.md) for the applied
 protocol sources, failure evidence and outstanding actual-model gate.
+
+2026-10-27 custom-gateway clarification: endpoint routing and authentication
+are owner-selected configuration, separate from the native protocol profile.
+An input `base_url` normalizes to an exact endpoint before disclosure; custom
+full paths remain possible without code changes. Optional Bearer/x-api-key
+selection replaces vendor assumptions, not authorization boundaries. No
+arbitrary headers, executable adapter, redirect/discovery or new worker
+permission is introduced. Changing the destination/auth changes consent.
+Public HTTPS/DNS restrictions and loopback-only local mode remain enforced.

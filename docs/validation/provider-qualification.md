@@ -30,8 +30,8 @@ provider config; a mock cannot be silently labeled an actual-model run.
 
 ## Applied implementation
 
-The opt-in `minimax-v1` profile implements the documented Messages endpoint,
-Bearer auth, explicit effort, native tools and complete retained assistant
+The opt-in `minimax-v1` profile implements the documented Messages protocol,
+explicit effort, native tools and complete retained assistant
 blocks/call IDs. Binding, size/schema checks and per-exchange ownership prevent
 opaque state from substituting a different action or replacing a retained plan
 with an identically worded rejected plan. Model state never reaches the worker
@@ -60,10 +60,33 @@ generated benchmark, never arbitrary cases. Ordinary case consent is unchanged.
 
 ## Prepared hosted experiment
 
-`python scripts/minimax_qualification.py --preview` works without credentials
-or network and produces the [reviewable disclosure plan](minimax-disclosure-plan.json).
-It selects `MiniMax-M3.1-Flash` at `https://api.minimax.io/anthropic/v1/messages`,
-medium effort, individual native tools and seven scenarios:
+The owner clarified that their credential is for **apmix.ai**, not direct
+MiniMax. The former [direct-service disclosure](minimax-disclosure-plan.json)
+is a historical preparation, not approval for a new destination. Its workflow
+has been replaced by a provider-neutral opt-in workflow. The direct launcher
+remains for reproducibility, but its old marker no longer selects inference.
+
+Current [nonsecret configuration](../../configs/qualification-provider.json)
+uses `base_url: https://api.apmix.ai`, Messages, `auth_scheme: x-api-key`, model
+alias `minimax/minimax-m3.1-flash`, medium effort and the existing MiniMax protocol
+profile. These settings are candidates, not a qualified gateway/model pairing.
+[The gateway's own API example](https://apmix.ai/models/minimax-m3.1-flash)
+documents the URL/header/model. Its translation of thinking/tool state and
+`output_config.effort` still needs actual execution. No model-list request or
+credential access occurred. No dependency or upstream source was incorporated.
+
+Create an owner-private copy of that config and preview it offline:
+
+```sh
+install -m 600 configs/qualification-provider.json /tmp/scryveil-provider.json
+python scripts/provider_qualification.py --provider-config /tmp/scryveil-provider.json --preview
+```
+
+The [current disclosure plan](provider-disclosure-plan.json) resolves the request
+to `https://api.apmix.ai/v1/messages`. URL, path, model, auth and protocol are
+owner-selectable; normalization never changes destinations after approval.
+Only the existing supported wire contracts are implemented. An arbitrary base
+URL does not prove an arbitrary model/API is compatible. Seven scenarios:
 
 | Scenario | Artifacts | Events | Purpose |
 |---|---:|---:|---|
@@ -84,20 +107,21 @@ speed comparison or a relaxed grounding requirement. Maximum 74 requests and
 its automatic evidence/coverage/contrary-reference floor, remaining remote
 scenarios are skipped without more requests. No automatic retry or resume.
 
-At the listed $0.15/M input and $0.60/M output rates, applying the larger rate
-to all 1.4 million reservation units gives $0.84. **This is an estimate, not a
-billing ceiling:** byte reservations are not a provider tokenizer; billed
-usage, cache semantics, account terms and timeout charging require actual
-verification. Configure a separate provider-side spending limit if available.
-A hosted model alias is recorded as such; its weights are not independently
-attested. Client cancellation does not prove server-side cancellation.
-
+Apmix uses weighted subscription tokens, so the earlier direct-MiniMax USD
+estimate does **not** apply. Rates are deliberately unset and SCRYVEIL reports
+unknown USD cost. Token usage is retained when available, without pretending to
+measure the gateway's billing weights. Set an account/key allowance separately.
+[Gateway privacy terms](https://apmix.ai/privacy) say content may be forwarded
+to a model vendor or intermediary; neither upstream identity nor retention is
+independently verified here. The disclosed destination is the gateway. Client
+cancellation cannot prove provider-side cancellation.
 To execute after owner review: add a dedicated GitHub Actions repository secret
-`SCRYVEIL_MINIMAX_API_KEY` through the repository's Settings → Secrets and
+`SCRYVEIL_PROVIDER_API_KEY` through the repository's Settings → Secrets and
 variables → Actions. Do not send its value through chat or commit it. Repository
 visibility need not change. The selected head commit must contain
-`[minimax-qualification:APPROVED_PLAN_SHA256]`, using the full reviewed digest.
-The opt-in workflow verifies that digest offline before exposing the secret to
+`[provider-qualification:APPROVED_PLAN_SHA256]`, using the full reviewed digest.
+The [opt-in workflow](../../.github/workflows/provider-qualification.yml) copies the
+reviewed config with private permissions, then verifies that digest offline before exposing the secret to
 the inference step. It runs only for same-repository PR #1, opened by the owner,
 and only on the first workflow attempt; reruns do not silently repeat paid
 inference. A new selected checkpoint requires an explicit decision.
@@ -131,7 +155,15 @@ cannot qualify MiniMax or any other model.
 Implementation `194c4fddfcc6b82733f9822ab9148e0e3c7650bc` is verified by
 [core CI 40488030071](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40488030071):
 400 tests in 21.81s, static/security checks, historical compatibility, all five
-source demos, package build and five installed-wheel demos. Local installed-wheel
-preview exactly matches the committed disclosure plan. The opt-in MiniMax job
+source demos, package build and five installed-wheel demos. That implementation's installed-wheel
+preview matched its historical direct-service plan. The opt-in MiniMax job
 40488030102 skipped its credential/inference steps; its green exit is **not**
 a MiniMax execution or quality result.
+
+The custom-gateway continuation removes vendor path coupling, adds canonical
+base-URL resolution and explicit auth selection, and keeps both old default
+providers byte-compatible. Loopback peers test full eight-step native
+investigations on direct/root/prefixed routes, custom JSON routes, TLS, mixed
+DNS rejection, credential isolation and changed-destination consent. These are
+protocol/security measurements, not hosted inference. Current test/CI results
+and the exact checkpoint are in the handoff.

@@ -1,0 +1,16 @@
+{
+  "schema_version": "scryveil.provider/1",
+  "adapter": "messages-tools",
+  "mode": "remote",
+  "base_url": "https://api.apmix.ai",
+  "auth_scheme": "x-api-key",
+  "model": "minimax/minimax-m3.1-flash",
+  "messages_profile": "minimax-v1",
+  "reasoning_effort": "medium",
+  "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
+  "max_requests": 12,
+  "timeout_seconds": 60,
+  "max_context_bytes": 131072,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 200000
+}

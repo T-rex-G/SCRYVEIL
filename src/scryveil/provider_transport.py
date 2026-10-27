@@ -70,13 +70,17 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         }
         if native:
             headers["anthropic-version"] = "2023-06-01"
-            if request["credential"]:
-                if config.get("messages_profile") == "minimax-v1":
-                    headers["Authorization"] = "Bearer " + request["credential"]
-                else:
-                    headers["x-api-key"] = request["credential"]
-        elif request["credential"]:
-            headers["Authorization"] = "Bearer " + request["credential"]
+        if request["credential"]:
+            auth = config.get(
+                "auth_scheme",
+                "x-api-key"
+                if native and config.get("messages_profile") != "minimax-v1"
+                else "bearer",
+            )
+            if auth == "bearer":
+                headers["Authorization"] = "Bearer " + request["credential"]
+            else:
+                headers["x-api-key"] = request["credential"]
         connection.request("POST", url.path, body=payload, headers=headers)
         response = connection.getresponse()
         # No redirects, proxies, cookies, downloads or provider-supplied URLs.

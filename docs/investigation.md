@@ -84,6 +84,72 @@ Run `investigate preview` with the exact question/options/config. It performs no
 
 Only after explicit owner approval of that manifest, run the same command as `investigate run` with `--consent-sha256` set to the displayed digest. There is deliberately no automatic preview-to-consent pipeline. Any changed scope, config, question, budget or case requires a fresh preview and owner acknowledgment. Configuration alone never transmits case data. Consent covers bounded queries within this selected snapshot, not unlimited future cases or destinations.
 
+## Custom URLs, gateways and API keys
+
+Choose the wire adapter and model independently from the service address. Use
+exactly one of `base_url` or `endpoint`. A base URL appends a documented suffix;
+`endpoint` sends to the exact custom path. Prefixes are preserved, no version is
+guessed, and preview shows the resolved endpoint before consent.
+
+| Adapter | Example base URL | Resolved request path |
+|---|---|---|
+| `messages-tools` | `https://api.apmix.ai` | `/v1/messages` |
+| `chat-completions-json` | `https://api.apmix.ai/v1` | `/v1/chat/completions` |
+| `messages-tools` | `https://api.minimax.io/anthropic` | `/anthropic/v1/messages` |
+| `messages-tools` | `https://gateway.example.invalid/team/proxy` | `/team/proxy/v1/messages` |
+
+For a gateway route such as `/team/infer`, set the full `endpoint` instead.
+Trailing base slashes are removed. `auth_scheme: "bearer"` sends an Authorization
+Bearer header; `auth_scheme: "x-api-key"` sends that header instead. Omission
+preserves historical defaults: Bearer for JSON-action and `minimax-v1`, otherwise
+x-api-key for Messages. No inline key, arbitrary headers or provider code is
+accepted. Only `api_key_env` names the dedicated `SCRYVEIL_…` environment variable;
+its value stays in the broker, outside model messages and reports.
+
+Example for the owner's selected gateway (candidate, **not live-qualified**):
+
+```json
+{
+  "adapter": "messages-tools",
+  "mode": "remote",
+  "base_url": "https://api.apmix.ai",
+  "auth_scheme": "x-api-key",
+  "model": "minimax/minimax-m3.1-flash",
+  "messages_profile": "minimax-v1",
+  "reasoning_effort": "medium",
+  "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
+  "max_requests": 12,
+  "timeout_seconds": 60,
+  "max_context_bytes": 131072,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 200000
+}
+```
+
+Save owner configuration with mode `0600`. The reviewed fictional benchmark
+configuration is [configs/qualification-provider.json](../configs/qualification-provider.json).
+Change the URL, model and adapter to match another service's documented API;
+changing service does not require a source-code edit. `messages_profile` and
+`reasoning_effort` apply only to the tested MiniMax-style Messages protocol;
+omit them for the default Messages contract or JSON-action adapter. SCRYVEIL
+supports these two wire contracts, not arbitrary proprietary APIs, native
+Chat Completions tool calls, Responses or universal model compatibility.
+
+Public HTTPS, certificate checks, public-address DNS pinning and exact consent
+still apply to remote URLs. Local mode still requires literal loopback HTTP.
+Queries/fragments, userinfo, controls, backslashes, dot segments and ambiguous
+encoded routes are rejected. There is no URL discovery, redirect following,
+proxy, automatic fallback or model-controlled destination. A new destination,
+route, authentication setting or protocol requires a new disclosure approval.
+
+[Apmix's model page](https://apmix.ai/models/minimax-m3.1-flash) documents both
+wire endpoints and x-api-key for Messages. Its [privacy policy](https://apmix.ai/privacy)
+says requests may go through vendor or intermediary infrastructure. The consent
+destination is apmix, not direct MiniMax. Its weighted-token subscription is
+not the direct vendor's USD rate; leave USD rates unset unless independently
+applicable to your account. Gateway translation, supported effort parameters,
+model identity and actual reasoning remain unverified until a reviewed run.
+
 ## Tool contract and limits
 
 All tools are `scryveil.tools/1`, and all errors are structured codes without raw paths/provider bodies. See [input](../schemas/investigator-tools-v1.schema.json) and [output](../schemas/investigator-results-v1.schema.json) schemas; choose the output `$defs` entry matching the requested tool.
@@ -116,7 +182,18 @@ Reruns are explicit, reverify originals and may incur fresh provider requests. T
 
 ## Reproduce model measurements safely
 
-`python scripts/model_qualification.py --mock` checks the evaluator against the scripted provider. Without `--mock`, it targets only the qualification server at `127.0.0.1:18080` and builds its own hardcoded fictional cases. It accepts no private case/path/config. The [qualification workflow](../.github/workflows/model-qualification.yml) pins the model/runtime, verifies the weight hash, and starts both server and evaluator inside a loopback-only Linux network namespace after setup. It preserves per-scenario results even if a later scenario stops. In PR CI, download/inference requires an explicitly selected head commit containing `[model-qualification]`; ordinary updates skip this costly experiment. Download/build requires Internet; inference itself has no external route. This separate development experiment is not run by the product CLI.
+`python scripts/model_qualification.py --mock` checks scripted mechanics.
+For another model, supply `--provider-config PRIVATE_CONFIG --preview`; see
+[the qualification procedure](validation/provider-qualification.md) for the
+consent-bound seven-scenario workflow. Only fixed fictional cases are generated;
+there is no owner evidence-path option. Remote inference needs an exact approved
+plan, while ordinary case analysis retains its separate disclosure consent.
+
+The [historical local workflow](../.github/workflows/model-qualification.yml)
+still pins Qwen weights/runtime and starts server/evaluator in a loopback-only
+network namespace. Selecting it requires `--pinned-qwen-baseline`; its opt-in
+CI marker remains `[model-qualification]`. There is no unchanged Qwen rerun
+scheduled and no implied preferred model.
 
 Review the recorded actions and final narrative alongside exact-field accuracy, contrary citations, query count, errors and budgets. A null accuracy or unexposed injection scenario is unmeasured, not a pass. Actual run outcomes are preserved even when the workflow process exits successfully. No private evidence may be substituted into this public CI harness.
 
@@ -133,7 +210,7 @@ The [collection workflow](collections.md) adds `--all-events` (complete bounded 
 
 ## Experimental native Messages adapter
 
-Use `adapter: "messages-tools"` with an explicitly configured `http://127.0.0.1:PORT/v1/messages` local endpoint, or consent-controlled public HTTPS `/v1/messages` remote endpoint. The remaining model, budget and credential options are unchanged. No model is selected automatically. This is a wire-protocol capability, not a claim that Claude, Qwen or any other model is a qualified investigator.
+Use `adapter: "messages-tools"` with an explicitly configured loopback HTTP or consent-controlled public HTTPS endpoint. Custom bases/routes are described above. The remaining model, budget and credential options are unchanged. No model is selected automatically. This is a wire-protocol capability, not a claim that Claude, Qwen or any other model is a qualified investigator.
 
 The adapter implements the [Messages client-tool lifecycle](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls): separate system instructions, `tool_use`/`tool_result` blocks, `x-api-key` credentials and explicit [API version](https://platform.claude.com/docs/en/api/versioning) `2023-06-01`. Public protocol documentation and the pinned local server's implementation informed this original translation; no SDK or agent framework was added. Native tool aliases replace dots with underscores; the worker still authorizes exactly the existing eleven tools. Plan/final operations remain bounded session actions, not additional evidence permissions.
 
@@ -159,11 +236,12 @@ model recommendation. See the measured native validation before selecting it.
 
 Use `adapter: "messages-tools"`, `messages_profile: "minimax-v1"`, an explicit
 `reasoning_effort` (`low`, `medium`, `high`, `xhigh`, or `max`), and
-`https://api.minimax.io/anthropic/v1/messages`. Select the model explicitly;
+a configured Messages endpoint. The direct service uses
+`https://api.minimax.io/anthropic/v1/messages`; gateways can use another path. Select the model explicitly;
 SCRYVEIL does not choose a vendor or model for ordinary cases. The prepared
-fictional benchmark selects `MiniMax-M3.1-Flash`, as currently documented by the
-provider. This profile uses Bearer authentication through a dedicated
-`SCRYVEIL_…` environment-variable reference. Existing native and JSON-action
+fictional gateway benchmark selects `minimax/minimax-m3.1-flash` at apmix.
+This profile defaults to Bearer authentication through a dedicated
+`SCRYVEIL_…` environment-variable reference; `auth_scheme` can override it. Existing native and JSON-action
 configurations retain their behavior. Changing profile/effort invalidates
 existing disclosure consent.
 

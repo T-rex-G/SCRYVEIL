@@ -13,7 +13,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 from .models import ScryveilError
 from .parse import canonical, load_json, text_field
@@ -34,9 +34,65 @@ DEFAULT_CONFIG: dict[str, Any] = {
 }
 
 
+def provider_endpoint(config: dict[str, Any]) -> str:
+    """Resolve an owner URL once; never discover, redirect or guess a provider.
+
+    SDK-style base URLs have protocol-specific suffixes. Full endpoints permit
+    custom gateway routes. The normalized endpoint is what disclosure binds.
+    """
+    if ("endpoint" in config) == ("base_url" in config):
+        raise ScryveilError("provider_requires_one_url")
+    value = config.get("base_url", config.get("endpoint"))
+    # urlsplit silently removes some controls; reject them before parsing.
+    if (
+        not isinstance(value, str)
+        or not 1 <= len(value) <= 1024
+        or any(ord(c) <= 32 or ord(c) >= 127 for c in value)
+        or any(c in value for c in ("\\", "?", "#"))
+    ):
+        raise ScryveilError("invalid_provider_endpoint")
+    try:
+        url = urlsplit(value)
+        port = url.port
+    except ValueError as exc:
+        raise ScryveilError("invalid_provider_endpoint") from exc
+    if (
+        "@" in url.netloc
+        or not url.hostname
+        or url.netloc.endswith(":")
+        or (port is not None and not 1 <= port <= 65535)
+        or re.search(r"%(?![0-9a-fA-F]{2})", url.path)
+    ):
+        raise ScryveilError("invalid_provider_endpoint")
+    # Ambiguous routing is not necessary for a model API. Reject encoded
+    # delimiters/controls and double encoding as well as dot path segments.
+    decoded = unquote(url.path)
+    if (
+        any(ord(c) <= 32 or ord(c) >= 127 for c in decoded)
+        or any(c in decoded for c in ("\\", "?", "#", "%"))
+        or decoded.count("/") != url.path.count("/")
+        or "//" in decoded
+        or any(part in (".", "..") for part in decoded.split("/"))
+    ):
+        raise ScryveilError("invalid_provider_endpoint")
+    if config["mode"] == "local":
+        if url.scheme != "http" or url.hostname not in {"127.0.0.1", "::1"}:
+            raise ScryveilError("local_provider_requires_loopback")
+    elif url.scheme != "https" or url.hostname in {"localhost", "127.0.0.1", "::1"}:
+        raise ScryveilError("remote_provider_requires_https")
+    if "base_url" in config:
+        suffix = "/v1/messages" if config["adapter"] == "messages-tools" else "/chat/completions"
+        value = value.rstrip("/") + suffix
+    if not urlsplit(value).path or len(value) > 1024:
+        raise ScryveilError("invalid_provider_endpoint")
+    return value
+
+
 def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     extra = {
         "endpoint",
+        "base_url",
+        "auth_scheme",
         "model",
         "api_key_env",
         "input_usd_per_million",
@@ -84,36 +140,10 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     if result.get("messages_profile") == "minimax-v1" and "reasoning_effort" not in result:
         raise ScryveilError("explicit_reasoning_effort_required")
     text_field(result.get("model"))
-    endpoint = text_field(result.get("endpoint"))
-    if endpoint is None:
-        raise ScryveilError("invalid_provider_endpoint")
-    url = urlsplit(endpoint)
-    try:
-        port = url.port
-    except ValueError as exc:
-        raise ScryveilError("invalid_provider_endpoint") from exc
-    if (
-        url.username
-        or url.password
-        or url.query
-        or url.fragment
-        or url.path
-        != (
-            "/anthropic/v1/messages"
-            if result.get("messages_profile") == "minimax-v1"
-            else "/v1/messages"
-            if result["adapter"] == "messages-tools"
-            else "/v1/chat/completions"
-        )
-        or not url.hostname
-        or (port is not None and not 1 <= port <= 65535)
-    ):
-        raise ScryveilError("invalid_provider_endpoint")
-    if result["mode"] == "local":
-        if url.scheme != "http" or url.hostname not in {"127.0.0.1", "::1"}:
-            raise ScryveilError("local_provider_requires_loopback")
-    elif url.scheme != "https" or url.hostname in {"localhost", "127.0.0.1", "::1"}:
-        raise ScryveilError("remote_provider_requires_https")
+    result["endpoint"] = provider_endpoint(result)
+    result.pop("base_url", None)
+    if "auth_scheme" in result and result["auth_scheme"] not in ("bearer", "x-api-key"):
+        raise ScryveilError("unsupported_provider_auth")
     if "api_key_env" in result and (
         not isinstance(result["api_key_env"], str)
         or not re.fullmatch(r"SCRYVEIL_[A-Z0-9_]{1,64}", result["api_key_env"])

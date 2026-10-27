@@ -84,11 +84,22 @@
         "xhigh",
         "max"
       ]
+    },
+    "base_url": {
+      "type": "string",
+      "maxLength": 1024,
+      "description": "SDK-style base: append /chat/completions for Chat Completions, /v1/messages for Messages. Use endpoint for an exact custom route."
+    },
+    "auth_scheme": {
+      "enum": [
+        "bearer",
+        "x-api-key"
+      ]
     }
   },
   "required": [],
   "additionalProperties": false,
-  "description": "Omitted fields use runtime defaults. Runtime additionally enforces adapter/mode combinations, private file permissions, exact URL path/scheme, loopback/public destination restrictions and consent. No inline credential is accepted.",
+  "description": "Omitted fields use runtime defaults. Runtime additionally enforces adapter/mode combinations, private file permissions, unambiguous URL routing, loopback/public destination restrictions and consent. Base URLs normalize to exact disclosed endpoints. No inline credential is accepted.",
   "allOf": [
     {
       "if": {
@@ -106,7 +117,6 @@
       },
       "then": {
         "required": [
-          "endpoint",
           "model",
           "mode"
         ],
@@ -117,7 +127,19 @@
               "remote"
             ]
           }
-        }
+        },
+        "oneOf": [
+          {
+            "required": [
+              "endpoint"
+            ]
+          },
+          {
+            "required": [
+              "base_url"
+            ]
+          }
+        ]
       },
       "else": {
         "properties": {
@@ -150,6 +172,16 @@
             {
               "required": [
                 "output_usd_per_million"
+              ]
+            },
+            {
+              "required": [
+                "base_url"
+              ]
+            },
+            {
+              "required": [
+                "auth_scheme"
               ]
             }
           ]

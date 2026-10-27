@@ -1,4 +1,4 @@
-name: synthetic-minimax-model-experiment
+name: synthetic-provider-model-experiment
 on:
   pull_request:
     branches: [main]
@@ -20,7 +20,7 @@ jobs:
           python - <<'PY'
           import os, re, subprocess
           message = subprocess.check_output(['git', 'log', '-1', '--format=%B']).decode()
-          match = re.search(r'\[minimax-qualification:([0-9a-f]{64})\]', message)
+          match = re.search(r'\[provider-qualification:([0-9a-f]{64})\]', message)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('selected=' + str(match is not None).lower() + '\n')
               output.write('approved=' + (match.group(1) if match else '') + '\n')
@@ -40,11 +40,12 @@ jobs:
         env:
           SCRYVEIL_APPROVED_PLAN: ${{ steps.experiment.outputs.approved }}
         run: |
-          python scripts/minimax_qualification.py --preview > "$RUNNER_TEMP/scryveil-minimax-plan.jsonl"
+          install -m 600 configs/qualification-provider.json "$RUNNER_TEMP/scryveil-provider.json"
+          python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --preview > "$RUNNER_TEMP/scryveil-provider-plan.jsonl"
           python - <<'PY'
           import json, os
           from pathlib import Path
-          raw = (Path(os.environ['RUNNER_TEMP']) / 'scryveil-minimax-plan.jsonl').read_text()
+          raw = (Path(os.environ['RUNNER_TEMP']) / 'scryveil-provider-plan.jsonl').read_text()
           prefix = 'SCRYVEIL_MODEL_RESULT='
           plan = json.loads(raw.removeprefix(prefix))
           if plan['plan_sha256'] != os.environ['SCRYVEIL_APPROVED_PLAN']:
@@ -54,7 +55,7 @@ jobs:
       - name: Investigate fixed fictional cases through isolated broker and read-only worker
         if: steps.experiment.outputs.selected == 'true'
         env:
-          SCRYVEIL_MINIMAX_API_KEY: ${{ secrets.SCRYVEIL_MINIMAX_API_KEY }}
+          SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_PROVIDER_API_KEY }}
           SCRYVEIL_APPROVED_PLAN: ${{ steps.experiment.outputs.approved }}
         run: |
-          python scripts/minimax_qualification.py --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"
+          python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"

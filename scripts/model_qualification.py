@@ -320,7 +320,9 @@ def disclosure_plan(config, selected, require_recurrence):
         ROOT / "scripts/model_qualification.py",
         ROOT / "scripts/collection_demo.py",
         ROOT / "scripts/minimax_qualification.py",
-        ROOT / ".github/workflows/minimax-qualification.yml",
+        ROOT / "scripts/provider_qualification.py",
+        ROOT / ".github/workflows/provider-qualification.yml",
+        ROOT / "configs/qualification-provider.json",
     ]
     plan = {
         "schema_version": "scryveil.synthetic-evaluation-plan/1",

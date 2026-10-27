@@ -48,8 +48,12 @@ def native(action=PLAN, sequence=1):
     return raw
 
 
+@pytest.mark.parametrize(
+    "route,auth",
+    [("/anthropic", None), ("", "x-api-key"), ("/gateway/tenant/compatible", "bearer")],
+)
 def test_profile_preserves_all_blocks_and_original_call_ids_across_full_investigation(
-    tmp_path, monkeypatch
+    tmp_path, monkeypatch, route, auth
 ):
     store, cid = case(tmp_path)
     before = (store.path(cid) / "state.json").read_bytes()
@@ -81,6 +85,9 @@ def test_profile_preserves_all_blocks_and_original_call_ids_across_full_investig
 
     with peer(respond) as (base, observed):
         cfg = {**config(base), "api_key_env": "SCRYVEIL_MINIMAX_TEST"}
+        cfg["base_url"] = cfg.pop("endpoint").removesuffix("/anthropic/v1/messages") + route
+        if auth is not None:
+            cfg["auth_scheme"] = auth
         report = investigate(
             store, cid, "Compare fictional failures", cfg, include_identifiers=True
         )
@@ -88,9 +95,13 @@ def test_profile_preserves_all_blocks_and_original_call_ids_across_full_investig
     assert len(observed) == 8 and report["result"]["observed_facts"]
     assert report["result"]["hypotheses"][0]["contradictions"]
     for path, headers, body in observed:
-        assert path == "/anthropic/v1/messages"
-        assert headers["Authorization"] == "Bearer fictional-credential"
-        assert "x-api-key" not in headers
+        assert path == route + "/v1/messages"
+        if auth == "x-api-key":
+            assert headers["x-api-key"] == "fictional-credential"
+            assert "Authorization" not in headers
+        else:
+            assert headers["Authorization"] == "Bearer fictional-credential"
+            assert "x-api-key" not in headers
         assert body["output_config"] == {"effort": "low"}
         assert body["tool_choice"] == {"type": "auto", "disable_parallel_tool_use": True}
         assert OPAQUE not in body["system"]
@@ -207,7 +218,6 @@ def test_profile_and_effort_are_explicit_consent_bound_and_schema_valid(tmp_path
             {**cfg, "messages_profile": "unknown"},
             {k: v for k, v in cfg.items() if k != "reasoning_effort"},
             {**cfg, "reasoning_effort": "unbounded"},
-            {**cfg, "endpoint": cfg["endpoint"].replace("/anthropic", "")},
         ):
             with pytest.raises(ScryveilError):
                 validate_config(changed)

@@ -105,11 +105,17 @@
             "xhigh",
             "max"
           ]
+        },
+        "auth_scheme": {
+          "enum": [
+            "bearer",
+            "x-api-key"
+          ]
         }
       },
       "required": [],
       "additionalProperties": false,
-      "description": "Omitted fields use runtime defaults. Runtime additionally enforces adapter/mode combinations, private file permissions, exact URL path/scheme, loopback/public destination restrictions and consent. No inline credential is accepted.",
+      "description": "Normalized provider configuration with exact endpoint; credential reference excluded. The input-only base_url is resolved before disclosure and reporting.",
       "allOf": [
         {
           "if": {
@@ -166,6 +172,11 @@
                 {
                   "required": [
                     "output_usd_per_million"
+                  ]
+                },
+                {
+                  "required": [
+                    "auth_scheme"
                   ]
                 }
               ]

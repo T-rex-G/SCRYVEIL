@@ -147,8 +147,9 @@ def test_remote_benchmark_preview_binds_scope_without_credentials_or_provider_ca
     cfg = {
         "adapter": "messages-tools",
         "mode": "remote",
-        "endpoint": "https://api.minimax.io/anthropic/v1/messages",
-        "model": "MiniMax-M3.1-Flash",
+        "base_url": "https://gateway.example.invalid/prefix",
+        "auth_scheme": "x-api-key",
+        "model": "fictional-hosted-model",
         "messages_profile": "minimax-v1",
         "reasoning_effort": "low",
         "api_key_env": "SCRYVEIL_ABSENT_QUALIFICATION_KEY",
@@ -162,6 +163,8 @@ def test_remote_benchmark_preview_binds_scope_without_credentials_or_provider_ca
     monkeypatch.setitem(evaluate.__globals__, "MessagesToolsProvider", forbidden)
     kwargs = {"provider_config": cfg, "scenarios": ["recurrence"]}
     first = evaluate(**kwargs, preview=True)
+    assert first["provider"]["endpoint"] == "https://gateway.example.invalid/prefix/v1/messages"
+    assert "base_url" not in first["provider"]
     assert evaluate(**kwargs, preview=True) == first  # New case IDs/clocks do not change the plan.
     assert first["scenarios"][0]["quantities"]["events"] == 3
     assert first["maximum_requests"] == 12
@@ -169,15 +172,22 @@ def test_remote_benchmark_preview_binds_scope_without_credentials_or_provider_ca
         evaluate(**kwargs)
     with pytest.raises(ScryveilError, match="synthetic_disclosure_plan_approval_required"):
         evaluate(**kwargs, approved_plan="0" * 64)
-    changed = {**cfg, "reasoning_effort": "medium"}
-    assert (
-        evaluate(provider_config=changed, scenarios=["recurrence"], preview=True)["plan_sha256"]
-        != first["plan_sha256"]
-    )
-    with pytest.raises(ScryveilError, match="synthetic_disclosure_plan_approval_required"):
-        evaluate(
-            provider_config=changed, scenarios=["recurrence"], approved_plan=first["plan_sha256"]
+    for changed in (
+        {**cfg, "reasoning_effort": "medium"},
+        {**cfg, "auth_scheme": "bearer"},
+        {**cfg, "model": "different-fictional-model"},
+        {**cfg, "base_url": "https://other.example.invalid/prefix"},
+    ):
+        assert (
+            evaluate(provider_config=changed, scenarios=["recurrence"], preview=True)["plan_sha256"]
+            != first["plan_sha256"]
         )
+        with pytest.raises(ScryveilError, match="synthetic_disclosure_plan_approval_required"):
+            evaluate(
+                provider_config=changed,
+                scenarios=["recurrence"],
+                approved_plan=first["plan_sha256"],
+            )
     assert calls == []
 
 

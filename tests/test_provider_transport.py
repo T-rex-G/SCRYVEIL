@@ -130,6 +130,9 @@ def test_full_loop_uses_configured_adapter_and_reports_usage_cost(tmp_path):
 )
 def test_transport_fails_closed_and_does_not_follow_redirects(status, raw):
     with peer(lambda _: (status, raw)) as (config, observed):
+        config["endpoint"] = config["endpoint"].replace(
+            "/v1/chat/completions", "/custom/gateway/infer"
+        )
         with pytest.raises(ScryveilError, match="provider_failed"):
             ChatCompletionsProvider(config).next([{"role": "user", "content": "synthetic"}])
         assert len(observed) == 1
@@ -185,7 +188,7 @@ def test_tls_handshake_is_confined_and_hostname_verified(tmp_path, hostname, acc
     context.load_cert_chain(cert, key)
     with peer(lambda _: (200, response()), context) as (config, observed):
         port = int(config["endpoint"].split(":")[2].split("/")[0])
-        config.update(mode="remote", endpoint=f"https://{hostname}:{port}/v1/chat/completions")
+        config.update(mode="remote", endpoint=f"https://{hostname}:{port}/custom/gateway/infer")
         # Only this test child substitutes DNS/TCP routing and its trust store.
         # The production broker does not accept a custom CA or route override.
         code = """
@@ -248,7 +251,7 @@ def test_remote_dns_must_be_public_before_any_connection(monkeypatch, addresses)
                 "config": {
                     "adapter": "chat-completions-json",
                     "mode": "remote",
-                    "endpoint": "https://provider.example.invalid/v1/chat/completions",
+                    "endpoint": "https://provider.example.invalid/custom/gateway/infer",
                     "model": "test",
                 },
                 "messages": [],
