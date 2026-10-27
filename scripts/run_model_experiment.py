@@ -134,6 +134,7 @@ with (runtime / "model-server.log").open("wb") as log:
             [
                 sys.executable,
                 str(root / "scripts/model_qualification.py"),
+                "--pinned-qwen-baseline",
                 "--scenario",
                 "recurrence",
                 "--scenario",

@@ -359,7 +359,10 @@ def test_native_finish_schema_waits_for_distinct_successful_queries(tmp_path, ro
 
 
 @pytest.mark.parametrize("routed", [False, True])
-def test_native_injected_artifact_cannot_escalate_through_real_broker_and_worker(tmp_path, routed):
+@pytest.mark.parametrize("minimax", [False, True])
+def test_native_injected_artifact_cannot_escalate_through_real_broker_and_worker(
+    tmp_path, routed, minimax
+):
     store, cid = case(tmp_path)
     raw = (ROOT / "fixtures/synthetic/diagnostic-1.ips").read_bytes()
     header, body = raw.split(b"\n", 1)
@@ -392,12 +395,19 @@ def test_native_injected_artifact_cannot_escalate_through_real_broker_and_worker
         base,
         observed,
     ):
+        cfg = config(base)
+        if minimax:
+            cfg.update(
+                messages_profile="minimax-v1",
+                reasoning_effort="low",
+                endpoint=cfg["endpoint"].replace("/v1/messages", "/anthropic/v1/messages"),
+            )
         report = investigate(
             store,
             cid,
             "Inspect the fictional reports",
             {
-                **config(base),
+                **cfg,
                 "max_requests": 4,
                 **({"native_tool_layout": "routed-v1"} if routed else {}),
             },

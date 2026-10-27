@@ -42,6 +42,8 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         "input_usd_per_million",
         "output_usd_per_million",
         "native_tool_layout",
+        "messages_profile",
+        "reasoning_effort",
     }
     if not isinstance(config, dict) or set(config) - (set(DEFAULT_CONFIG) | extra):
         raise ScryveilError("invalid_provider_config")
@@ -70,6 +72,17 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         or result["native_tool_layout"] not in ("individual-v1", "routed-v1")
     ):
         raise ScryveilError("unsupported_native_tool_layout")
+    if "messages_profile" in result and (
+        result["adapter"] != "messages-tools" or result["messages_profile"] != "minimax-v1"
+    ):
+        raise ScryveilError("unsupported_messages_profile")
+    if "reasoning_effort" in result and (
+        result.get("messages_profile") != "minimax-v1"
+        or result["reasoning_effort"] not in ("low", "medium", "high", "xhigh", "max")
+    ):
+        raise ScryveilError("unsupported_reasoning_effort")
+    if result.get("messages_profile") == "minimax-v1" and "reasoning_effort" not in result:
+        raise ScryveilError("explicit_reasoning_effort_required")
     text_field(result.get("model"))
     endpoint = text_field(result.get("endpoint"))
     if endpoint is None:
@@ -85,7 +98,13 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         or url.query
         or url.fragment
         or url.path
-        != ("/v1/messages" if result["adapter"] == "messages-tools" else "/v1/chat/completions")
+        != (
+            "/anthropic/v1/messages"
+            if result.get("messages_profile") == "minimax-v1"
+            else "/v1/messages"
+            if result["adapter"] == "messages-tools"
+            else "/v1/chat/completions"
+        )
         or not url.hostname
         or (port is not None and not 1 <= port <= 65535)
     ):
@@ -122,6 +141,7 @@ def load_config(path: Path | None) -> dict[str, Any]:
 class Reply:
     action: dict[str, Any]
     usage: dict[str, int] | None = None
+    continuation: list[dict[str, Any]] | None = None
 
 
 class Provider(Protocol):
@@ -264,7 +284,7 @@ class BrokerProvider:
             ):
                 raise ScryveilError(response["error"])
             raise ScryveilError("provider_failed")
-        return Reply(response["action"], response["usage"])
+        return Reply(response["action"], response["usage"], response.get("continuation"))
 
 
 class ChatCompletionsProvider(BrokerProvider):

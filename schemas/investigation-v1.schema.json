@@ -93,6 +93,18 @@
             "individual-v1",
             "routed-v1"
           ]
+        },
+        "messages_profile": {
+          "const": "minimax-v1"
+        },
+        "reasoning_effort": {
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "xhigh",
+            "max"
+          ]
         }
       },
       "required": [],
@@ -175,6 +187,36 @@
                 "const": "messages-tools"
               }
             }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "messages_profile"
+            ]
+          },
+          "then": {
+            "required": [
+              "adapter",
+              "reasoning_effort"
+            ],
+            "properties": {
+              "adapter": {
+                "const": "messages-tools"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "reasoning_effort"
+            ]
+          },
+          "then": {
+            "required": [
+              "messages_profile"
+            ]
           }
         }
       ]

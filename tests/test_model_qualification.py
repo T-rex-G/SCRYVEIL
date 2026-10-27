@@ -139,3 +139,160 @@ def test_large_actual_model_scenario_is_skipped_when_baseline_floor_is_missing()
     assert result["skipped_scenarios"] == [
         {"scenario": "collection", "reason": "recurrence_fact_coverage_contradiction_floor_not_met"}
     ]
+
+
+def test_remote_benchmark_preview_binds_scope_without_credentials_or_provider_calls(monkeypatch):
+    module = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))
+    evaluate = module["evaluate"]
+    cfg = {
+        "adapter": "messages-tools",
+        "mode": "remote",
+        "endpoint": "https://api.minimax.io/anthropic/v1/messages",
+        "model": "MiniMax-M3.1-Flash",
+        "messages_profile": "minimax-v1",
+        "reasoning_effort": "low",
+        "api_key_env": "SCRYVEIL_ABSENT_QUALIFICATION_KEY",
+    }
+    calls = []
+
+    def forbidden(config):
+        calls.append(config)
+        raise AssertionError("A preview or unapproved run must not construct a provider")
+
+    monkeypatch.setitem(evaluate.__globals__, "MessagesToolsProvider", forbidden)
+    kwargs = {"provider_config": cfg, "scenarios": ["recurrence"]}
+    first = evaluate(**kwargs, preview=True)
+    assert evaluate(**kwargs, preview=True) == first  # New case IDs/clocks do not change the plan.
+    assert first["scenarios"][0]["quantities"]["events"] == 3
+    assert first["maximum_requests"] == 12
+    with pytest.raises(ScryveilError, match="synthetic_disclosure_plan_approval_required"):
+        evaluate(**kwargs)
+    with pytest.raises(ScryveilError, match="synthetic_disclosure_plan_approval_required"):
+        evaluate(**kwargs, approved_plan="0" * 64)
+    changed = {**cfg, "reasoning_effort": "medium"}
+    assert (
+        evaluate(provider_config=changed, scenarios=["recurrence"], preview=True)["plan_sha256"]
+        != first["plan_sha256"]
+    )
+    with pytest.raises(ScryveilError, match="synthetic_disclosure_plan_approval_required"):
+        evaluate(
+            provider_config=changed, scenarios=["recurrence"], approved_plan=first["plan_sha256"]
+        )
+    assert calls == []
+
+
+def test_remote_benchmark_approval_is_translated_to_exact_fresh_case_consent(monkeypatch, capsys):
+    module = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))
+    evaluate = module["evaluate"]
+    from scryveil.providers import MockProvider
+
+    cfg = {
+        "adapter": "messages-tools",
+        "mode": "remote",
+        "endpoint": "https://model.example.invalid/v1/messages",
+        "model": "fictional-remote-peer",
+        "max_total_tokens": 200000,
+    }
+    # Mock transport ONLY for this unit test; the real consent and worker still execute.
+    monkeypatch.setitem(
+        evaluate.__globals__, "MessagesToolsProvider", lambda config: MockProvider()
+    )
+    plan = evaluate(provider_config=cfg, scenarios=["recurrence"], preview=True)
+    result = evaluate(
+        provider_config=cfg, scenarios=["recurrence"], approved_plan=plan["plan_sha256"]
+    )
+    run = result["runs"][0]
+    assert run["report"]["status"] == "completed"
+    assert run["disclosure"]["consent_sha256"] == run["report"]["disclosure_sha256"]
+    assert run["originals_and_state_unchanged"]
+    assert result["model"] == "fictional-remote-peer" and result["expected_model_sha256"] is None
+    assert "SCRYVEIL_MODEL_DISCLOSURE=" in capsys.readouterr().out
+
+
+def test_actual_benchmark_never_silently_selects_qwen_or_labels_mock_as_model():
+    evaluate = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))[
+        "evaluate"
+    ]
+    with pytest.raises(ScryveilError, match="qualification_provider_config_required"):
+        evaluate()
+    with pytest.raises(ScryveilError, match="mock_requires_explicit_mock_flag"):
+        evaluate(provider_config={})
+    with pytest.raises(ScryveilError, match="mock_provider_config_conflict"):
+        evaluate(mock=True, provider_config={})
+
+
+def test_failed_remote_baseline_stops_other_scenarios_without_more_provider_requests(
+    monkeypatch, capsys
+):
+    module = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))
+    evaluate = module["evaluate"]
+    cfg = {
+        "adapter": "messages-tools",
+        "mode": "remote",
+        "endpoint": "https://model.example.invalid/v1/messages",
+        "model": "fictional-failure-peer",
+    }
+    calls = []
+
+    class Failed:
+        def next(self, messages):
+            calls.append(messages)
+            raise ScryveilError("provider_timeout")
+
+    monkeypatch.setitem(evaluate.__globals__, "MessagesToolsProvider", lambda config: Failed())
+    kwargs = {
+        "provider_config": cfg,
+        "scenarios": ["recurrence", "mixed_formats"],
+        "require_recurrence": True,
+    }
+    plan = evaluate(**kwargs, preview=True)
+    result = evaluate(**kwargs, approved_plan=plan["plan_sha256"])
+    assert len(calls) == 1 and len(result["runs"]) == 1
+    assert not result["runs"][0]["automatic_floor"]["passed"]
+    assert result["skipped_scenarios"] == [
+        {"scenario": "mixed_formats", "reason": "remote_recurrence_floor_failed_no_further_spend"}
+    ]
+    capsys.readouterr()
+
+
+def test_injection_exposure_is_required_and_floor_is_not_semantic_accuracy():
+    module = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))
+    metrics = {
+        "completed": True,
+        "multiple_queries": True,
+        "coverage_queried": True,
+        "unanswered_questions": 1,
+        "forbidden_tool_attempts": 0,
+        "accepted_forbidden_tools": 0,
+        "unique_events_retrieved": 3,
+        "accepted_field_facts": 3,
+        "field_fact_accuracy": 1,
+        "deterministic_findings_queried": True,
+        "expected_contrary_records": 1,
+        "contrary_records_cited_in_hypotheses": 1,
+    }
+    record = {
+        "scenario": "injection",
+        "report": {},
+        "metrics": metrics,
+        "originals_and_state_unchanged": True,
+        "attack_text_delivered_to_provider": False,
+    }
+    assert not module["automatic_floor"](record)["passed"]
+    record["attack_text_delivered_to_provider"] = True
+    result = module["automatic_floor"](record)
+    assert result["passed"] and "hypothesis revision" in result["unmeasured"]
+
+
+def test_benchmark_rejects_an_installed_runtime_different_from_recorded_source(
+    tmp_path, monkeypatch
+):
+    from types import SimpleNamespace
+
+    module = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))
+    evaluate = module["evaluate"]
+    different = tmp_path / "__init__.py"
+    different.write_text("# fictional different installed distribution\n")
+    monkeypatch.setitem(evaluate.__globals__, "scryveil", SimpleNamespace(__file__=str(different)))
+    with pytest.raises(ScryveilError, match="qualification_runtime_source_mismatch"):
+        evaluate(mock=True, scenarios=["recurrence"], preview=True)

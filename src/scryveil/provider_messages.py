@@ -1,8 +1,8 @@
 """Native Messages client-tool wire format, with no tool execution authority.
 
 Translate only the fixed SCRYVEIL operations. Provider text and server-side
-tools never become forensic claims or executable operations. History is rebuilt
-from bounded supervisor exchanges; call IDs are local, not permissions.
+tools never become forensic claims or executable operations. History is bounded;
+the explicit MiniMax profile preserves validated assistant blocks and call IDs.
 """
 
 import re
@@ -71,6 +71,11 @@ ERROR_CODES = {
     "single_native_tool_call_required",
     "invalid_provider_usage",
     "provider_response_too_large",
+    "provider_continuation_too_large",
+    "provider_continuation_mismatch",
+    "unexpected_provider_continuation",
+    "provider_credential_echo",
+    "provider_native_error",
 }
 
 
@@ -181,6 +186,7 @@ def routed_definition() -> dict[str, Any]:
 
 def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str, Any]:
     routed = config.get("native_tool_layout") == "routed-v1"
+    preserve = config.get("messages_profile") == "minimax-v1"
     history: list[dict[str, Any]] = []
     system = SYSTEM
     pending: str | None = None
@@ -198,12 +204,17 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
             pending_name = action.get("name") if action.get("kind") == "tool" else None
             pending_plan = action.get("kind") == "plan"
             pending = f"scryveil_call_{index}"
+            blocks = [{"type": "tool_use", "id": pending, "name": name, "input": arguments}]
+            if "native_content" in message:
+                if not preserve:
+                    raise ScryveilError("unexpected_provider_continuation")
+                blocks = load_json(message["native_content"].encode())
+                validate_continuation(blocks, action)
+                pending = next(b["id"] for b in blocks if b["type"] == "tool_use")
             history.append(
                 {
                     "role": "assistant",
-                    "content": [
-                        {"type": "tool_use", "id": pending, "name": name, "input": arguments}
-                    ],
+                    "content": blocks,
                 }
             )
         elif role == "user":
@@ -255,7 +266,7 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
             available.append(definitions()[-1])
     if routed:
         system += "\nFor queries use forensic_query with the dotted tool name and arguments. Underscored query names in guidance refer to those dotted names. Plan and finish remain separate tools."
-    return {
+    body = {
         "model": config["model"],
         "system": system,
         "messages": history,
@@ -267,25 +278,54 @@ def payload(config: dict[str, Any], messages: list[dict[str, str]]) -> dict[str,
         "tools": compact_schema(available),
         "tool_choice": {"type": "any", "disable_parallel_tool_use": True},
     }
+    if preserve:
+        body["tool_choice"] = {"type": "auto", "disable_parallel_tool_use": True}
+        body["output_config"] = {"effort": config["reasoning_effort"]}
+    return body
 
 
-def response(data: Any) -> dict[str, Any]:
+def response(data: Any, *, preserve: bool = False) -> dict[str, Any]:
     if (
         not isinstance(data, dict)
         or data.get("type") != "message"
         or data.get("role") != "assistant"
     ):
         raise ScryveilError("invalid_native_response")
+    if preserve and "base_resp" in data:
+        status = data["base_resp"]
+        if (
+            not isinstance(status, dict)
+            or type(status.get("status_code")) is not int
+            or status["status_code"] != 0
+        ):
+            raise ScryveilError("provider_native_error")
     content = data.get("content")
     if data.get("stop_reason") != "tool_use" or not isinstance(content, list) or len(content) > 8:
         raise ScryveilError("native_tool_call_required")
     calls = []
+    if preserve and len(canonical(content)) > 65536:
+        raise ScryveilError("provider_continuation_too_large")
     for block in content:
         if not isinstance(block, dict):
             raise ScryveilError("invalid_native_response")
         if block.get("type") == "tool_use":
+            if preserve and (
+                set(block) != {"type", "id", "name", "input"}
+                or not isinstance(block.get("id"), str)
+                or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", block["id"])
+            ):
+                raise ScryveilError("invalid_native_response")
             calls.append(block)
+        elif preserve and block.get("type") == "thinking":
+            if (
+                set(block) - {"type", "thinking", "signature"}
+                or not isinstance(block.get("thinking"), str)
+                or ("signature" in block and not isinstance(block["signature"], str))
+            ):
+                raise ScryveilError("invalid_native_response")
         elif block.get("type") != "text" or not isinstance(block.get("text"), str):
+            raise ScryveilError("unsupported_native_content")
+        elif preserve and set(block) != {"type", "text"}:
             raise ScryveilError("unsupported_native_content")
     if len(calls) != 1:
         raise ScryveilError("single_native_tool_call_required")
@@ -324,4 +364,17 @@ def response(data: Any) -> dict[str, Any]:
         # Messages reports cached inputs separately, including the pinned local
         # server. Include all input categories in the conservative accounting.
         usage = {"input_tokens": values[0] + values[2] + values[3], "output_tokens": values[1]}
-    return {"ok": True, "action": action, "usage": usage}
+    result = {"ok": True, "action": action, "usage": usage}
+    if preserve:
+        result["continuation"] = deepcopy(content)
+    return result
+
+
+def validate_continuation(content: Any, action: dict[str, Any]) -> None:
+    """Opaque provider state cannot substitute another tool call or role."""
+    translated = response(
+        {"type": "message", "role": "assistant", "stop_reason": "tool_use", "content": content},
+        preserve=True,
+    )
+    if canonical(translated["action"]) != canonical(action):
+        raise ScryveilError("provider_continuation_mismatch")

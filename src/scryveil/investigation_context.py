@@ -8,7 +8,9 @@ from copy import deepcopy
 from typing import Any
 
 from .investigation_tools import TOOL_SCHEMAS
+from .models import ScryveilError
 from .parse import canonical
+from .provider_messages import validate_continuation
 
 POLICY = "scryveil.context/1"
 NATIVE_POLICY = "scryveil.context.native/1"
@@ -71,13 +73,27 @@ class InvestigationContext:
         self.rejected: tuple[dict[str, Any], dict[str, Any]] | None = None
         self.omitted = 0
         self.native = native
+        # Key by the retained action object's identity, not its JSON value:
+        # identical repeated/rejected actions can have different wire call IDs.
+        self.continuations: dict[int, str] = {}
 
-    def accept(self, action: dict[str, Any], result: dict[str, Any]) -> None:
+    def accept(
+        self,
+        action: dict[str, Any],
+        result: dict[str, Any],
+        continuation: list[dict[str, Any]] | None = None,
+    ) -> None:
+        action = deepcopy(action)
+        if continuation is not None:
+            if not self.native:
+                raise ScryveilError("unexpected_provider_continuation")
+            validate_continuation(continuation, action)
+            self.continuations[id(action)] = canonical(continuation).decode()
         self.rejected = None
         if not result["ok"]:
-            self.rejected = deepcopy(action), deepcopy(result)
+            self.rejected = action, deepcopy(result)
         elif "plan" in result:
-            self.plan = deepcopy(action)
+            self.plan = action
         else:
             # Repeated identical queries replace their previous model view.
             # The full chronological trace is kept separately by the supervisor.
@@ -85,10 +101,27 @@ class InvestigationContext:
             previous = len(self.exchanges)
             self.exchanges = [pair for pair in self.exchanges if canonical(pair[0]) != key]
             self.omitted += previous - len(self.exchanges)
-            self.exchanges.append((deepcopy(action), model_view(result)))
+            self.exchanges.append((action, model_view(result)))
             while len(self.exchanges) > MAX_EXCHANGES:
                 self.exchanges.pop(0)
                 self.omitted += 1
+        self._prune_continuations()
+
+    def _prune_continuations(self) -> None:
+        retained = [action for action, _ in self.exchanges]
+        if self.plan is not None:
+            retained.append(self.plan)
+        if self.rejected is not None:
+            retained.append(self.rejected[0])
+        keys = {id(action) for action in retained}
+        self.continuations = {k: v for k, v in self.continuations.items() if k in keys}
+
+    def _assistant(self, action: dict[str, Any]) -> dict[str, str]:
+        key = id(action)
+        message = {"role": "assistant", "content": canonical(action).decode()}
+        if key in self.continuations:
+            message["native_content"] = self.continuations[key]
+        return message
 
     def messages(self, byte_limit: int) -> list[dict[str, str]]:
         if self.plan is None and self.rejected is None:
@@ -96,12 +129,12 @@ class InvestigationContext:
         while True:
             messages = deepcopy(self.base)
             if self.plan is not None:
-                messages.append({"role": "assistant", "content": canonical(self.plan).decode()})
+                messages.append(self._assistant(self.plan))
                 messages.append(
                     {"role": "user", "content": '{"tool_result":{"ok":true,"plan_accepted":true}}'}
                 )
             for action, result in [*self.exchanges, *([self.rejected] if self.rejected else [])]:
-                messages.append({"role": "assistant", "content": canonical(action).decode()})
+                messages.append(self._assistant(action))
                 messages.append(
                     {
                         "role": "user",
@@ -183,3 +216,4 @@ class InvestigationContext:
                 return messages
             self.exchanges.pop(0)
             self.omitted += 1
+            self._prune_continuations()

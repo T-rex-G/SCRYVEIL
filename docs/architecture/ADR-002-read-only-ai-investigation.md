@@ -69,3 +69,17 @@ MCP may eventually make a vetted tool surface reusable by another host, but it a
 2026-10-25 additive decision: implement a separate native Messages client-tool adapter after repeated JSON-envelope failures. A fixed translator maps underscore wire names to the existing eleven tools plus plan/final session actions; the worker retains authority. Native system/tool-result formatting, phase-scoped schemas and full serialized-request budgeting avoid pretending that Messages is Chat Completions with another URL. No framework, SDK, provider server tools or new execution permission is needed. Synthetic HTTP/worker tests establish protocol behavior; actual-model and hosted-provider qualification remain separate. The first instrumented JSON baseline timed out with no reply; details and selected comparison are in [native continuation](../validation/native-provider-continuation.md). Existing JSON-action clients remain supported unchanged.
 
 The complete slice is testable without AI credits and preserves the existing offline formats. Its OS isolation is Linux-specific and dynamically requires system libseccomp; no second authored implementation language or vendored native binary was introduced. Real IPS exports, per-version semantics, actual model utility, remote-provider behavior/retention, external security review and cross-platform isolation remain unqualified. The new pipeline measurements qualify bounded local workloads, not general forensic scalability. See [capability assessment](../capability-assessment.md), [operator guide](../investigation.md) and [validation](../validation/investigation-results.md).
+
+2026-10-27 applied provider correction: the optional `minimax-v1` Messages
+profile preserves bounded untrusted assistant blocks and original tool-call
+IDs across turns, as required by the documented native protocol. It binds the
+logical action to that continuation before worker dispatch. The state stays
+in the current supervisor/provider conversation, never in forensic findings,
+worker input or reports. Compaction retains whole exchanges; response and
+request limits still apply. No SDK, framework, file/network tool or new
+investigator permission is introduced. Existing profiles keep their behavior.
+The fictional benchmark accepts explicit provider configurations and requires
+an exact offline-generated disclosure-plan approval before remote execution;
+ordinary case execution retains its exact snapshot consent. See
+[qualification](../validation/provider-qualification.md) for the applied
+protocol sources, failure evidence and outstanding actual-model gate.

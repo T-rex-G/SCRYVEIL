@@ -71,7 +71,10 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         if native:
             headers["anthropic-version"] = "2023-06-01"
             if request["credential"]:
-                headers["x-api-key"] = request["credential"]
+                if config.get("messages_profile") == "minimax-v1":
+                    headers["Authorization"] = "Bearer " + request["credential"]
+                else:
+                    headers["x-api-key"] = request["credential"]
         elif request["credential"]:
             headers["Authorization"] = "Bearer " + request["credential"]
         connection.request("POST", url.path, body=payload, headers=headers)
@@ -84,9 +87,11 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         raw = response.read(1024 * 1024 + 1)
         if len(raw) > 1024 * 1024:
             raise ScryveilError("provider_response_too_large")
+        if request["credential"] and request["credential"].encode() in raw:
+            raise ScryveilError("provider_credential_echo")
         data = load_json(raw)
         if native:
-            return messages_response(data)
+            return messages_response(data, preserve=config.get("messages_profile") == "minimax-v1")
         content = data["choices"][0]["message"]["content"]
         if not isinstance(content, str) or len(content.encode()) > 65536:
             raise ScryveilError("invalid_provider_response")

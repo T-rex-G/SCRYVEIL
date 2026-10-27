@@ -15,6 +15,7 @@ from .investigation_tools import MAX_RESULT, prompt_schemas, snapshot_case
 from .models import ScryveilError
 from .parse import canonical, digest, load_json, text_field
 from .provider_messages import SYSTEM as NATIVE_SYSTEM
+from .provider_messages import validate_continuation
 from .providers import (
     ChatCompletionsProvider,
     MessagesToolsProvider,
@@ -216,6 +217,10 @@ def investigate(
             requests += 1
             reserved_tokens += reservation
             reply = selected.next(messages)
+            if reply.continuation is not None:
+                if config.get("messages_profile") != "minimax-v1":
+                    raise ScryveilError("unexpected_provider_continuation")
+                validate_continuation(reply.continuation, reply.action)
             if reply.usage is not None:
                 if set(reply.usage) != {"input_tokens", "output_tokens"} or any(
                     type(v) is not int or not 0 <= v <= 10**9 for v in reply.usage.values()
@@ -251,7 +256,7 @@ def investigate(
             if "final" in result:
                 report["result"], report["status"] = result["final"], "completed"
                 break
-            context.accept(reply.action, result)
+            context.accept(reply.action, result, reply.continuation)
             if not result["ok"] and rejected[entry["action_sha256"] + result["error"]] >= 3:
                 report["status"] = "repeated_action_limit"
                 break

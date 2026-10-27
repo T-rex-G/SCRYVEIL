@@ -154,3 +154,41 @@ unchanged. Omitting the setting (or selecting `individual-v1`) retains separate
 native definitions. The choice changes the disclosure digest and requires fresh
 remote consent. This is experimental protocol configuration, not a qualified
 model recommendation. See the measured native validation before selecting it.
+
+### MiniMax Messages profile (experimental)
+
+Use `adapter: "messages-tools"`, `messages_profile: "minimax-v1"`, an explicit
+`reasoning_effort` (`low`, `medium`, `high`, `xhigh`, or `max`), and
+`https://api.minimax.io/anthropic/v1/messages`. Select the model explicitly;
+SCRYVEIL does not choose a vendor or model for ordinary cases. The prepared
+fictional benchmark selects `MiniMax-M3.1-Flash`, as currently documented by the
+provider. This profile uses Bearer authentication through a dedicated
+`SCRYVEIL_…` environment-variable reference. Existing native and JSON-action
+configurations retain their behavior. Changing profile/effort invalidates
+existing disclosure consent.
+
+This profile preserves bounded assistant `thinking`, `text` and `tool_use`
+blocks and original call IDs when returning subsequent tool results. Those
+blocks are untrusted protocol state, not evidence: they never enter the worker
+or reports. Each continuation must translate to exactly the proposed logical
+action before it can reach the worker. Rejected actions receive normal bounded
+feedback, and compaction removes complete exchanges. The retained wire content
+counts toward request/context budgets. Images, server tools, parallel calls,
+unknown blocks, oversized state and truncated replies remain unsupported.
+Exact credential echoes from a provider response are rejected; this is a
+narrow defense, not a complete secret-leak detector.
+
+The provider's Flash model always uses thinking; the profile does not attempt
+to disable it. `output_config.effort` is explicit rather than inheriting the
+provider's maximum default. Tool choice is `auto` with parallel tools disabled;
+text-only responses fail closed instead of becoming unvalidated reports.
+Synthetic HTTP peers exercise full native round trips and grounding. Hosted
+API compatibility, latency, reasoning quality and provider retention remain
+unqualified until an authorized actual-model run is reviewed.
+
+For the fixed fictional evaluation, see
+[the qualification procedure](validation/provider-qualification.md).
+Never paste a credential into chat, JSON config, command arguments, evidence or
+Git. A GitHub Actions repository secret can hold a dedicated test key while the
+repository remains public. Configuring that secret does not select a test or
+authorize private evidence disclosure.
