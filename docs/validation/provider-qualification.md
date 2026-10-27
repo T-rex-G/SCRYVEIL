@@ -127,3 +127,11 @@ Validation results and exact source checkpoint are recorded in the
 [handoff](../continuity/SCRYVEIL_WORK_HANDOFF.md). The
 [offline harness smoke](provider-neutral-smoke.json) is explicitly mocked and
 cannot qualify MiniMax or any other model.
+
+Implementation `194c4fddfcc6b82733f9822ab9148e0e3c7650bc` is verified by
+[core CI 40488030071](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40488030071):
+400 tests in 21.81s, static/security checks, historical compatibility, all five
+source demos, package build and five installed-wheel demos. Local installed-wheel
+preview exactly matches the committed disclosure plan. The opt-in MiniMax job
+40488030102 skipped its credential/inference steps; its green exit is **not**
+a MiniMax execution or quality result.
