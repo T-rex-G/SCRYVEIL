@@ -167,3 +167,13 @@ investigations on direct/root/prefixed routes, custom JSON routes, TLS, mixed
 DNS rejection, credential isolation and changed-destination consent. These are
 protocol/security measurements, not hosted inference. Current test/CI results
 and the exact checkpoint are in the handoff.
+
+Custom-gateway implementation `1ad9d0ca0937c8bbf38e755d9772c8da19b1c55a`
+is independently checked by [core CI 40530288063](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40530288063):
+453 tests in 21.45s and all required static/security, compatibility, demo and
+package checks. The opt-in gateway workflow 40530288157 skipped inference.
+Its current plan digest is
+`6cf6fefb6b35ba4beeb87f2adf790e9d1886808030d9ba559a3583670a33f008`.
+The installed-wheel offline preview matches it exactly. No hosted reasoning
+result is available; credential setup and reviewed experiment activation remain
+the immediate next step.

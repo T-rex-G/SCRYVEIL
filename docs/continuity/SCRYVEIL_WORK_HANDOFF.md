@@ -1,6 +1,6 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-27. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Continuation starts from `c30d673530d3e83e23c6bf3d26930fa13e022556` (tree `a682d687d82801aded46fb55aa0a025da645a0cc`); [core CI 40488455583](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40488455583) passed 400 tests and all required checks. The enclosing implementation adds custom gateway configuration; its exact published SHA/CI will be recorded after validation. No hosted request, private diagnostic access or merge occurred.
+Updated 2026-10-27. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified implementation: `1ad9d0ca0937c8bbf38e755d9772c8da19b1c55a`, tree `37c528500747eb43ce35f3eaf40e84be121ce231`. [Core CI 40530288063](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40530288063), job `122280893865`, passed **453 tests in 21.45s** and all static/security, historical compatibility, source-demo, packaging and installed-wheel checks. This enclosing documentation checkpoint records that evidence; obtain its exact SHA with `git rev-parse HEAD`. Prior checkpoint `c30d673530d3e83e23c6bf3d26930fa13e022556` and its 400-test CI were reconciled before implementation. No hosted request, private diagnostic access or merge occurred.
 
 ## Current continuation: custom gateway qualification
 
@@ -20,7 +20,10 @@ and format, strict mypy (22 modules), Bandit and the three historical baseline
 compatibility records pass. All five source demos and sdist/wheel build pass.
 All five installed-wheel demos pass; its offline plan exactly matches the
 source and all 36 bound file hashes. Hygiene passes for 187 source files/18
-fictional fixtures. Remote CI verification follows publication.
+fictional fixtures. Core CI independently confirms all required checks. Provider
+workflow [40530288157](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40530288157)
+explicitly skipped credential/inference steps; local-model run 40530288080 also
+skipped inference. These successful workflow exits are not model executions.
 Reviewed-plan digest: `6cf6fefb6b35ba4beeb87f2adf790e9d1886808030d9ba559a3583670a33f008`. The stable plan
 binds 36 runtime/generator/config/workflow/fixture files; at most 74 requests
 and 1.4 million reservation units. These are limits, not gateway billing or
