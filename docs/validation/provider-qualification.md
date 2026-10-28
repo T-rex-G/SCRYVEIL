@@ -12,6 +12,10 @@ The continuation adds a closed set of bounded, provider-reported error categorie
 
 Applied reference: [gateway API error/catalog documentation](https://apmix.ai/docs), inspected 2026-10-28. Only documented stable error identifiers inform the closed classification; no source/SDK/dependency was incorporated. Catalog declarations are unverified provider data, not proof of free access or model capability. [Catalog plan](provider-access-plan.json). Current inference disclosure is preparation only; no unchanged paid retry is selected. Local validation: 498 tests in 21.07s; static/security checks, three historical compatibility baselines, five source demos, build and five installed-wheel demos pass. Catalog security tests cover same-origin enforcement before credential access, one GET with no body, exact auth binding, redirects, malformed/oversized lists and malicious/credential-bearing error responses.
 
+The live catalog-only check [40743613991](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40743613991), job `123011450525`, at `e8f1ebd5ba5c36efa7d0828a11662c8fdea50138` received zero entries, no indicated pagination, and no exact matches for either MiniMax alias or the explicitly checked historical free-Claude ID. [Exact result and plan](apmix-catalog-40743613991.json); all 25 bound historical files/digest were independently recomputed. No evidence or inference request was sent. It does not verify billing, establish why the earlier POST failed, or justify automatically trying an unlisted model.
+
+[Core CI 40743614263](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40743614263) passed 498 tests in 25.11s and every required static/security, compatibility, source-demo and packaging check. Hosted workflow 40743613945 explicitly skipped inference. Actual-model qualification remains blocked on access; no completion, reasoning or injection-resilience claim is made.
+
 ## Why the prior work did not qualify an investigator
 
 The preserved [execution records](native-provider-continuation.md) separate

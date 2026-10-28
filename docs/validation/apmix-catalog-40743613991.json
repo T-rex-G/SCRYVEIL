@@ -1,0 +1,77 @@
+{
+  "source_commit": "e8f1ebd5ba5c36efa7d0828a11662c8fdea50138",
+  "workflow_run": 40743613991,
+  "job_id": 123011450525,
+  "plan": {
+    "schema_version": "scryveil.provider-access-plan/1",
+    "provider": {
+      "schema_version": "scryveil.provider/1",
+      "adapter": "messages-tools",
+      "mode": "remote",
+      "max_requests": 12,
+      "timeout_seconds": 60,
+      "max_context_bytes": 131072,
+      "max_output_tokens": 4096,
+      "max_total_tokens": 200000,
+      "auth_scheme": "bearer",
+      "model": "minimax/minimax-m3.1-flash",
+      "messages_profile": "minimax-v1",
+      "reasoning_effort": "medium",
+      "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
+      "endpoint": "https://api.apmix.ai/v1/messages"
+    },
+    "catalog_endpoint": "https://api.apmix.ai/v1/models",
+    "candidates": [
+      "minimax/minimax-m3.1-flash",
+      "minimax-m3.1-flash",
+      "claude-sonnet-4-6-free"
+    ],
+    "method": "GET",
+    "maximum_requests": 1,
+    "request_body": null,
+    "evidence_records": 0,
+    "inference_requests": 0,
+    "code_sha256": {
+      "src/scryveil/__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+      "src/scryveil/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+      "src/scryveil/cli.py": "a3255cc65a0f4c34dec280eb850381022d4850508878f6e2d47cf8cb38199286",
+      "src/scryveil/collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+      "src/scryveil/diagnostic_intelligence.py": "05c4d9c6f51283af3b00964397546de7e9655726e3b18607b361b8640848510e",
+      "src/scryveil/diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+      "src/scryveil/diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+      "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+      "src/scryveil/investigation.py": "4886517e797ff1601bfbe7a0f7de393a53afc2c14deba8c56a407b9a6e1f0318",
+      "src/scryveil/investigation_context.py": "a26a7c1c141507c73ba1e15269b41db1327da5dedb98e0a309ddaec3ee6c1ec4",
+      "src/scryveil/investigation_tools.py": "8f3b7d4052b12ea6a69540b6e8d4702774cd7b9b46a94d8aea46d256095588a4",
+      "src/scryveil/investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+      "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+      "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+      "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+      "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+      "src/scryveil/provider_messages.py": "0a672ecde084e558a6a74c9c2fae28f9bfaa03c6dc2ebb865f5922a93e10e11e",
+      "src/scryveil/provider_transport.py": "44a862a58e0a7b5f618eaffcb4a522f56b208285b9aba49bed9a0e7cd452484e",
+      "src/scryveil/providers.py": "76c9a1bea26c601362c32a0614976258a0aa8c8d07177f569a598dbfc20b98d0",
+      "src/scryveil/report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+      "src/scryveil/state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+      "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5",
+      "scripts/provider_access_check.py": "81f86ea870f556ab7bb4d956aebd3fb1bef366f033305553429cd5b90e98d0de",
+      ".github/workflows/provider-access-check.yml": "60720de4f75b6243516aac3bb9e46803608578534ca39241bcb3c345a41753aa",
+      "configs/qualification-provider.json": "96b9142b6e2a398b9dcad9139a920eb5dcc16e9f0c7a56f5e24620e0aa2db8c1"
+    },
+    "plan_sha256": "8fa3d695960a435241296926729c2be5d5fa8fec1b1685500f5ad6f7f7a8a9eb"
+  },
+  "result": {
+    "plan_sha256": "8fa3d695960a435241296926729c2be5d5fa8fec1b1685500f5ad6f7f7a8a9eb",
+    "status": "catalog_received",
+    "billing_verified": false,
+    "candidate_listed": {
+      "claude-sonnet-4-6-free": false,
+      "minimax-m3.1-flash": false,
+      "minimax/minimax-m3.1-flash": false
+    },
+    "entries_received": 0,
+    "inference_tested": false,
+    "pagination_indicated": false,
+    "schema_version": "scryveil.provider-catalog-check/1"
+  }
+}
