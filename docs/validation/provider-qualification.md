@@ -1,8 +1,16 @@
 # Provider qualification correction
 
-Status: implementation and fictional protocol tests; **no qualified actual-model
-investigation and no hosted request made in this checkpoint**. No private logs,
-devices or model credentials were accessed. Continue PR #1 without merging.
+Status: **no qualified actual-model investigation**. One owner-authorized hosted attempt reached HTTP 403 before any model action. Private diagnostics and devices remain out of scope; PR #1 stays unmerged.
+
+## Recovered gateway attempt and access diagnostics
+
+At `6058a0d9df07c753e87392c9c4689f7c59039bc7`, [run 40580100780](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40580100780), job `122456873922`, matched approved digest `6cf6fefb6b35ba4beeb87f2adf790e9d1886808030d9ba559a3583670a33f008` before secret access. The first recurrence request returned `provider_http_403` after 0.9787s. No accepted plan, query, factual claim, final report or adversarial exposure occurred. All other six scenarios were skipped; originals/state were unchanged. No provider usage returned and cost is unknown.
+
+[Machine-readable original](apmix-access-40580100780.json) and [executed disclosure](apmix-disclosure-6058a0d.json) are independently hash-checkable. Offline reconciliation verified the report/plan digests and all 36 historical bound files; no inference replay. Core CI 40580100705 passed independently. The original transport discarded the error body; neither account entitlement nor a specific rejection reason can be inferred from status 403 alone.
+
+The continuation adds a closed set of bounded, provider-reported error categories and an explicit **one-GET catalog check**, with no evidence or inference. It preserves auth secrecy, TLS/public-DNS restrictions, syscall isolation, same-origin authorization, strict size limits and no retries/redirects. Catalog entries cannot install tools, select a model or trigger inference. Unknown error content never reaches the operator or agent.
+
+Applied reference: [gateway API error/catalog documentation](https://apmix.ai/docs), inspected 2026-10-28. Only documented stable error identifiers inform the closed classification; no source/SDK/dependency was incorporated. Catalog declarations are unverified provider data, not proof of free access or model capability. [Catalog plan](provider-access-plan.json). Current inference disclosure is preparation only; no unchanged paid retry is selected. Local validation: 498 tests in 21.07s; static/security checks, three historical compatibility baselines, five source demos, build and five installed-wheel demos pass. Catalog security tests cover same-origin enforcement before credential access, one GET with no body, exact auth binding, redirects, malformed/oversized lists and malicious/credential-bearing error responses.
 
 ## Why the prior work did not qualify an investigator
 
@@ -58,7 +66,7 @@ plan; each actual case's exact runtime disclosure and consent digest are also
 recorded before provider use. This approval route applies only to the fixed
 generated benchmark, never arbitrary cases. Ordinary case consent is unchanged.
 
-## Prepared hosted experiment
+## Hosted experiment configuration and reproduction
 
 The owner clarified that their credential is for **apmix.ai**, not direct
 MiniMax. The former [direct-service disclosure](minimax-disclosure-plan.json)
@@ -72,8 +80,7 @@ alias `minimax/minimax-m3.1-flash`, medium effort and the existing MiniMax proto
 profile. These settings are candidates, not a qualified gateway/model pairing.
 [The gateway's own API example](https://apmix.ai/models/minimax-m3.1-flash)
 documents the URL/header/model. Its translation of thinking/tool state and
-`output_config.effort` still needs actual execution. No model-list request or
-credential access occurred. No dependency or upstream source was incorporated.
+`output_config.effort` still needs actual execution. That preparation made no model-list request or credential access; the subsequent attempt is recorded above. No dependency or upstream source was incorporated.
 
 Create an owner-private copy of that config and preview it offline:
 

@@ -76,13 +76,43 @@ ERROR_CODES = {
     "unexpected_provider_continuation",
     "provider_credential_echo",
     "provider_native_error",
+    "invalid_provider_catalog",
+}
+# Provider-reported categories, never free-form error messages. Keep this closed:
+# errors may echo prompts, credentials or instructions from a compromised gateway.
+HTTP_ERROR_DETAILS = {
+    "invalid_json",
+    "missing_model",
+    "bad_request",
+    "missing_api_key",
+    "invalid_api_key",
+    "key_expired",
+    "model_not_in_plan",
+    "event_not_started",
+    "event_ended",
+    "account_suspended",
+    "account_on_hold",
+    "model_not_found",
+    "not_found",
+    "allowance_exhausted",
+    "daily_limit_reached",
+    "weekly_limit_reached",
+    "key_limit_reached",
+    "rate_limit_exceeded",
+    "upstream_rate_limited",
+    "upstream_error",
+    "upstream_unavailable",
+    "no_provider",
 }
 
 
 def safe_error(code: Any) -> bool:
-    return isinstance(code, str) and (
-        code in ERROR_CODES or re.fullmatch(r"provider_http_[1-5][0-9]{2}", code) is not None
-    )
+    if not isinstance(code, str):
+        return False
+    if code in ERROR_CODES:
+        return True
+    match = re.fullmatch(r"provider_http_[1-5][0-9]{2}(?:_([a-z_]+))?", code)
+    return match is not None and (match[1] is None or match[1] in HTTP_ERROR_DETAILS)
 
 
 def definitions() -> list[dict[str, Any]]:

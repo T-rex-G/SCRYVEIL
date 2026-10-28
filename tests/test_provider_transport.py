@@ -39,6 +39,13 @@ def peer(callback, tls_context=None):
         def do_POST(self):
             body = self.rfile.read(int(self.headers["Content-Length"]))
             observed.append((self.path, dict(self.headers), json.loads(body)))
+            self.respond()
+
+        def do_GET(self):
+            observed.append((self.path, dict(self.headers), None))
+            self.respond()
+
+        def respond(self):
             status, raw = callback(observed[-1])
             try:
                 self.send_response(status)

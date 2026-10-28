@@ -167,6 +167,33 @@ def load_config(path: Path | None) -> dict[str, Any]:
     return validate_config(load_json(raw))
 
 
+def validate_catalog_request(config: dict[str, Any], endpoint: str, candidates: list[str]) -> str:
+    """Explicit owner-only catalog address; never follow provider discovery URLs."""
+    if config["adapter"] == "mock":
+        raise ScryveilError("unsupported_provider")
+    resolved = provider_endpoint({**config, "endpoint": endpoint})
+    origin, catalog = urlsplit(config["endpoint"]), urlsplit(resolved)
+    default_port = 443 if origin.scheme == "https" else 80
+    if (origin.scheme, origin.hostname, origin.port or default_port) != (
+        catalog.scheme,
+        catalog.hostname,
+        catalog.port or default_port,
+    ):
+        raise ScryveilError("catalog_origin_mismatch")
+    if (
+        not isinstance(candidates, list)
+        or not 1 <= len(candidates) <= 16
+        or any(
+            not isinstance(value, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}", value)
+            for value in candidates
+        )
+        or len(set(candidates)) != len(candidates)
+    ):
+        raise ScryveilError("invalid_catalog_candidates")
+    return resolved
+
+
 @dataclass(frozen=True)
 class Reply:
     action: dict[str, Any]
@@ -271,7 +298,7 @@ class BrokerProvider:
     def __init__(self, config: dict[str, Any]):
         self.config = validate_config(config)
 
-    def next(self, messages: list[dict[str, str]]) -> Reply:
+    def _credential(self) -> str | None:
         credential = None
         if self.config.get("api_key_env"):
             credential = os.environ.get(self.config["api_key_env"])
@@ -281,9 +308,32 @@ class BrokerProvider:
                 or any(ord(c) < 33 or ord(c) > 126 for c in credential)
             ):
                 raise ScryveilError("provider_credential_unavailable")
-        request = {"config": self.config, "credential": credential, "messages": messages}
+        return credential
+
+    def inspect_catalog(self, endpoint: str, candidates: list[str]) -> dict[str, Any]:
+        """One explicit GET with no evidence/model messages; not an agent tool."""
+        endpoint = validate_catalog_request(self.config, endpoint, candidates)
+        response = self._exchange(
+            {
+                "config": self.config,
+                "credential": self._credential(),
+                "catalog_endpoint": endpoint,
+                "candidates": candidates,
+            },
+            diagnostic_errors=True,
+        )
+        return dict(response["catalog"])
+
+    def next(self, messages: list[dict[str, str]]) -> Reply:
         if context_bytes(self.config, messages) > self.config["max_context_bytes"]:
             raise ScryveilError("context_budget_exhausted")
+        response = self._exchange(
+            {"config": self.config, "credential": self._credential(), "messages": messages},
+            diagnostic_errors=self.config["adapter"] == "messages-tools",
+        )
+        return Reply(response["action"], response["usage"], response.get("continuation"))
+
+    def _exchange(self, request: dict[str, Any], *, diagnostic_errors: bool) -> dict[str, Any]:
         # Fixed interpreter/module and an empty credential environment.
         child = subprocess.Popen(  # nosec B603
             [sys.executable, "-I", "-m", "scryveil.provider_transport"],
@@ -308,13 +358,13 @@ class BrokerProvider:
         response = load_json(output)
         if not isinstance(response, dict) or not response.get("ok"):
             if (
-                self.config["adapter"] == "messages-tools"
+                diagnostic_errors
                 and isinstance(response, dict)
                 and safe_error(response.get("error"))
             ):
                 raise ScryveilError(response["error"])
             raise ScryveilError("provider_failed")
-        return Reply(response["action"], response["usage"], response.get("continuation"))
+        return response
 
 
 class ChatCompletionsProvider(BrokerProvider):

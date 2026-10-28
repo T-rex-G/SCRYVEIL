@@ -1,33 +1,25 @@
 # SCRYVEIL engineering handoff
 
-Updated 2026-10-27. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified implementation: `1ad9d0ca0937c8bbf38e755d9772c8da19b1c55a`, tree `37c528500747eb43ce35f3eaf40e84be121ce231`. [Core CI 40530288063](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40530288063), job `122280893865`, passed **453 tests in 21.45s** and all static/security, historical compatibility, source-demo, packaging and installed-wheel checks. This enclosing documentation checkpoint records that evidence; obtain its exact SHA with `git rev-parse HEAD`. Prior checkpoint `c30d673530d3e83e23c6bf3d26930fa13e022556` and its 400-test CI were reconciled before implementation. No hosted request, private diagnostic access or merge occurred.
+Updated 2026-10-28. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Reconciled parent: `6058a0d9df07c753e87392c9c4689f7c59039bc7`, tree `75e6d711905ed615e32db6c3eec2be560bf71422`. [Core CI 40580100705](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40580100705), job `122456874103`, passed every required gate. This enclosing implementation adds safe provider access diagnostics; its exact SHA is `git rev-parse HEAD` after publication. No private records/devices or merge.
 
-## Current continuation: custom gateway qualification
+## Current continuation: distinguish gateway access from model reasoning
 
-- The owner clarified their key is for **apmix.ai**. Removed the MiniMax profile's fixed URL-path restriction. Configuration accepts either an SDK-style `base_url` or an exact custom `endpoint`, and explicit `auth_scheme` (`bearer`/`x-api-key`). Preview/consent binds the resolved destination, protocol and auth. Existing endpoint-only configurations retain their wire/default behavior.
-- Prefixes are retained; there is no URL discovery or automatic protocol/model fallback. Ambiguous/credential-bearing URL forms fail closed. Public HTTPS/TLS/DNS restrictions, literal loopback local mode, isolated broker, eleven read-only worker tools and grounding remain intact.
-- Full native investigations through fictional direct/root/prefixed gateways preserve assistant state/call IDs and evidence bytes. Tests also cover exact custom Chat Completions routes, auth isolation, changed-destination consent, TLS, redirects and mixed/private DNS. These do not measure model reasoning.
-- `configs/qualification-provider.json` selects the documented apmix Messages route and `minimax/minimax-m3.1-flash` alias, with the experimental MiniMax profile. Protocol parameters/translation and actual reasoning are unqualified. The adapter remains a supported wire contract, not universal compatibility.
-- `scripts/provider_qualification.py` requires an explicit private config and generates seven fictional scenarios. The opt-in provider workflow reads the reviewed nonsecret config, verifies the plan offline and only then exposes `SCRYVEIL_PROVIDER_API_KEY`. The old direct-MiniMax workflow marker no longer triggers inference. Its disclosure remains historical.
-- [Qualification procedure](../validation/provider-qualification.md), [current disclosure](../validation/provider-disclosure-plan.json), [historical mock-only smoke](../validation/provider-neutral-smoke.json). No direct-vendor USD estimate is applied to apmix's weighted-token subscription; cost remains unknown when rates are unset.
+The owner authorized using the apmix key for the prepared fictional benchmark. The key was saved as repository Actions secret `SCRYVEIL_PROVIDER_API_KEY`; never request or put it in chat/Git/cases. Run [40580100780](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40580100780), job `122456873922`, verified the exact approved plan, then its **first request returned HTTP 403 after 0.979s**. Zero model actions, queries, facts or final reports. Six subsequent scenarios were correctly skipped. This is an access failure, not evidence of model reasoning failure or success. Original case/state bytes remained unchanged. No usage was returned; zero reported tokens is not verified zero billing.
 
-Next highest-value action: the owner places their apmix key in the dedicated GitHub Actions repository secret `SCRYVEIL_PROVIDER_API_KEY`, outside chat/Git/cases. After review of the exact synthetic disclosure, select an experiment checkpoint with `[provider-qualification:APPROVED_PLAN_SHA256]`. Record actual actions, authoritative results, timings/errors and usage; do not call a workflow exit a reasoning pass. Stop after a failed recurrence floor. No key or activation marker is present in this checkpoint.
+[Original machine record](../validation/apmix-access-40580100780.json) and [original disclosure](../validation/apmix-disclosure-6058a0d.json) preserve the selected commit, hashes and exact result. Offline verification recomputed the plan/report digests and all 36 historical file hashes. The old transport discarded the error body, so the exact 403 subtype cannot be recovered from this run. Do not assert a missing plan, expired key or bot block as established fact.
 
-Reproduce the offline plan with a mode-0600 copy of `configs/qualification-provider.json`, then `python scripts/provider_qualification.py --provider-config PRIVATE_CONFIG --preview`. Config/model/auth/code changes invalidate the selected plan. Full ordinary-case disclosure remains separate. No unchanged Qwen rerun is warranted. Hosted reasoning, hypothesis revision/injection resilience and genuine Apple-export qualification remain open; private diagnostics/devices remain unauthorized.
+Implemented now:
 
-Validation for this continuation: **453 tests passed in 21.33s**; Ruff/check
-and format, strict mypy (22 modules), Bandit and the three historical baseline
-compatibility records pass. All five source demos and sdist/wheel build pass.
-All five installed-wheel demos pass; its offline plan exactly matches the
-source and all 36 bound file hashes. Hygiene passes for 187 source files/18
-fictional fixtures. Core CI independently confirms all required checks. Provider
-workflow [40530288157](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40530288157)
-explicitly skipped credential/inference steps; local-model run 40530288080 also
-skipped inference. These successful workflow exits are not model executions.
-Reviewed-plan digest: `6cf6fefb6b35ba4beeb87f2adf790e9d1886808030d9ba559a3583670a33f008`. The stable plan
-binds 36 runtime/generator/config/workflow/fixture files; at most 74 requests
-and 1.4 million reservation units. These are limits, not gateway billing or
-model-quality measurements.
+- Native errors retain only a closed set of provider-reported JSON error codes, including unavailable model access, expired credentials and quota conditions. Arbitrary provider messages, identifiers and credential echoes never appear in reports. Unknown/oversized/malformed errors retain the generic HTTP status. No retry or fallback.
+- A separate owner-operated catalog check makes exactly one GET to an explicitly reviewed same-origin URL. No case paths, evidence, prompts or inference requests. It reuses the pinned-TLS, isolated broker and outputs only counts and membership of operator-selected model IDs. Catalog membership is not verified access, price, model identity or intelligence.
+- Catalog preview/approval binds source, endpoint, auth, candidates and one-request budget before credential access. The `provider-access` workflow marker is separate from inference activation; it never starts an investigation or changes the selected model. The eleven investigator tools remain unchanged.
+- Custom URL/auth behavior, native assistant state, source preservation, grounding, report contracts and historical case compatibility remain in place.
+
+Next action: recover the explicitly selected catalog check for this enclosing checkpoint. The owner asked to verify free-model availability after the 403; do **not** repeat the same inference experiment. Current public pages conflict with older free-tier listings; the catalog is an access lead, not a billing guarantee. If access remains blocked, continue independent code/forensic work and report the precise blocker. No purchase, automatic model switch, new provider destination or private disclosure is authorized by this check.
+
+[Catalog plan](../validation/provider-access-plan.json), [operator procedure](../investigation.md), [qualification record](../validation/provider-qualification.md). `provider-disclosure-plan.json` is regenerated for current code but **not activated**; the executed old plan is archived separately. Hosted actual-model completion, semantic hypothesis review and actual-model injection qualification remain open. Private diagnostics/devices remain unauthorized.
+
+Local validation: **498 tests passed in 21.07s**, Ruff/check and format, strict mypy (22 modules), Bandit, all three historical compatibility records, all five source demos, sdist/wheel build and all five installed-wheel demos. A relative `runpy` path defect in catalog-plan generation was caught and fixed; its focused checks and source/wheel offline plan were verified afterward. Repository hygiene also recognizes gateway-key patterns. Retrieve this checkpoint’s CI before calling it green. No unchanged Qwen rerun is warranted.
 
 ## Working capability
 

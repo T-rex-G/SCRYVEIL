@@ -270,3 +270,17 @@ Never paste a credential into chat, JSON config, command arguments, evidence or
 Git. A GitHub Actions repository secret can hold a dedicated test key while the
 repository remains public. Configuring that secret does not select a test or
 authorize private evidence disclosure.
+
+## Check a provider catalog without disclosing evidence
+
+`scripts/provider_access_check.py` is an owner-operated diagnostic, separate from the eleven investigator tools. Supply an explicit same-origin catalog URL and specific candidate IDs. It supports the `data: [{id: ...}]` list shape; other protocols fail closed. It makes one GET, sends no body or case data, never follows pagination/redirects and never launches inference. A listed ID does not prove entitlement, free pricing, model identity or tool compatibility. A non-listed ID may still be an accepted alias or on an unrequested page.
+
+```sh
+python scripts/provider_access_check.py --provider-config PRIVATE_CONFIG \
+  --catalog-endpoint https://YOUR_GATEWAY/v1/models \
+  --catalog-auth-scheme bearer --candidate-model YOUR_MODEL --preview
+```
+
+Review the exact destination, credential reference, auth and source digest. Repeat with `--approve-plan-sha256 REVIEWED_DIGEST` instead of `--preview` to perform the single GET. Omit `--catalog-auth-scheme` to use the configured auth scheme. Credentials stay in the referenced environment variable; never pass them as arguments. Neither preview nor catalog inspection grants consent to send forensic evidence.
+
+Known native API error codes are reported as `provider_http_STATUS_CODE`; unknown error bodies remain `provider_http_STATUS`. The suffix is an allowlisted provider assertion, not a verified account diagnosis. Free-form messages/identifiers are suppressed; credential echoes fail closed. Correct access/configuration before explicitly selecting another inference run.

@@ -11,29 +11,87 @@ from urllib.parse import urlsplit
 from .isolation import restrict_worker
 from .models import ScryveilError
 from .parse import canonical, load_json
+from .provider_messages import HTTP_ERROR_DETAILS, safe_error
 from .provider_messages import payload as messages_payload
 from .provider_messages import response as messages_response
-from .provider_messages import safe_error
-from .providers import validate_config
+from .providers import validate_catalog_request, validate_config
+
+
+def http_failure(status: int, raw: bytes, credential: str | None) -> str:
+    """Classify a bounded error without returning provider text or identifiers."""
+    fallback = f"provider_http_{status}"
+    if credential and credential.encode() in raw:
+        return "provider_credential_echo"
+    if len(raw) > 65536:
+        return fallback
+    try:
+        data = load_json(raw)
+    except (ScryveilError, ValueError, RecursionError):
+        return fallback
+    error = data.get("error") if isinstance(data, dict) else None
+    code = error.get("code") if isinstance(error, dict) else None
+    return (
+        fallback + "_" + code if isinstance(code, str) and code in HTTP_ERROR_DETAILS else fallback
+    )
+
+
+def catalog_result(data: Any, candidates: list[str]) -> dict[str, Any]:
+    """Return only requested membership and counts, not arbitrary catalog text."""
+    if (
+        not isinstance(data, dict)
+        or not isinstance(data.get("data"), list)
+        or len(data["data"]) > 1000
+        or any(
+            not isinstance(row, dict)
+            or not isinstance(row.get("id"), str)
+            or not 1 <= len(row["id"]) <= 256
+            for row in data["data"]
+        )
+    ):
+        raise ScryveilError("invalid_provider_catalog")
+    identifiers = {row["id"] for row in data["data"]}
+    return {
+        "ok": True,
+        "catalog": {
+            "schema_version": "scryveil.provider-catalog-check/1",
+            "entries_received": len(data["data"]),
+            "candidate_listed": {candidate: candidate in identifiers for candidate in candidates},
+            "pagination_indicated": any(data.get(k) for k in ("has_more", "next", "next_page")),
+            "inference_tested": False,
+            "billing_verified": False,
+        },
+    }
 
 
 def exchange(request: dict[str, Any]) -> dict[str, Any]:
     config = validate_config(request["config"])
     native = config["adapter"] == "messages-tools"
-    payload = canonical(
-        messages_payload(config, request["messages"])
-        if native
-        else {
-            "model": config["model"],
-            "messages": request["messages"],
-            "max_tokens": config["max_output_tokens"],
-            "stream": False,
-            "response_format": {"type": "json_object"},
-        }
+    catalog = "catalog_endpoint" in request
+    if catalog and set(request) != {"config", "credential", "catalog_endpoint", "candidates"}:
+        raise ScryveilError("invalid_provider_catalog")
+    endpoint = (
+        validate_catalog_request(config, request["catalog_endpoint"], request["candidates"])
+        if catalog
+        else config["endpoint"]
     )
-    if native and len(payload) > config["max_context_bytes"]:
+    payload = (
+        None
+        if catalog
+        else canonical(
+            messages_payload(config, request["messages"])
+            if native
+            else {
+                "model": config["model"],
+                "messages": request["messages"],
+                "max_tokens": config["max_output_tokens"],
+                "stream": False,
+                "response_format": {"type": "json_object"},
+            }
+        )
+    )
+    if native and payload is not None and len(payload) > config["max_context_bytes"]:
         raise ScryveilError("context_budget_exhausted")
-    url = urlsplit(config["endpoint"])
+    url = urlsplit(endpoint)
     host, port = url.hostname, url.port or (443 if config["mode"] == "remote" else 80)
     if host is None:
         raise ScryveilError("invalid_provider_endpoint")
@@ -81,12 +139,14 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
                 headers["Authorization"] = "Bearer " + request["credential"]
             else:
                 headers["x-api-key"] = request["credential"]
-        connection.request("POST", url.path, body=payload, headers=headers)
+        connection.request("GET" if catalog else "POST", url.path, body=payload, headers=headers)
         response = connection.getresponse()
         # No redirects, proxies, cookies, downloads or provider-supplied URLs.
         if response.status != 200:
             raise ScryveilError(
-                f"provider_http_{response.status}" if native else "provider_http_error"
+                http_failure(response.status, response.read(65537), request["credential"])
+                if native or catalog
+                else "provider_http_error"
             )
         raw = response.read(1024 * 1024 + 1)
         if len(raw) > 1024 * 1024:
@@ -94,6 +154,8 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         if request["credential"] and request["credential"].encode() in raw:
             raise ScryveilError("provider_credential_echo")
         data = load_json(raw)
+        if catalog:
+            return catalog_result(data, request["candidates"])
         if native:
             return messages_response(data, preserve=config.get("messages_profile") == "minimax-v1")
         content = data["choices"][0]["message"]["content"]

@@ -18,6 +18,7 @@ blocked = {".pcap", ".pcapng", ".db", ".sqlite3", ".mobileconfig", ".pem", ".p12
 patterns = [
     rb"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----",
     rb"gh[pousr]_[A-Za-z0-9]{30,}",
+    rb"apx_live_[A-Za-z0-9_-]{24,}",
     rb"AKIA[A-Z0-9]{16}",
 ]
 for name in sorted(set(paths) - {""}):
