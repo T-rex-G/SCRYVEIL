@@ -1,3 +1,7 @@
+# Recovery comparison checkpoint — 2026-10-29
+
+Parent `bde505479271fc746b0dd960002dd5504d7f2a29`. Added provider-neutral completed-review tracking, explicit JSON-type guidance, counted rejection feedback and a concrete findings query suggestion after premature finalization. Permissions, claim validation, budgets and stop conditions are unchanged. New regressions replay recorded Gemini rejections and test progress retention through compaction/untrusted evidence. Actual-model comparison pending; same model and budgets, newly bound disclosure. No private evidence or billing changes.
+
 # Current checkpoint: Google inference measured, quality gate failed
 
 Branch `feat/forensic-core-genesis`, PR #1 unmerged. Latest executed code SHA `2f7caa150b0a6f52bfc5aeba82695a41fc2af01d`; this documentation checkpoint records its result without scheduling more inference.
