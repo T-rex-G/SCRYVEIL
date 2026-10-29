@@ -1,7 +1,7 @@
 # SCRYVEIL engineering handoff
 
 Branch `feat/forensic-core-genesis`; PR #1 open; never merge automatically.
-Last verified published implementation: `b205cadfc73509fee7e755631269a9d74c763f3c`; core CI 40905285285 passed. Current offline-report changes have passed local qualification; final commit/CI reference follows after publication.
+Verified implementation: `2089c573939fcae8c9bcf170e81fb716856aeb38`; core CI [40964874799](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40964874799) passed all gates, including source and installed-wheel offline delivery. This documentation checkpoint records that exact code.
 
 ## Delivered offline capability
 
@@ -9,7 +9,7 @@ Last verified published implementation: `b205cadfc73509fee7e755631269a9d74c763f3
 
 Creates the fictional collection, imports through the ordinary CLI, reconstructs 6,260 events, measures three signature groups of 80 incident declarations, and exports `diagnostics.md`, full JSON, inventory and paged queries. No AI (including mock) is invoked. Reports now show timeline coverage, authorized signature symbols, resource accounting windows, original hashes, byte ranges and JSON pointers. 24 explicit nonfatal declarations and 20 no-action resource reports contradict an all-fatal interpretation. Earlier Jetsam records do not establish pressure at later crash times.
 
-All 266 original member bytes and normalized crash timestamps/exception fields/flags were checked independently against Python's ZIP reader and raw JSON. Original bytes and case state remain unchanged. 534 local tests, static/type/security/hygiene checks, historical compatibility, five source/installed-wheel demos and the installed-wheel offline delivery pass. The latter completed in 3.727 seconds on this shared host; this is not a general scalability guarantee.
+All 266 original member bytes and normalized crash timestamps/exception fields/flags were checked independently against Python's ZIP reader and raw JSON. Original bytes and case state remain unchanged. 534 local tests, static/type/security/hygiene checks, historical compatibility, five source/installed-wheel demos and the installed-wheel offline delivery pass. The downloadable generated example was extracted and its report reproduced byte-for-byte. Installed-wheel offline delivery completed in 3.727 seconds on this shared host; this is not a general scalability guarantee.
 
 ## Actual-model blocker
 
