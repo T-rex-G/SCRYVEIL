@@ -55,7 +55,7 @@ jobs:
       - name: Investigate fixed fictional cases through isolated broker and read-only worker
         if: steps.experiment.outputs.selected == 'true'
         env:
-          SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_PROVIDER_API_KEY }}
+          SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_GOOGLE_API_KEY }}
           SCRYVEIL_APPROVED_PLAN: ${{ steps.experiment.outputs.approved }}
         run: |
           python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"

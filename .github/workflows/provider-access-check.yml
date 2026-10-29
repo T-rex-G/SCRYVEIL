@@ -41,7 +41,7 @@ jobs:
           SCRYVEIL_APPROVED_PLAN: ${{ steps.check.outputs.approved }}
         run: |
           install -m 600 configs/qualification-provider.json "$RUNNER_TEMP/scryveil-provider.json"
-          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://api.apmix.ai/v1/models --catalog-auth-scheme bearer --candidate-model minimax/minimax-m3.1-flash --candidate-model minimax-m3.1-flash --candidate-model claude-sonnet-4-6-free --preview > "$RUNNER_TEMP/scryveil-access-plan.jsonl"
+          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://generativelanguage.googleapis.com/v1beta/openai/models --catalog-auth-scheme bearer --candidate-model gemini-3.1-flash-lite --preview > "$RUNNER_TEMP/scryveil-access-plan.jsonl"
           python - <<'PY'
           import json, os
           from pathlib import Path
@@ -54,7 +54,7 @@ jobs:
       - name: Read catalog once through isolated broker without inference or evidence
         if: steps.check.outputs.selected == 'true'
         env:
-          SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_PROVIDER_API_KEY }}
+          SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_GOOGLE_API_KEY }}
           SCRYVEIL_APPROVED_PLAN: ${{ steps.check.outputs.approved }}
         run: |
-          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://api.apmix.ai/v1/models --catalog-auth-scheme bearer --candidate-model minimax/minimax-m3.1-flash --candidate-model minimax-m3.1-flash --candidate-model claude-sonnet-4-6-free --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"
+          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://generativelanguage.googleapis.com/v1beta/openai/models --catalog-auth-scheme bearer --candidate-model gemini-3.1-flash-lite --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"

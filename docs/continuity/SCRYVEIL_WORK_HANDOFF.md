@@ -1,3 +1,7 @@
+# Google access continuation — 2026-10-29
+
+Parent checkpoint: `c43b9a14ca95d8fef98911574e0f35eb142bc345`. Owner authorized Google key testing. Selected config now targets Google OpenAI-compatible endpoint using Gemini 3.1 Flash-Lite; separate Actions secret, no billing changes. This checkpoint activates only one catalog GET, no evidence or inference. Result pending. Catalog and HTTP-error regressions: 45 passed. Historical APMIX results below remain unchanged; they do not qualify Google. Next: inspect catalog result before inference activation.
+
 # SCRYVEIL engineering handoff
 
 Updated 2026-10-28. Branch `feat/forensic-core-genesis`, [PR #1](https://github.com/T-rex-G/SCRYVEIL/pull/1), open and unmerged. Verified implementation: `e8f1ebd5ba5c36efa7d0828a11662c8fdea50138`, tree `527e0ca7d808ebef6ac7e1079d627c8ef9b85a20`. [Core CI 40743614263](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40743614263), job `123011451460`, passed **498 tests in 25.11s** and every required static/security, hygiene, historical compatibility, source-demo, packaging and installed-wheel gate. This enclosing documentation checkpoint records the completed access check; use `git rev-parse HEAD` for its SHA. Parent `6058a0d9df07c753e87392c9c4689f7c59039bc7` and its failed hosted attempt were reconciled. No private records/devices or merge.

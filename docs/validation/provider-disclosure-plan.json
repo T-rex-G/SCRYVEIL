@@ -3,19 +3,17 @@
   "evidence": "Only freshly generated fictional cases; no private/device exports or caller-supplied case paths",
   "provider": {
     "schema_version": "scryveil.provider/1",
-    "adapter": "messages-tools",
+    "adapter": "chat-completions-json",
     "mode": "remote",
     "max_requests": 12,
     "timeout_seconds": 60,
     "max_context_bytes": 131072,
     "max_output_tokens": 4096,
     "max_total_tokens": 200000,
-    "auth_scheme": "x-api-key",
-    "model": "minimax/minimax-m3.1-flash",
-    "messages_profile": "minimax-v1",
-    "reasoning_effort": "medium",
+    "auth_scheme": "bearer",
+    "model": "gemini-3.1-flash-lite",
     "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
-    "endpoint": "https://api.apmix.ai/v1/messages"
+    "endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
   },
   "code_and_fixture_sha256": {
     "src/scryveil/__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
@@ -52,8 +50,8 @@
     "scripts/collection_demo.py": "77d22e136557143a831bc60f8aff8bdc966786c96df96d32079567edbd6a29d0",
     "scripts/minimax_qualification.py": "5337ac7e1be072e546eb9e983c100c5199d9b22abccf6829b03d543e4fd2fca9",
     "scripts/provider_qualification.py": "e548a860156743d801c70779c1d88bed1944a6d7da1c217e3328ad7487a9e764",
-    ".github/workflows/provider-qualification.yml": "5d197d4f7da3e8c171edcbb8771891334a2a26fdf6315f5f5ea784165d56f1c1",
-    "configs/qualification-provider.json": "96b9142b6e2a398b9dcad9139a920eb5dcc16e9f0c7a56f5e24620e0aa2db8c1"
+    ".github/workflows/provider-qualification.yml": "4dbc83c986e0d2ca4161b84e5aa1d60e24fc433ce6d4e4ef63fbedac96b38471",
+    "configs/qualification-provider.json": "09dba96d7a5abfe8040cd9ff5bc0672f45bd2898ec6a70797111301837b12a58"
   },
   "require_recurrence_before_collection": true,
   "remote_stop_after_failed_recurrence": true,
@@ -484,5 +482,5 @@
   ],
   "maximum_requests": 74,
   "maximum_reserved_token_estimate": 1400000,
-  "plan_sha256": "83e48c0e3a83aef5e4b91fe7bd75bad9f95f610701b934bbda44aa54e03d8f9c"
+  "plan_sha256": "8ae79714e4e12fdbbea1998632c3a4ce9c27740217d94933f08f0202dcc9ca98"
 }
