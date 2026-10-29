@@ -45,7 +45,9 @@ jobs:
       - name: Version-aware diagnostic format demonstration
         run: python scripts/diagnostic_formats_demo.py
       - name: Fictional multi-artifact collection investigation
-        run: python scripts/collection_demo.py
+        run: |
+          python scripts/collection_demo.py
+          python scripts/collection_demo.py --offline-only
       - name: Package and installed-wheel smoke
         run: |
           python -m build --no-isolation
@@ -58,3 +60,4 @@ jobs:
           /tmp/scryveil-wheel-smoke/bin/python "$GITHUB_WORKSPACE/scripts/investigation_demo.py"
           /tmp/scryveil-wheel-smoke/bin/python "$GITHUB_WORKSPACE/scripts/diagnostic_formats_demo.py"
           /tmp/scryveil-wheel-smoke/bin/python "$GITHUB_WORKSPACE/scripts/collection_demo.py"
+          /tmp/scryveil-wheel-smoke/bin/python "$GITHUB_WORKSPACE/scripts/collection_demo.py" --offline-only

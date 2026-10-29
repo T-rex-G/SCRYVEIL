@@ -7,7 +7,7 @@ The CLI can import a bounded ZIP collection, preserve unsupported members, and i
 After installing SCRYVEIL, run from a checkout:
 
 ```sh
-python scripts/collection_demo.py --output /tmp/scryveil-example
+python scripts/collection_demo.py --offline-only --output /tmp/scryveil-example
 CID=$(cat /tmp/scryveil-example/case-id.txt)
 scryveil --root /tmp/scryveil-example/cases diagnostics report --case "$CID" --all-events --diagnostic-details --format markdown
 scryveil --root /tmp/scryveil-example/cases timeline query --case "$CID" --event-type diagnostic.crash --limit 5 --diagnostic-details
@@ -16,7 +16,7 @@ scryveil --root /tmp/scryveil-example/cases collection inventory --case "$CID"
 
 The generated collection contains 240 JSON crash reports, 20 text disk-write reports, three Jetsam reports with 6,000 process entries, two unsupported members and one malformed diagnostic. Expected observations: 6,260 events; three declared exception/stack signature groups with 80 incident IDs each; 24 nonfatal flags; 20 resource reports declaring no action; three explicit Jetsam reason entries. Mere listing in Jetsam is not counted as termination. The early memory records precede all crashes, exercising retrieval beyond the old chronological cap.
 
-The output directory also contains original ZIP, inventory, full diagnostic JSON, readable Markdown, and a mock investigation. The mock is scripted; it does not qualify a model's reasoning. Its explicit 200,000-unit budget is preserved in `mock-provider.json`; the smaller default is not claimed qualified for this workload.
+The output contains the original ZIP, ordinary case, inventory, complete diagnostic JSON, readable `diagnostics.md`, a crash timeline page and exact contrary/memory queries. The report includes source hashes, byte ranges/JSON pointers, signature symbols, timing coverage, resource accounting windows and uncertainties. All 266 member bytes are independently checked against the ZIP in regression validation. No model or mock is invoked with `--offline-only`. Omitting that option retains the existing scripted mock demonstration, which does not qualify model reasoning. The output directory must not already exist.
 
 For an owner-authorized collection:
 

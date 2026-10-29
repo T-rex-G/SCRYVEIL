@@ -114,6 +114,67 @@ def test_report_escapes_evidence_text():
     )
 
 
+def test_offline_cli_delivery_matches_independent_archive_observations(tmp_path, monkeypatch):
+    import runpy
+    import zipfile
+    from collections import Counter
+    from datetime import datetime
+
+    demo = runpy.run_path(str(ROOT / "scripts/collection_demo.py"))
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("offline delivery invoked AI")
+
+    monkeypatch.setitem(demo["run"].__globals__, "investigate", forbidden)
+    result = demo["run"](tmp_path, offline_only=True)
+    assert result["mock_requests"] == 0 and result["offline_only"]
+    assert not (tmp_path / "mock-investigation.json").exists()
+    snapshot = json.loads((tmp_path / "diagnostics.json").read_bytes())
+    artifacts = {a["artifact_id"]: a for a in snapshot["artifacts"]}
+    inventory = json.loads((tmp_path / "inventory.json").read_bytes())
+    originals = tmp_path / "cases" / result["case_id"] / "originals"
+    # Independent ZIP reader and raw source fields; no SCRYVEIL parser/detector oracle.
+    with zipfile.ZipFile(tmp_path / "fictional-collection.zip") as archive:
+        raw_crashes = {}
+        for member in inventory["archives"][0]["members"]:
+            raw = archive.read(member["path"])
+            assert digest(raw) == member["sha256"]
+            assert (originals / member["sha256"]).read_bytes() == raw
+            if member["path"].startswith("diagnostics/crash-"):
+                raw_crashes[member["artifact_id"]] = json.loads(raw.split(b"\n", 1)[1])
+    assert len(raw_crashes) == 240
+    symbol_counts = Counter(r["threads"][0]["frames"][0]["symbol"] for r in raw_crashes.values())
+    assert sorted(symbol_counts.values()) == [80, 80, 80]
+    assert sum(r["isNonFatal"] is True for r in raw_crashes.values()) == 24
+    for event in snapshot["events"]:
+        if event["artifact_id"] in raw_crashes:
+            raw = raw_crashes[event["artifact_id"]]
+            assert datetime.fromisoformat(event["event_time"]) == datetime.fromisoformat(
+                raw["captureTime"]
+            )
+            assert event["exception_type"] == raw["exception"]["type"]
+            assert event["nonfatal"] is raw["isNonFatal"]
+    rendered = (tmp_path / "diagnostics.md").read_text()
+    assert "6260 of 6260" in rendered and "3 recurring" in rendered
+    assert "24 observations explicitly declare nonfatal" in rendered
+    assert "20 declare no action" in rendered
+    assert "precedes the first timed crash" in rendered
+    assert "JSON pointer /processes/0" in rendered
+    for event in [e for e in snapshot["events"] if e["event_type"] == "diagnostic.resource"][:3]:
+        location = event["field_locations"]["writes_caused"]
+        raw = (originals / artifacts[event["artifact_id"]]["sha256"]).read_bytes()
+        assert (
+            b"12.50 MB"
+            in raw[location["byte_offset"] : location["byte_offset"] + location["byte_length"]]
+        )
+        assert (
+            f"bytes {location['byte_offset']}–{location['byte_offset'] + location['byte_length']}"
+            in rendered
+        )
+    assert "first\\_five\\_source\\_symbols" in rendered
+    assert result["originals_and_state_unchanged"]
+
+
 def test_signature_contrary_evidence_cannot_cross_declared_build_or_bundle():
     rows = events()
     for field, value in [

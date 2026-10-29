@@ -9,6 +9,8 @@ import argparse
 import io
 import json
 import resource
+import subprocess
+import sys
 import tempfile
 import time
 import zipfile
@@ -76,19 +78,26 @@ def generate():
     return stream.getvalue()
 
 
-def run(base):
+def run(base, *, offline_only=False):
     timings = {}
     raw = generate()
     source = base / "fictional-collection.zip"
     source.write_bytes(raw)
     store = CaseStore(base / "cases")
-    cid = store.create("fictional service investigation", "self")["case_id"]
+
+    def cli(*args):
+        command = [sys.executable, "-m", "scryveil", "--root", str(base / "cases"), *args]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        if result.returncode not in (0, 2):
+            raise RuntimeError("demonstration_cli_failed: " + result.stderr)
+        return result.stdout
+
+    cid = json.loads(
+        cli("case", "create", "--label", "fictional service investigation", "--consent", "self")
+    )["case_id"]
     (base / "case-id.txt").write_text(cid + "\n")
-    mock_config = base / "mock-provider.json"
-    mock_config.write_bytes(canonical({**DEFAULT_CONFIG, "max_total_tokens": 200000}))
-    mock_config.chmod(0o600)
     start = time.perf_counter()
-    imported = store.import_collection(cid, source, True)
+    imported = json.loads(cli("collection", "import", "--case", cid, "--synthetic", str(source)))
     timings["import_seconds"] = time.perf_counter() - start
     start = time.perf_counter()
     snapshot = snapshot_case(store, cid, all_events=True, diagnostic_details=True)
@@ -127,25 +136,58 @@ def run(base):
     timings["three_exact_queries_seconds"] = time.perf_counter() - start
     (base / "contrary-and-memory-queries.json").write_bytes(canonical(diagnostic_queries))
     before = (store.path(cid) / "state.json").read_bytes()
-    start = time.perf_counter()
-    report = investigate(
-        store,
+    report = None
+    if not offline_only:
+        mock_config = base / "mock-provider.json"
+        mock_config.write_bytes(canonical({**DEFAULT_CONFIG, "max_total_tokens": 200000}))
+        mock_config.chmod(0o600)
+        start = time.perf_counter()
+        report = investigate(
+            store,
+            cid,
+            "Which observations support recurring service failures, and what contradicts treating every report as fatal?",
+            {**DEFAULT_CONFIG, "max_total_tokens": 200000},
+            all_events=True,
+            diagnostic_details=True,
+        )
+        timings["mock_investigation_seconds"] = time.perf_counter() - start
+        assert report["status"] == "completed", report["status"]
+        (base / "mock-investigation.json").write_bytes(canonical(report))
+    # Export through the same CLI an operator uses; compare to verified source data.
+    rendered = cli(
+        "diagnostics",
+        "report",
+        "--case",
         cid,
-        "Which observations support recurring service failures, and what contradicts treating every report as fatal?",
-        {**DEFAULT_CONFIG, "max_total_tokens": 200000},
-        all_events=True,
-        diagnostic_details=True,
+        "--all-events",
+        "--diagnostic-details",
+        "--format",
+        "markdown",
     )
-    timings["mock_investigation_seconds"] = time.perf_counter() - start
+    assert rendered == narrative(snapshot)
+    timeline = json.loads(
+        cli(
+            "timeline",
+            "query",
+            "--case",
+            cid,
+            "--event-type",
+            "diagnostic.crash",
+            "--limit",
+            "5",
+            "--diagnostic-details",
+        )
+    )
+    assert timeline["data"]["matched"] == 240
+    (base / "crash-timeline-page.json").write_bytes(canonical(timeline))
     assert (store.path(cid) / "state.json").read_bytes() == before and source.read_bytes() == raw
     inventory = store.collection_inventory(cid)
     for name, value in (
         ("inventory.json", inventory),
         ("diagnostics.json", snapshot),
-        ("mock-investigation.json", report),
     ):
         (base / name).write_bytes(canonical(value))
-    (base / "diagnostics.md").write_text(narrative(snapshot))
+    (base / "diagnostics.md").write_text(rendered)
     summary = {
         "synthetic": True,
         "case_id": cid,
@@ -164,9 +206,10 @@ def run(base):
         ],
         "timings": timings,
         "parent_peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-        "mock_status": report["status"],
-        "mock_requests": report["requests"],
-        "reserved_token_units": report["reserved_token_estimate"],
+        "mock_status": report["status"] if report else "NOT_RUN",
+        "mock_requests": report["requests"] if report else 0,
+        "reserved_token_units": report["reserved_token_estimate"] if report else 0,
+        "offline_only": offline_only,
         "originals_and_state_unchanged": True,
         "actual_model_quality": "NOT_TESTED",
         "genuine_export_qualification": "OPEN",
@@ -175,17 +218,21 @@ def run(base):
         },
     }
     (base / "measurement.json").write_bytes(canonical(summary))
-    assert report["status"] == "completed", report["status"]
     return summary
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--offline-only",
+        action="store_true",
+        help="Produce deterministic reports without invoking even the mock investigator",
+    )
     args = parser.parse_args()
     if args.output:
         args.output.mkdir(mode=0o700, parents=True, exist_ok=False)
-        print(json.dumps(run(args.output)))
+        print(json.dumps(run(args.output, offline_only=args.offline_only)))
     else:
         with tempfile.TemporaryDirectory(prefix="scryveil-collection-demo-") as temp:
-            print(json.dumps(run(Path(temp))))
+            print(json.dumps(run(Path(temp), offline_only=args.offline_only)))

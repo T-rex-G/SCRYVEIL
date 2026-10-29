@@ -204,5 +204,30 @@
       "fresh_process_wall_seconds": 2.7832452529999046
     }
   ],
-  "scope": "Generated fictional inputs and scripted mock only; no genuine Apple export or actual-model qualification."
+  "scope": "Generated fictional inputs and scripted mock only; no genuine Apple export or actual-model qualification.",
+  "offline_delivery": {
+    "archive_sha256": "53685fd44722e7dac058a451959250ed9a0cd813342ebcdd96d222ad60e10b8b",
+    "events": 6260,
+    "signature_groups": 3,
+    "incidents_per_signature": [
+      80,
+      80,
+      80
+    ],
+    "resource_temporal_observation_pairs": 220,
+    "pairs_inside_reported_intervals": 40,
+    "mock_requests": 0,
+    "offline_only": true,
+    "originals_and_state_unchanged": true,
+    "timings": {
+      "filtered_query_seconds": 0.0004897459999710918,
+      "import_seconds": 0.5778057830000307,
+      "three_exact_queries_seconds": 0.0014226369999050803,
+      "verified_snapshot_seconds": 0.6822335079999675
+    },
+    "parent_peak_rss_kib": 82872,
+    "command": "python scripts/collection_demo.py --offline-only --output FRESH_DIRECTORY",
+    "installed_wheel_wall_seconds": 3.727,
+    "qualification": "Generated collection only; original ZIP member bytes and crash field interpretation independently checked in test_offline_cli_delivery_matches_independent_archive_observations; genuine Apple exports unqualified."
+  }
 }

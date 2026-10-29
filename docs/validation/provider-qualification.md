@@ -264,3 +264,5 @@ Its current plan digest is
 The installed-wheel offline preview matches it exactly. No hosted reasoning
 result is available; credential setup and reviewed experiment activation remain
 the immediate next step.
+
+Latest bounded protocol result: [40905285383](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40905285383), commit `b205cadfc73509fee7e755631269a9d74c763f3c`, Gemini 3.8 Flash: first request timed out waiting for headers at 60.03819 seconds; no reply, no evidence, no tool execution, no retry. [Compact original result](provider-protocol-result.json). No forensic reasoning was exercised. The prior semantic gates remain open.

@@ -33,7 +33,7 @@ Run `python scripts/investigation_demo.py` for the complete diagnostic slice: fo
 
 Run `python scripts/diagnostic_formats_demo.py` for the new 309/308/145 triad: three observations, three distinct incident declarations, two contrary records, exact resource-line citations and an eight-step mock report. Genuine exports remain a separate authorization and qualification gate.
 
-Run `python scripts/collection_demo.py --output /tmp/scryveil-example` to retain a fictional 266-member collection, an ordinary CLI-readable case with 6,260 events, diagnostic reports and a scripted investigation. The [collection guide](docs/collections.md) explains how to browse findings and query later crashes without relying on the test harness.
+Run `python scripts/collection_demo.py --offline-only --output /tmp/scryveil-example` to retain a fictional 266-member collection, an ordinary CLI-readable case with 6,260 events, a source-linked Markdown report, complete diagnostic JSON and paged timeline queries without invoking AI. The [collection guide](docs/collections.md) explains how to browse findings and query later crashes without relying on the test harness.
 
 ## Evidence-linked App Privacy Report review
 

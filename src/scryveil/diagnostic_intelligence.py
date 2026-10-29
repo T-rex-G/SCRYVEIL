@@ -338,6 +338,7 @@ def narrative(snapshot: dict[str, Any]) -> str:
 
     def safe(value: str) -> str:
         value = html.escape(value)
+        value = value.replace("\r", " ").replace("\n", " ")
         for character in ("\\", "`", "[", "]", "*", "_", "#", "|"):
             value = value.replace(character, "\\" + character)
         return value
@@ -355,6 +356,69 @@ def narrative(snapshot: dict[str, Any]) -> str:
     counts = coverage.get("collection_member_status_counts")
     if counts:
         lines += ["Collection inventory: " + safe(json.dumps(counts, sort_keys=True)), ""]
+    repeated = [
+        f for f in snapshot["findings"] if f["rule"] == "diagnostics.signature_recurrence/1"
+    ]
+    nonfatal = sum(e.get("nonfatal") is True for e in rows.values())
+    no_action = sum(e.get("action_taken") == "none" for e in rows.values())
+    lines += [
+        "## Assessment",
+        "",
+        f"- {len(repeated)} recurring declared exception/stack signature groups were identified. A repeated signature identifies a pattern for follow-up, not its cause.",
+        f"- {nonfatal} observations explicitly declare nonfatal conditions; {no_action} declare no action taken. These flags must not be counted as proof of fatal crashes.",
+        "- Software defects, workload/resource policy and mixed-device collections remain competing explanations. The supplied observations do not establish spyware or a clean device.",
+        "",
+    ]
+    lines += [
+        "## Timeline overview",
+        "",
+        "Times below are normalized source observations, not acquisition times. Unknown clock accuracy prevents causal ordering across devices. The JSON report retains every selected event and its original offset/precision.",
+        "",
+        "| Category | Observations | First source time (UTC) | Last source time (UTC) | Unknown times |",
+        "| --- | ---: | --- | --- | ---: |",
+    ]
+    for category in sorted({e["event_type"] for e in rows.values()}):
+        group = [e for e in rows.values() if e["event_type"] == category]
+        times = sorted(e["event_time"] for e in group if e["event_time"] is not None)
+        lines.append(
+            f"| {safe(category)} | {len(group)} | {safe(times[0]) if times else 'unknown'} | {safe(times[-1]) if times else 'unknown'} | {len(group) - len(times)} |"
+        )
+    memory_times = [
+        e["event_time"]
+        for e in rows.values()
+        if e["event_type"] == "diagnostic.jetsam" and e["event_time"] is not None
+    ]
+    crash_times = [
+        e["event_time"]
+        for e in rows.values()
+        if e["event_type"] == "diagnostic.crash" and e["event_time"] is not None
+    ]
+    if memory_times and crash_times and max(memory_times) < min(crash_times):
+        lines += [
+            "",
+            "Every timed Jetsam observation in this selection precedes the first timed crash. These records do not show memory pressure at the later crash times; unknown clock accuracy and missing history remain limitations.",
+        ]
+    lines += [
+        "",
+        "Missing or unsupported source families: "
+        + ", ".join(safe(family) for family in coverage.get("not_collected_or_supported", []))
+        + ".",
+        "",
+    ]
+    artifacts = {a["artifact_id"]: a for a in snapshot["artifacts"]}
+
+    def citation(event: dict[str, Any], field: str | None = None) -> str:
+        location = event.get("field_locations", {}).get(field, event) if field else event
+        pointer = location.get("json_pointer", event.get("json_pointer", ""))
+        original = artifacts.get(event["artifact_id"], {}).get("sha256", "unavailable")
+        return (
+            f"`{event['event_id']}` — `{event['artifact_id']}`; "
+            f"SHA-256 `{original}`; {safe(location['source_locator'])}; "
+            f"bytes {location['byte_offset']}–{location['byte_offset'] + location['byte_length']} (end exclusive); "
+            f"JSON pointer {safe(pointer) if pointer else '(record root/text)'}; "
+            f"time {safe(event['event_time'] or 'unknown')}."
+        )
+
     for finding in snapshot["findings"]:
         process_ref = finding.get("process_ref")
         name = next(
@@ -376,6 +440,27 @@ def narrative(snapshot: dict[str, Any]) -> str:
                 "Measured values: " + safe(json.dumps(finding["statistics"], sort_keys=True)),
                 "",
             ]
+        # Describe the actual authorized signature, not just its opaque hash.
+        if finding["rule"] == "diagnostics.signature_recurrence/1":
+            example = rows[finding["supporting_evidence_ids"][0]]
+            details = {
+                key: example[key]
+                for key in (
+                    "exception_type",
+                    "termination_namespace",
+                    "termination_code",
+                    "os_build",
+                )
+                if key in example
+            }
+            if "frames" in example:
+                details["first_five_source_symbols"] = [
+                    f.get("symbol") for f in example["frames"][:5]
+                ]
+            lines += [
+                "Observed signature details: " + safe(json.dumps(details, sort_keys=True)),
+                "",
+            ]
         for key, title in (
             ("supporting_evidence_ids", "Supporting observations"),
             ("contradictory_evidence_ids", "Contrary observations"),
@@ -383,9 +468,7 @@ def narrative(snapshot: dict[str, Any]) -> str:
             lines += [title + ":", ""]
             for eid in finding[key][:3]:
                 e = rows[eid]
-                lines += [
-                    f"- `{eid}` — `{e['artifact_id']}`; {safe(e['source_locator'])}; bytes {e['byte_offset']}–{e['byte_offset'] + e['byte_length']} (end exclusive); time {safe(e['event_time'] or 'unknown')}."
-                ]
+                lines += ["- " + citation(e)]
             if not finding[key]:
                 lines.append(
                     "- None identified by this rule; this does not establish that none exist."
@@ -407,6 +490,34 @@ def narrative(snapshot: dict[str, Any]) -> str:
             "Limits: " + " ".join(safe(s) for s in finding["limitations"]),
             "",
         ]
+    resources = [e for e in rows.values() if e["event_type"] == "diagnostic.resource"]
+    if resources:
+        lines += [
+            "## Resource accounting examples",
+            "",
+            "Reported writes and limits have separate accounting windows. These values are not packet observations, measured rates or proof that a limit caused a crash. No unit conversion or same-window comparison is assumed.",
+            "",
+        ]
+        for e in resources[:3]:
+            for field in (
+                "writes_caused",
+                "writes_duration_seconds",
+                "writes_limit",
+                "limit_duration_seconds",
+                "sampled_duration_seconds",
+                "action_taken",
+            ):
+                if field in e:
+                    lines += [
+                        f"- {safe(field)} = {safe(json.dumps(e[field], sort_keys=True))}; "
+                        + citation(e, field)
+                    ]
+            lines.append("")
+        if len(resources) > 3:
+            lines += [
+                f"Showing 3 of {len(resources)} resource records; all selected records remain in the JSON report.",
+                "",
+            ]
     lines += [
         "## Outstanding questions",
         "",
