@@ -1,3 +1,19 @@
+# Current continuation — reasoning guidance unqualified after provider failures
+
+Branch `feat/forensic-core-genesis`, PR #1 unmerged. Runtime SHA `63561ba2f457895a0c28986cf5de8752a2f91556`; alternative-model execution SHA `52461d4e1df0ec070db08a6e5c263f5be150eeb5`. This result checkpoint restores the previously invocable model configuration without scheduling another run.
+
+## Reasoning procedure and provider comparison — 2026-10-29
+
+Code checkpoint `63561ba2f457895a0c28986cf5de8752a2f91556` adds a shared provider-neutral reasoning procedure: compare the original proposition against contrary evidence, inspect finding-linked records, evaluate competing causes, and distinguish observations from causation. It also fixes rejection-count reset after an accepted plan. This is guidance, not semantic enforcement. Tests establish presentation and unchanged security boundaries, not reasoning quality.
+
+[Run 40849580293](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40849580293), original `google-reasoning-40849580293.json`: Flash-Lite returned a plan, inspected findings and read one contrary event. Request four timed out after 60.048 seconds (87.734 seconds total). No final or proposed facts. Remaining scenarios skipped. This does not measure the effect on final reasoning. Report/plan and 36 historical bound files were independently verified.
+
+An explicit same-budget comparison with catalog-listed `gemini-2.5-flash` at `52461d4e1df0ec070db08a6e5c263f5be150eeb5`, [run 40850006631](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40850006631), returned `provider_http_404` on request one after 0.311 seconds. Original: `google-flash-40850006631.json`. No model response or tool execution; other scenarios skipped. Catalog listing and official free-tier pricing did not prove this alias was invocable. No specific 404 cause is claimed and billing was untouched. No automatic retry/fallback occurred.
+
+The prepared qualification config returns to previously functioning Flash-Lite; restoring it does not activate inference. Both attempts preserved original evidence/state. Neither attempt qualifies semantic accuracy, attack exposure or recovery under injected faults. Actual-model completion/reasoning remains an open gate, not a waived criterion.
+
+505 local tests passed, plus static checks, historical compatibility, source and installed-wheel demos. [Core CI 40849580280](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40849580280) passed every gate for the changed runtime. The highest-value next step is a bounded availability/protocol check for a currently invocable reasoning model before re-running the evidence benchmark; preserve exact model/disclosure scope and do not increase budgets to hide failures. Genuine private Apple diagnostics remain separately unauthorized.
+
 # Explicit alternative-model comparison — 2026-10-29
 
 Parent `63561ba2f457895a0c28986cf5de8752a2f91556`. Run 40849580293 on Flash-Lite timed out on request four (60.048s); three replies, no final/facts, remaining cases skipped. Original results preserved. No reasoning improvement inferred. Core CI 40849580280 passed; 505 local tests passed. Compare already catalog-listed Gemini 2.5 Flash using identical evidence, reasoning guide, protocol and limits. Official Google pricing lists free-tier text input/output; no billing changes. This is an explicit reviewed comparison, not automatic fallback. Result pending.
