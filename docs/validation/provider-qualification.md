@@ -1,5 +1,7 @@
 # Provider qualification correction
 
+Verified implementation checkpoint: `bf88a45fd06b9e59a55337fa32d3bbee646c45f7` (branch `feat/forensic-core-genesis`, PR #1 unmerged). [Core CI 40848642662](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40848642662) passed all tests, static/typing/security/hygiene checks, historical compatibility, five source demonstrations, build and five installed-wheel demonstrations. Local regression count: 503 passing. Provider workflow 40848642657 explicitly skipped inference; no new live model qualification is claimed. This documentation checkpoint records the verified code state.
+
 Status: **no qualified actual-model investigation**. Google inference now works, but the first six-request investigation failed its quality floor. Private diagnostics and devices remain out of scope; PR #1 stays unmerged.
 
 ## Coverage gate comparison and remaining qualification — 2026-10-29

@@ -1,5 +1,7 @@
 # Current handoff — measured recovery, reasoning still unqualified
 
+Verified implementation checkpoint: `bf88a45fd06b9e59a55337fa32d3bbee646c45f7` (branch `feat/forensic-core-genesis`, PR #1 unmerged). [Core CI 40848642662](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40848642662) passed all tests, static/typing/security/hygiene checks, historical compatibility, five source demonstrations, build and five installed-wheel demonstrations. Local regression count: 503 passing. Provider workflow 40848642657 explicitly skipped inference; no new live model qualification is claimed. This documentation checkpoint records the verified code state.
+
 Branch `feat/forensic-core-genesis`; PR #1 open/unmerged. Latest executed model checkpoint `c3c842e7db0a4cbdc7f277d37ec14712eddefbcb`. This follow-up adds sanitized Chat HTTP diagnostics and fail-fast remote benchmark behavior, with no new inference activation. No credentials or private evidence in repository. Owner diagnostics still require separate authorization.
 
 ## Coverage gate comparison and remaining qualification — 2026-10-29
