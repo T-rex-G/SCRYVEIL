@@ -1,3 +1,7 @@
+# Google inference activation — 2026-10-29
+
+Parent checkpoint: `17ab73ca80c7e98aadb7532c36186be8ee186d58`. Catalog runs 40798261295 and 40798372044 authenticated successfully. Google lists model IDs with `models/`; all three requested candidates were present with that prefix. The documented inference API accepts bare model names. Activate prepared disclosure plan `8ae79714e4e12fdbbea1998632c3a4ce9c27740217d94933f08f0202dcc9ca98`: Google Gemini 3.1 Flash-Lite, fictional cases only, 12 requests per initial recurrence case, stop subsequent scenarios on failed recurrence. No inference result yet. Local full regressions: 498 passed; Ruff, mypy, Bandit and hygiene passed. No paid billing enabled, no private evidence accessed.
+
 # Google access continuation — 2026-10-29
 
 Parent checkpoint: `c43b9a14ca95d8fef98911574e0f35eb142bc345`. Owner authorized Google key testing. Selected config now targets Google OpenAI-compatible endpoint using Gemini 3.1 Flash-Lite; separate Actions secret, no billing changes. This checkpoint activates only one catalog GET, no evidence or inference. Result pending. Catalog and HTTP-error regressions: 45 passed. Historical APMIX results below remain unchanged; they do not qualify Google. Next: inspect catalog result before inference activation.
