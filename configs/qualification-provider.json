@@ -4,7 +4,7 @@
   "mode": "remote",
   "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
   "auth_scheme": "bearer",
-  "model": "gemini-3.1-flash-lite",
+  "model": "gemini-2.5-flash",
   "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
   "max_requests": 12,
   "timeout_seconds": 60,

@@ -1,3 +1,7 @@
+# Explicit alternative-model comparison — 2026-10-29
+
+Parent `63561ba2f457895a0c28986cf5de8752a2f91556`. Run 40849580293 on Flash-Lite timed out on request four (60.048s); three replies, no final/facts, remaining cases skipped. Original results preserved. No reasoning improvement inferred. Core CI 40849580280 passed; 505 local tests passed. Compare already catalog-listed Gemini 2.5 Flash using identical evidence, reasoning guide, protocol and limits. Official Google pricing lists free-tier text input/output; no billing changes. This is an explicit reviewed comparison, not automatic fallback. Result pending.
+
 # Hypothesis reasoning comparison — 2026-10-29
 
 Parent checkpoint `f2b1f0eb29d7dce15b0c0d7084ab83856bd657dc`. Add a shared forensic reasoning procedure to both provider paths: preserve the tested proposition, map contrary evidence to it, compare alternative causes, inspect finding-linked events and avoid causal claims from labels/recurrence. This is experimental guidance, not a semantic validator; all worker gates remain unchanged. Fix consecutive rejection count reset after accepted plan. Test compaction against policy-size-relative budgets and preserve the native stable prefix with the shared procedure. Same-model controlled comparison pending. No private evidence, paid billing changes or expanded permissions.

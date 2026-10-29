@@ -10,7 +10,7 @@
     "max_output_tokens": 4096,
     "max_total_tokens": 200000,
     "auth_scheme": "bearer",
-    "model": "gemini-3.1-flash-lite",
+    "model": "gemini-2.5-flash",
     "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
     "endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
   },
@@ -53,7 +53,7 @@
     "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5",
     "scripts/provider_access_check.py": "81f86ea870f556ab7bb4d956aebd3fb1bef366f033305553429cd5b90e98d0de",
     ".github/workflows/provider-access-check.yml": "5b31f682687a960c6cfc0913de60c17cd6a731431151b3820acd0a9f8abe379d",
-    "configs/qualification-provider.json": "09dba96d7a5abfe8040cd9ff5bc0672f45bd2898ec6a70797111301837b12a58"
+    "configs/qualification-provider.json": "6b5d29a30c9292a7d7a24d94c961d3f5a930182650c54a1dec11f1ad62f9537b"
   },
-  "plan_sha256": "753059b7a4f9a3ecd54c512d6f13569fd1e2290ee1f096b8c26c8a7aa1b01490"
+  "plan_sha256": "a0ec48389828d7332e837a71d740e607ea3fc35cec2b3b9d55f62bef911e8001"
 }
