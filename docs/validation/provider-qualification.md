@@ -4,6 +4,22 @@ Verified implementation checkpoint: `bf88a45fd06b9e59a55337fa32d3bbee646c45f7` (
 
 Status: **no qualified actual-model investigation**. Google inference now works, but the first six-request investigation failed its quality floor. Private diagnostics and devices remain out of scope; PR #1 stays unmerged.
 
+## Qualification protocol audit and 503 recovery — 2026-10-29
+
+Verified implementation: `af69350619b48dad94baf4f70f058475175a6f1c`. [Core CI 40902935469](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40902935469) passed all gates; local tests: 519 passed in 26.10s. All three recovered records below validate against the current report schema, report/plan digests and historical bound source hashes.
+
+Resolved implementation defects: Chat reasoning effort was prohibited; finish reasons/refusal were ignored; timeout phase was opaque; report-embedded provider schema drifted from Chat configuration. Optional bounded 503 recovery now counts every attempt within existing budgets and records the decision. Default remains no retries. Tests cover rejection, success, retry exhaustion, cancellation and exact report conformance.
+
+| Run | Observation | Qualification implication |
+|---|---|---|
+| [40851648597](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40851648597) | Explicit low effort, request four timeout; three events retrieved | Low effort did not demonstrate a latency or reasoning fix |
+| [40902135551](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40902135551) | Plan returned, then HTTP 503 on request two | Concrete service-availability failure; no timeout phase was reached |
+| [40902935225](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40902935225) | First request 503; one delayed retry also 503 | Recovery limit demonstrated live; model quality not exercised |
+
+Original records: `google-effort-40851648597.json`, `google-phase-40902135551.json`, `google-retry-40902935225.json`. Later selected scenarios were skipped. Previous semantic defects are still unresolved; newer transport failures neither prove nor disprove improved reasoning. The focused three-scenario selection is not a replacement for the full seven-scenario qualification suite. No private diagnostics, increased budgets, paid billing changes or permission weakening.
+
+Applied API reference: [Google OpenAI compatibility](https://ai.google.dev/gemini-api/docs/openai), specifically explicit reasoning-effort mapping and default behavior. No SDK or third-party code incorporated. Provider availability must be established before another semantic comparison; no further unchanged retry is justified by this record.
+
 ## Reasoning procedure and provider comparison — 2026-10-29
 
 Code checkpoint `63561ba2f457895a0c28986cf5de8752a2f91556` adds a shared provider-neutral reasoning procedure: compare the original proposition against contrary evidence, inspect finding-linked records, evaluate competing causes, and distinguish observations from causation. It also fixes rejection-count reset after an accepted plan. This is guidance, not semantic enforcement. Tests establish presentation and unchanged security boundaries, not reasoning quality.

@@ -288,3 +288,13 @@ Review the exact destination, credential reference, auth and source digest. Repe
 Known native API error codes are reported as `provider_http_STATUS_CODE`; unknown error bodies remain `provider_http_STATUS`. The suffix is an allowlisted provider assertion, not a verified account diagnosis. Free-form messages/identifiers are suppressed; credential echoes fail closed. Correct access/configuration before explicitly selecting another inference run.
 
 Chat provider HTTP failures now retain sanitized `provider_http_STATUS` codes (and closed known categories), without response bodies. A 429 identifies an HTTP rejection, not a verified account balance or specific quota. The fictional remote benchmark stops later scenarios after a provider failure; no automatic retry or fallback is performed.
+
+## Controlled reasoning and transient recovery
+
+Chat-compatible configurations may explicitly set `reasoning_effort` to `low`, `medium` or `high` where supported by the selected endpoint/model. Omission preserves provider defaults. This setting is bound into disclosure and is not a guarantee of quality or latency. Truncated, refused or unsupported finish reasons cannot dispatch agent actions; missing finish_reason remains compatible with older peers.
+
+Optional `retry_http_503_once: true` permits exactly one five-second delayed retry of exact `provider_http_503` within the existing request, token and deadline budgets. Default is no retry. No retry for timeouts, quota/auth failures or 404s. The report records `provider_recovery`; failed attempts count toward requests/reserved tokens, and missing usage remains unknown. Ctrl-C cancels during the delay. No automatic provider/model fallback.
+
+Timeout suffixes (`resolve`, `connect`, `tls`, `send`, `headers`, `body`, `decode`) identify the last trusted broker phase, not a definitive remote root cause. Only fixed phase names cross the diagnostic channel. Provider bodies, keys, URLs and evidence do not. Neither a timeout nor 503 proves a quota issue.
+
+Use repeated `--scenario` arguments with `scripts/provider_qualification.py` to select a focused benchmark; include the identical selection in preview and execution. Passing a subset does not qualify omitted scenarios. The reviewed workflow currently selects recurrence, injection and missing evidence. All criteria remain unchanged.
