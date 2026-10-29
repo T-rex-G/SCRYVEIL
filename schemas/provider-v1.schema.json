@@ -230,8 +230,29 @@
         ]
       },
       "then": {
-        "required": [
-          "messages_profile"
+        "anyOf": [
+          {
+            "required": [
+              "messages_profile"
+            ]
+          },
+          {
+            "required": [
+              "adapter"
+            ],
+            "properties": {
+              "adapter": {
+                "const": "chat-completions-json"
+              },
+              "reasoning_effort": {
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              }
+            }
+          }
         ]
       }
     }

@@ -86,6 +86,11 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
                 "max_tokens": config["max_output_tokens"],
                 "stream": False,
                 "response_format": {"type": "json_object"},
+                **(
+                    {"reasoning_effort": config["reasoning_effort"]}
+                    if "reasoning_effort" in config
+                    else {}
+                ),
             }
         )
     )
@@ -156,7 +161,15 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
             return catalog_result(data, request["candidates"])
         if native:
             return messages_response(data, preserve=config.get("messages_profile") == "minimax-v1")
-        content = data["choices"][0]["message"]["content"]
+        choice = data["choices"][0]
+        finish = choice.get("finish_reason")
+        if finish == "length":
+            raise ScryveilError("provider_output_truncated")
+        if finish == "content_filter" or choice["message"].get("refusal"):
+            raise ScryveilError("provider_refused")
+        if finish not in (None, "stop"):
+            raise ScryveilError("provider_finish_unsupported")
+        content = choice["message"]["content"]
         if not isinstance(content, str) or len(content.encode()) > 65536:
             raise ScryveilError("invalid_provider_response")
         usage = data.get("usage")

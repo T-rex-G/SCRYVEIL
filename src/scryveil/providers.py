@@ -133,8 +133,16 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     ):
         raise ScryveilError("unsupported_messages_profile")
     if "reasoning_effort" in result and (
-        result.get("messages_profile") != "minimax-v1"
-        or result["reasoning_effort"] not in ("low", "medium", "high", "xhigh", "max")
+        not (
+            (
+                result["adapter"] == "chat-completions-json"
+                and result["reasoning_effort"] in ("low", "medium", "high")
+            )
+            or (
+                result.get("messages_profile") == "minimax-v1"
+                and result["reasoning_effort"] in ("low", "medium", "high", "xhigh", "max")
+            )
+        )
     ):
         raise ScryveilError("unsupported_reasoning_effort")
     if result.get("messages_profile") == "minimax-v1" and "reasoning_effort" not in result:
@@ -360,7 +368,17 @@ class BrokerProvider:
             if (
                 isinstance(response, dict)
                 and safe_error(response.get("error"))
-                and (diagnostic_errors or response["error"].startswith("provider_http_"))
+                and (
+                    diagnostic_errors
+                    or response["error"].startswith(
+                        (
+                            "provider_http_",
+                            "provider_output_",
+                            "provider_refused",
+                            "provider_finish_",
+                        )
+                    )
+                )
             ):
                 raise ScryveilError(response["error"])
             raise ScryveilError("provider_failed")

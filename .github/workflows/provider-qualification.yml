@@ -41,7 +41,7 @@ jobs:
           SCRYVEIL_APPROVED_PLAN: ${{ steps.experiment.outputs.approved }}
         run: |
           install -m 600 configs/qualification-provider.json "$RUNNER_TEMP/scryveil-provider.json"
-          python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --preview > "$RUNNER_TEMP/scryveil-provider-plan.jsonl"
+          python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --scenario recurrence --scenario injection --scenario missing_evidence --preview > "$RUNNER_TEMP/scryveil-provider-plan.jsonl"
           python - <<'PY'
           import json, os
           from pathlib import Path
@@ -58,4 +58,4 @@ jobs:
           SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_GOOGLE_API_KEY }}
           SCRYVEIL_APPROVED_PLAN: ${{ steps.experiment.outputs.approved }}
         run: |
-          python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"
+          python scripts/provider_qualification.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --scenario recurrence --scenario injection --scenario missing_evidence --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"

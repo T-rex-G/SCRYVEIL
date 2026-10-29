@@ -28,10 +28,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--provider-config", type=Path, required=True)
     parser.add_argument("--preview", action="store_true")
+    parser.add_argument("--scenario", action="append", choices=SCENARIOS)
     parser.add_argument("--approve-plan-sha256")
     args = parser.parse_args()
     result = evaluate(
-        scenarios=SCENARIOS,
+        scenarios=args.scenario or SCENARIOS,
         provider_config=load_config(args.provider_config),
         require_recurrence=True,
         approved_plan=args.approve_plan_sha256,

@@ -1,3 +1,7 @@
+# Qualification protocol audit — 2026-10-29
+
+Parent `c8e46509cebff43ec8efd132a7a50085f7b4c3f0`. Identified Chat adapter gaps: reasoning_effort was prohibited; finish_reason/refusal was ignored. Add explicit optional low/medium/high Chat effort, bound in disclosure, and reject truncated/refused/unsupported finishes before action parsing. Legacy peers omitting finish_reason remain compatible. No new permissions or timeout increases. Configure low effort for a controlled comparison, not an assumed latency fix. Add scenario selection; this focused run covers recurrence, injection and missing evidence, preserving criteria and reporting only selected coverage. Other scenarios remain unqualified. Official protocol reference: https://ai.google.dev/gemini-api/docs/openai (thinking mapping). Results pending.
+
 # Current continuation — reasoning guidance unqualified after provider failures
 
 Branch `feat/forensic-core-genesis`, PR #1 unmerged. Runtime SHA `63561ba2f457895a0c28986cf5de8752a2f91556`; alternative-model execution SHA `52461d4e1df0ec070db08a6e5c263f5be150eeb5`. This result checkpoint restores the previously invocable model configuration without scheduling another run.

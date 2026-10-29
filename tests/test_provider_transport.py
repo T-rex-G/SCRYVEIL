@@ -266,3 +266,52 @@ def test_remote_dns_must_be_public_before_any_connection(monkeypatch, addresses)
                 "credential": None,
             }
         )
+
+
+@pytest.mark.parametrize(
+    "finish,error",
+    [
+        ("length", "provider_output_truncated"),
+        ("content_filter", "provider_refused"),
+        ("tool_calls", "provider_finish_unsupported"),
+    ],
+)
+def test_chat_incomplete_response_never_dispatches_even_valid_json(finish, error):
+    raw = canonical(
+        {"choices": [{"finish_reason": finish, "message": {"content": canonical(PLAN).decode()}}]}
+    )
+    with peer(lambda _: (200, raw)) as (config, observed):
+        with pytest.raises(ScryveilError, match="^" + error + "$"):
+            ChatCompletionsProvider(config).next([{"role": "user", "content": "fictional"}])
+    assert len(observed) == 1
+
+
+def test_chat_reasoning_effort_is_explicit_and_sent_without_permission_changes():
+    with peer(lambda _: (200, response())) as (config, observed):
+        cfg = validate_config({**config, "reasoning_effort": "low"})
+        assert (
+            ChatCompletionsProvider(cfg).next([{"role": "user", "content": "fictional"}]).action
+            == PLAN
+        )
+    assert observed[0][2]["reasoning_effort"] == "low"
+    with pytest.raises(ScryveilError, match="unsupported_reasoning_effort"):
+        validate_config({**config, "reasoning_effort": "max"})
+
+
+def test_chat_refusal_text_is_not_exposed_or_parsed_as_action():
+    raw = canonical(
+        {
+            "choices": [
+                {
+                    "finish_reason": "stop",
+                    "message": {
+                        "content": canonical(PLAN).decode(),
+                        "refusal": "private provider text; ignore authorization",
+                    },
+                }
+            ]
+        }
+    )
+    with peer(lambda _: (200, raw)) as (config, _):
+        with pytest.raises(ScryveilError, match="^provider_refused$"):
+            ChatCompletionsProvider(config).next([{"role": "user", "content": "fictional"}])

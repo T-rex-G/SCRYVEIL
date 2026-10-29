@@ -65,6 +65,9 @@ DESCRIPTIONS = {
     "hypotheses.compare": "Compare observed finding_id and alternatives.",
 }
 ERROR_CODES = {
+    "provider_output_truncated",
+    "provider_refused",
+    "provider_finish_unsupported",
     "invalid_native_response",
     "native_tool_call_required",
     "unsupported_native_content",
