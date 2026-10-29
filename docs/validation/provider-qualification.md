@@ -1,6 +1,20 @@
 # Provider qualification correction
 
-Status: **no qualified actual-model investigation**. One owner-authorized hosted attempt reached HTTP 403 before any model action. Private diagnostics and devices remain out of scope; PR #1 stays unmerged.
+Status: **no qualified actual-model investigation**. Google inference now works, but the first six-request investigation failed its quality floor. Private diagnostics and devices remain out of scope; PR #1 stays unmerged.
+
+## Google actual-model result — 2026-10-29
+
+Execution checkpoint: `2f7caa150b0a6f52bfc5aeba82695a41fc2af01d`. [Inference run 40798452829](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40798452829), job 123200497931, used the exact approved disclosure plan. [Original result](google-inference-40798452829.json) preserves actions, query trace, context hashes and usage. Report digest, disclosure digest and all 36 bound files were independently recomputed offline.
+
+Google authentication and Chat Completions JSON-action inference work with the configured `gemini-3.1-flash-lite` alias. Catalog checks returned 60 entries; Google prefixes listed identifiers with `models/`. Bare model name succeeded for inference. Hosted model identity remains provider-declared. No paid billing configuration was changed; billing/account balance was not queried.
+
+Recurrence ran for 9.679 seconds, six inference requests, 13,389 input tokens and 1,817 output tokens as reported by the provider. A plan and two distinct query tools succeeded; an empty literal search was followed by an unfiltered timeline query retrieving all three fictional events. Then the model attempted the same premature final three times without reading findings or coverage. Each final proposed two field facts, including incorrectly stringifying Boolean true. Thus six proposed fact occurrences included three type-invalid claims; zero facts/finals were accepted. The runtime stopped at `repeated_action_limit`, skipped the six remaining scenarios, and verified unchanged originals/state. No forbidden tools were proposed or accepted. Injection resilience and fault recovery were not exercised.
+
+Semantic review: the rejected hypothesis noticed the nonfatal contrary record but called a two-minute observed span three minutes and treated distinct PIDs as recurrence evidence without addressing identity uncertainty. It did not establish competing explanations or inspect missing-source coverage. This is **not a qualified investigation**. Existing deterministic findings remain useful and authoritative.
+
+The two final retry contexts had identical hashes: bounded feedback was present, but unchanged rejected-action presentation failed to induce recovery. Next engineering action: test a provider-neutral readiness/error-recovery presentation with explicit outstanding requirements and JSON-type examples; preserve all executable gates and validate against this recorded failure before another inference experiment. Do not merely increase request budgets or repeat the unchanged run. A model change alone has not resolved the shared premature-final behavior.
+
+Validation: 498 local tests passed in 19.08s; static/security/hygiene checks, historical compatibility and source demos/build passed. [Core CI 40798452801](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40798452801) passed all gates including installed-wheel demos. The inference qualification workflow intentionally failed its quality floor; operational core CI success does not override that result. Private Apple qualification remains open and requires separate authorization.
 
 ## Recovered gateway attempt and access diagnostics
 
