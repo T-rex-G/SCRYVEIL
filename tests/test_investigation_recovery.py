@@ -352,3 +352,103 @@ def test_accepted_plan_resets_consecutive_rejection_feedback():
     context.accept(PLAN, {"ok": True, "plan": PLAN["steps"]})
     context.accept(FINAL, {"ok": False, "error": "investigation_queries_required"})
     assert "Consecutive rejected actions: 1." in context.messages(100000)[-1]["content"]
+
+
+@pytest.mark.parametrize(
+    "error,enabled,expected_calls",
+    [
+        ("provider_http_503", True, 2),
+        ("provider_http_503", False, 1),
+        ("provider_http_429", True, 1),
+        ("provider_timeout_headers", True, 1),
+        ("provider_http_401", True, 1),
+        ("provider_http_404", True, 1),
+    ],
+)
+def test_transient_retry_is_opt_in_exact_and_bounded(
+    tmp_path, monkeypatch, error, enabled, expected_calls
+):
+    from jsonschema import Draft202012Validator
+
+    import scryveil.investigation as runtime
+    from scryveil.models import ScryveilError
+
+    store, cid = case(tmp_path)
+    delays = []
+    monkeypatch.setattr(runtime.time, "sleep", delays.append)
+
+    class Failed:
+        calls = 0
+
+        def next(self, messages):
+            self.calls += 1
+            raise ScryveilError(error)
+
+    provider = Failed()
+    cfg = {
+        **DEFAULT_CONFIG,
+        "adapter": "chat-completions-json",
+        "mode": "local",
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "model": "fictional",
+        "reasoning_effort": "low",
+        "retry_http_503_once": enabled,
+    }
+    report = investigate(store, cid, "Question", cfg, provider=provider)
+    assert provider.calls == report["requests"] == expected_calls
+    assert report["status"] == error
+    assert delays == ([5] if expected_calls == 2 else [])
+    assert not report["usage_complete"]
+    Draft202012Validator(
+        json.loads((ROOT / "schemas/investigation-v1.schema.json").read_text())
+    ).validate(report)
+    if expected_calls == 2:
+        assert report["provider_recovery"]["failed_request"] == 1
+        provider = Failed()
+        delays.clear()
+        limited = investigate(store, cid, "Question", {**cfg, "max_requests": 1}, provider=provider)
+        assert limited["requests"] == 1 and not delays
+
+
+@pytest.mark.parametrize("cancel", [False, True])
+def test_transient_retry_can_recover_or_cancel_without_changing_evidence(
+    tmp_path, monkeypatch, cancel
+):
+    import scryveil.investigation as runtime
+    from scryveil.models import ScryveilError
+    from scryveil.providers import MockProvider
+
+    store, cid = case(tmp_path)
+    before = snapshot_case(store, cid)["source_state_sha256"]
+
+    class Recovering:
+        calls = 0
+        inner = MockProvider()
+
+        def next(self, messages):
+            self.calls += 1
+            if self.calls == 1:
+                raise ScryveilError("provider_http_503")
+            return self.inner.next(messages)
+
+    def delay(seconds):
+        assert seconds == 5
+        if cancel:
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(runtime.time, "sleep", delay)
+    cfg = {
+        **DEFAULT_CONFIG,
+        "adapter": "chat-completions-json",
+        "mode": "local",
+        "endpoint": "http://127.0.0.1:8000/v1/chat/completions",
+        "model": "fictional",
+        "retry_http_503_once": True,
+        "max_total_tokens": 200000,
+    }
+    provider = Recovering()
+    report = investigate(store, cid, "Question", cfg, provider=provider)
+    assert report["status"] == ("cancelled" if cancel else "completed")
+    assert report["requests"] == provider.calls
+    assert provider.calls == (1 if cancel else 9)
+    assert snapshot_case(store, cid)["source_state_sha256"] == before

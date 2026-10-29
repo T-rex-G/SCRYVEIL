@@ -198,6 +198,7 @@ def investigate(
     reserved_tokens = 0
     rejected: Counter[str] = Counter()
     consecutive_rejections = 0
+    recovery_used = False
     try:
         for _ in range(config["max_requests"]):
             messages = context.messages(config["max_context_bytes"])
@@ -216,7 +217,27 @@ def investigate(
                 break
             requests += 1
             reserved_tokens += reservation
-            reply = selected.next(messages)
+            try:
+                reply = selected.next(messages)
+            except ScryveilError as exc:
+                if (
+                    exc.code == "provider_http_503"
+                    and config.get("retry_http_503_once", False)
+                    and not recovery_used
+                    and requests < config["max_requests"]
+                    and reserved_tokens + reservation <= config["max_total_tokens"]
+                    and time.monotonic() + 5 < deadline
+                ):
+                    recovery_used = True
+                    report["provider_recovery"] = {
+                        "failed_request": requests,
+                        "reason": "provider_http_503",
+                        "delay_seconds": 5,
+                        "policy": "one_503_retry_within_existing_budgets",
+                    }
+                    time.sleep(5)
+                    continue
+                raise
             if reply.continuation is not None:
                 if config.get("messages_profile") != "minimax-v1":
                     raise ScryveilError("unexpected_provider_continuation")

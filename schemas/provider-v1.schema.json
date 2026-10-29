@@ -95,6 +95,9 @@
         "bearer",
         "x-api-key"
       ]
+    },
+    "retry_http_503_once": {
+      "type": "boolean"
     }
   },
   "required": [],
@@ -254,6 +257,23 @@
             }
           }
         ]
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "retry_http_503_once"
+        ]
+      },
+      "then": {
+        "properties": {
+          "adapter": {
+            "enum": [
+              "chat-completions-json",
+              "messages-tools"
+            ]
+          }
+        }
       }
     }
   ]

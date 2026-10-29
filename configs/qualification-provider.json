@@ -11,5 +11,6 @@
   "max_context_bytes": 131072,
   "max_output_tokens": 4096,
   "max_total_tokens": 200000,
-  "reasoning_effort": "low"
+  "reasoning_effort": "low",
+  "retry_http_503_once": true
 }

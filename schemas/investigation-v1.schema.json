@@ -111,6 +111,9 @@
             "bearer",
             "x-api-key"
           ]
+        },
+        "retry_http_503_once": {
+          "type": "boolean"
         }
       },
       "required": [],
@@ -225,9 +228,47 @@
             ]
           },
           "then": {
-            "required": [
-              "messages_profile"
+            "anyOf": [
+              {
+                "required": [
+                  "messages_profile"
+                ]
+              },
+              {
+                "required": [
+                  "adapter"
+                ],
+                "properties": {
+                  "adapter": {
+                    "const": "chat-completions-json"
+                  },
+                  "reasoning_effort": {
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ]
+                  }
+                }
+              }
             ]
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "retry_http_503_once"
+            ]
+          },
+          "then": {
+            "properties": {
+              "adapter": {
+                "enum": [
+                  "chat-completions-json",
+                  "messages-tools"
+                ]
+              }
+            }
           }
         }
       ]
@@ -583,6 +624,32 @@
         "query_views_omitted_or_replaced",
         "full_tool_results_retained_in_trace",
         "locator_metadata_in_model_view"
+      ],
+      "additionalProperties": false
+    },
+    "provider_recovery": {
+      "type": "object",
+      "properties": {
+        "failed_request": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "reason": {
+          "const": "provider_http_503"
+        },
+        "delay_seconds": {
+          "const": 5
+        },
+        "policy": {
+          "const": "one_503_retry_within_existing_budgets"
+        }
+      },
+      "required": [
+        "failed_request",
+        "reason",
+        "delay_seconds",
+        "policy"
       ],
       "additionalProperties": false
     }

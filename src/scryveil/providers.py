@@ -100,6 +100,7 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         "native_tool_layout",
         "messages_profile",
         "reasoning_effort",
+        "retry_http_503_once",
     }
     if not isinstance(config, dict) or set(config) - (set(DEFAULT_CONFIG) | extra):
         raise ScryveilError("invalid_provider_config")
@@ -147,6 +148,8 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ScryveilError("unsupported_reasoning_effort")
     if result.get("messages_profile") == "minimax-v1" and "reasoning_effort" not in result:
         raise ScryveilError("explicit_reasoning_effort_required")
+    if "retry_http_503_once" in result and type(result["retry_http_503_once"]) is not bool:
+        raise ScryveilError("invalid_provider_config")
     text_field(result.get("model"))
     result["endpoint"] = provider_endpoint(result)
     result.pop("base_url", None)

@@ -1,3 +1,7 @@
+# Bounded transient-provider recovery — 2026-10-29
+
+Parent `983a6f7593166831a0f4d9cd6d957ad07782d108`. Instrumented run 40902135551 returned a real HTTP 503 on request two, after one valid plan. No timeout stage was reached; prior timeout causes remain unknown. Original preserved. Add opt-in retry_http_503_once: one five-second delay, only exact HTTP 503, within existing request/token/deadline budgets. Default remains no retries; 429/401/404/timeouts never retried. Recovery is recorded as provider_recovery; cancellation during delay stops. Fix embedded report-provider schema to accept previously added Chat reasoning effort (a qualification schema drift found during recovery testing). Tests exercise exact errors, bounded repeats, success, cancellation and report schemas. Controlled live comparison pending; no claim of restored service.
+
 # Transport phase diagnostic — 2026-10-29
 
 Parent `d7eb2ca3d80cf6e754e4baef404f3f09db30fb74`. Explicit low-effort run 40851648597 again timed out on fourth request, after plan, coverage query and reading three events. No final or semantic qualification; remaining cases skipped. Original preserved. Add closed phase-only stderr markers from disposable broker; timeout errors distinguish DNS/connect/TLS/send/headers/body/decode without exporting provider text or credentials. No timeout, permissions or budget increase. Synthetic stalled-header test requires exact phase classification. Next diagnostic keeps the same model/settings to locate the failure rather than changing them blindly.
