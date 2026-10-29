@@ -347,7 +347,7 @@ class BrokerProvider:
             [sys.executable, "-I", "-m", "scryveil.provider_transport"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
             env={"LANG": "C.UTF-8"},
             close_fds=True,
         )
@@ -356,7 +356,13 @@ class BrokerProvider:
                 canonical(request), timeout=self.config["timeout_seconds"]
             )
         except subprocess.TimeoutExpired as exc:
-            raise ScryveilError("provider_timeout") from exc
+            from .provider_messages import TRANSPORT_PHASES
+
+            progress = exc.stderr or b""
+            lines = progress.splitlines() if len(progress) <= 512 else []
+            valid = [stage.encode() for stage in TRANSPORT_PHASES]
+            suffix = "_" + lines[-1].decode() if lines and all(x in valid for x in lines) else ""
+            raise ScryveilError("provider_timeout" + suffix) from exc
         finally:
             if child.poll() is None:
                 child.kill()
@@ -376,6 +382,7 @@ class BrokerProvider:
                             "provider_output_",
                             "provider_refused",
                             "provider_finish_",
+                            "provider_timeout_",
                         )
                     )
                 )

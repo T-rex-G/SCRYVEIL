@@ -11,10 +11,22 @@ from urllib.parse import urlsplit
 from .isolation import restrict_worker
 from .models import ScryveilError
 from .parse import canonical, load_json
-from .provider_messages import HTTP_ERROR_DETAILS, safe_error
+from .provider_messages import HTTP_ERROR_DETAILS, TRANSPORT_PHASES, safe_error
 from .provider_messages import payload as messages_payload
 from .provider_messages import response as messages_response
 from .providers import validate_catalog_request, validate_config
+
+_phase = "resolve"
+
+
+def mark_phase(stage: str) -> None:
+    """Fixed diagnostic vocabulary only; no URLs, headers, prompts or responses."""
+    global _phase
+    if stage not in TRANSPORT_PHASES:
+        raise ValueError("invalid_transport_phase")
+    _phase = stage
+    sys.stderr.write(stage + "\n")
+    sys.stderr.flush()
 
 
 def http_failure(status: int, raw: bytes, credential: str | None) -> str:
@@ -102,6 +114,7 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         raise ScryveilError("invalid_provider_endpoint")
     # Resolve once, reject every non-public remote address, and connect to the
     # selected numeric address. TLS still verifies the configured DNS hostname.
+    mark_phase("resolve")
     addresses = socket.getaddrinfo(host, port, type=socket.SOCK_STREAM)
     for address in addresses:
         ip = ipaddress.ip_address(address[4][0])
@@ -116,6 +129,7 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
     sock = socket.socket(selected[0], selected[1], selected[2])
     sock.settimeout(config["timeout_seconds"])
     try:
+        mark_phase("connect")
         sock.connect(selected[4])
         if context is not None:
             # Construct the wrapper without consuming provider-controlled TLS
@@ -123,6 +137,7 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
             sock = context.wrap_socket(sock, server_hostname=host, do_handshake_on_connect=False)
         restrict_worker(connected_socket=True)
         if isinstance(sock, ssl.SSLSocket):
+            mark_phase("tls")
             sock.do_handshake()
         connection = http.client.HTTPConnection(host, port, timeout=config["timeout_seconds"])
         connection.sock = sock
@@ -144,8 +159,11 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
                 headers["Authorization"] = "Bearer " + request["credential"]
             else:
                 headers["x-api-key"] = request["credential"]
+        mark_phase("send")
         connection.request("GET" if catalog else "POST", url.path, body=payload, headers=headers)
+        mark_phase("headers")
         response = connection.getresponse()
+        mark_phase("body")
         # No redirects, proxies, cookies, downloads or provider-supplied URLs.
         if response.status != 200:
             raise ScryveilError(
@@ -156,6 +174,7 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
             raise ScryveilError("provider_response_too_large")
         if request["credential"] and request["credential"].encode() in raw:
             raise ScryveilError("provider_credential_echo")
+        mark_phase("decode")
         data = load_json(raw)
         if catalog:
             return catalog_result(data, request["candidates"])
@@ -191,6 +210,8 @@ def main() -> None:
         if len(raw) > 524288:
             raise ScryveilError("provider_request_too_large")
         result = exchange(load_json(raw))
+    except TimeoutError:
+        result = {"ok": False, "error": "provider_timeout_" + _phase}
     except ScryveilError as exc:
         result = {
             "ok": False,

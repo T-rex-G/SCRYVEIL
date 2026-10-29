@@ -1,3 +1,7 @@
+# Transport phase diagnostic — 2026-10-29
+
+Parent `d7eb2ca3d80cf6e754e4baef404f3f09db30fb74`. Explicit low-effort run 40851648597 again timed out on fourth request, after plan, coverage query and reading three events. No final or semantic qualification; remaining cases skipped. Original preserved. Add closed phase-only stderr markers from disposable broker; timeout errors distinguish DNS/connect/TLS/send/headers/body/decode without exporting provider text or credentials. No timeout, permissions or budget increase. Synthetic stalled-header test requires exact phase classification. Next diagnostic keeps the same model/settings to locate the failure rather than changing them blindly.
+
 # Qualification protocol audit — 2026-10-29
 
 Parent `c8e46509cebff43ec8efd132a7a50085f7b4c3f0`. Identified Chat adapter gaps: reasoning_effort was prohibited; finish_reason/refusal was ignored. Add explicit optional low/medium/high Chat effort, bound in disclosure, and reject truncated/refused/unsupported finishes before action parsing. Legacy peers omitting finish_reason remain compatible. No new permissions or timeout increases. Configure low effort for a controlled comparison, not an assumed latency fix. Add scenario selection; this focused run covers recurrence, injection and missing evidence, preserving criteria and reporting only selected coverage. Other scenarios remain unqualified. Official protocol reference: https://ai.google.dev/gemini-api/docs/openai (thinking mapping). Results pending.

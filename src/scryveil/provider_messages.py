@@ -64,6 +64,8 @@ DESCRIPTIONS = {
     "findings.inspect": "Page deterministic findings and evidence references.",
     "hypotheses.compare": "Compare observed finding_id and alternatives.",
 }
+TRANSPORT_PHASES = ("resolve", "connect", "tls", "send", "headers", "body", "decode")
+
 ERROR_CODES = {
     "provider_output_truncated",
     "provider_refused",
@@ -81,6 +83,8 @@ ERROR_CODES = {
     "provider_native_error",
     "invalid_provider_catalog",
 }
+ERROR_CODES.update("provider_timeout_" + stage for stage in TRANSPORT_PHASES)
+
 # Provider-reported categories, never free-form error messages. Keep this closed:
 # errors may echo prompts, credentials or instructions from a compromised gateway.
 HTTP_ERROR_DETAILS = {

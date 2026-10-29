@@ -156,7 +156,7 @@ def test_real_transport_timeout_terminates_broker():
     try:
         with peer(blocked) as (config, observed):
             config["timeout_seconds"] = 1
-            with pytest.raises(ScryveilError, match="provider_timeout"):
+            with pytest.raises(ScryveilError, match="^provider_timeout_headers$"):
                 ChatCompletionsProvider(config).next([{"role": "user", "content": "synthetic"}])
             assert len(observed) == 1
     finally:
@@ -315,3 +315,13 @@ def test_chat_refusal_text_is_not_exposed_or_parsed_as_action():
     with peer(lambda _: (200, raw)) as (config, _):
         with pytest.raises(ScryveilError, match="^provider_refused$"):
             ChatCompletionsProvider(config).next([{"role": "user", "content": "fictional"}])
+
+
+def test_transport_progress_is_closed_vocabulary(capsys):
+    from scryveil.provider_transport import mark_phase
+
+    mark_phase("headers")
+    assert capsys.readouterr().err == "headers\n"
+    with pytest.raises(ValueError, match="invalid_transport_phase"):
+        mark_phase("headers secret or forensic content")
+    assert capsys.readouterr().err == ""
