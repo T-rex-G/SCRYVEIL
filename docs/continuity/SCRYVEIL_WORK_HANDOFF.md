@@ -1,3 +1,7 @@
+# Coverage completion correction — 2026-10-29
+
+Parent implementation `ab483947683a31b0ba1989aa17ecf5eea7c6f5a5`. Actual run 40799213728 completed recurrence in six requests, recovered from one rejected final, accepted two correctly typed source-linked facts, and cited contrary evidence. It still failed the unchanged quality floor because coverage.inspect was omitted; remaining scenarios skipped. Preserved original in docs/validation/google-recovery-40799213728.json. Strengthen finalization to require successful coverage review, with actionable feedback and a regression proving a failed query does not satisfy it. This is intentional session-policy tightening, not a report/case migration. Next bounded comparison uses same model/budgets; pending result. Private evidence remains unauthorized.
+
 # Recovery comparison checkpoint — 2026-10-29
 
 Parent `bde505479271fc746b0dd960002dd5504d7f2a29`. Added provider-neutral completed-review tracking, explicit JSON-type guidance, counted rejection feedback and a concrete findings query suggestion after premature finalization. Permissions, claim validation, budgets and stop conditions are unchanged. New regressions replay recorded Gemini rejections and test progress retention through compaction/untrusted evidence. Actual-model comparison pending; same model and budgets, newly bound disclosure. No private evidence or billing changes.

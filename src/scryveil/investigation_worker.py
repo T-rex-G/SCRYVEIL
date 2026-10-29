@@ -95,6 +95,8 @@ class Session:
                 raise ScryveilError("coverage_limitation_required")
             if self.tools.findings and not self.tools.seen_findings:
                 raise ScryveilError("deterministic_review_required")
+            if "coverage.inspect" not in self.successful_queries:
+                raise ScryveilError("coverage_review_required")
             return {"ok": True, "final": self.tools.ground_final(action)}
         except (ScryveilError, ValueError, TypeError, KeyError, RecursionError) as exc:
             return {

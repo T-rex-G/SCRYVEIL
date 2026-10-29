@@ -29,6 +29,7 @@ PROVENANCE = {
     "parser_version",
 }
 FEEDBACK = {
+    "coverage_review_required": "Inspect coverage.inspect before finalizing. Explicitly report missing sources and omissions; absence of observations is not proof of safety.",
     "invalid_agent_action": "Return one action, never a tool_result envelope. Use the exact top-level keys in the examples.",
     "plan_required": "First submit a plan with a list of short strings.",
     "plan_already_set": "The plan is already accepted. Choose a read-only query or a grounded final response; do not submit another plan.",
@@ -225,17 +226,22 @@ class InvestigationContext:
                         + "."
                     )
                 guidance += f" Consecutive rejected actions: {self.rejection_count}. Do not resubmit the rejected final unchanged. "
-                if error == "deterministic_review_required":
+                if error in {"deterministic_review_required", "coverage_review_required"}:
+                    review_tool = (
+                        "coverage.inspect"
+                        if error == "coverage_review_required"
+                        else "findings.inspect"
+                    )
                     repair = {
                         "version": "scryveil.agent/1",
                         "kind": "tool",
-                        "name": "findings.inspect",
+                        "name": review_tool,
                         "arguments": {},
                     }
                     guidance += (
                         "Next required evidence review: "
                         + (
-                            "findings_inspect with {}"
+                            review_tool.replace(".", "_") + " with {}"
                             if self.native
                             else canonical(repair).decode().strip()
                         )

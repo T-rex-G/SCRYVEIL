@@ -92,3 +92,14 @@ selection replaces vendor assumptions, not authorization boundaries. No
 arbitrary headers, executable adapter, redirect/discovery or new worker
 permission is introduced. Changing the destination/auth changes consent.
 Public HTTPS/DNS restrictions and loopback-only local mode remain enforced.
+
+2026-10-29 observed recovery correction: Gemini's first run repeated identical
+premature finals. Retain successful review-tool names across context eviction,
+count consecutive rejections, and present actionable trusted feedback without
+rewriting claims or automatically executing a suggested query. The comparison
+completed with valid facts but omitted coverage review. Finalization now requires
+a successful `coverage.inspect` query, including for empty cases, aligning the
+runtime with the existing quality criterion. This deliberately tightens session
+completion; stored cases, reports and all eleven tool schemas remain unchanged.
+The new `coverage_review_required` error is recoverable. Evidence text cannot
+mark a review completed, and no new tool or permission is introduced.

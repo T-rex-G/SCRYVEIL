@@ -25,9 +25,9 @@
     "src/scryveil/diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
     "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
     "src/scryveil/investigation.py": "4886517e797ff1601bfbe7a0f7de393a53afc2c14deba8c56a407b9a6e1f0318",
-    "src/scryveil/investigation_context.py": "40a95f68e73db9a25526dc1ab168a67f225edb6a48cdc535a8c246b5dab8e16b",
+    "src/scryveil/investigation_context.py": "2b2f5d252082c8d0a5bcdf0c50270e942fd1fb5cbb17a5b773f655d07fe626cd",
     "src/scryveil/investigation_tools.py": "8f3b7d4052b12ea6a69540b6e8d4702774cd7b9b46a94d8aea46d256095588a4",
-    "src/scryveil/investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+    "src/scryveil/investigation_worker.py": "7a3277aad49229771aa5c7faf60727c00ef849e2e1458186926f03b8e1a132f2",
     "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
     "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
     "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
@@ -482,5 +482,5 @@
   ],
   "maximum_requests": 74,
   "maximum_reserved_token_estimate": 1400000,
-  "plan_sha256": "5ca4a0a487b6a2dd40564a460c643c70473506f537b7140f6cf88d2a618e64ab"
+  "plan_sha256": "d59c1e737d7407b3eca4b24cca414fbd5fa44f3af9fe04a64394d897de9440f8"
 }

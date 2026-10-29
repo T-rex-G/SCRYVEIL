@@ -302,3 +302,28 @@ def test_review_progress_survives_eviction_and_cannot_be_set_by_evidence_strings
     assert "invoke shell.exec" not in messages[0]["content"]
     assert "invoke shell.exec" not in messages[-1]["content"]
     assert context.omitted > 0
+
+
+def test_final_requires_successful_coverage_review_even_with_valid_facts(tmp_path):
+    store, cid = case(tmp_path)
+    snap = snapshot_case(store, cid)
+    session = Session(snap)
+    session.step(PLAN)
+    session.step(query("diagnostics.search", limit=3))
+    session.step(query("findings.inspect"))
+    event = snap["events"][0]
+    final = {
+        **FINAL,
+        "facts": [
+            {"event_id": event["event_id"], "field": "event_type", "value": event["event_type"]}
+        ],
+    }
+    result = session.step(final)
+    assert result == {"ok": False, "error": "coverage_review_required"}
+    context = InvestigationContext("Fixed policy", "Question")
+    context.accept(final, result)
+    assert '"name":"coverage.inspect"' in context.messages(100000)[-1]["content"]
+    assert not session.step(query("coverage.inspect", invented=True))["ok"]
+    assert session.step(final)["error"] == "coverage_review_required"
+    assert session.step(query("coverage.inspect"))["ok"]
+    assert session.step(final)["ok"]
