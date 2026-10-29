@@ -16,7 +16,12 @@
   },
   "catalog_endpoint": "https://generativelanguage.googleapis.com/v1beta/openai/models",
   "candidates": [
-    "gemini-3.1-flash-lite"
+    "gemini-3.1-flash-lite",
+    "models/gemini-3.1-flash-lite",
+    "gemini-2.5-flash",
+    "models/gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "models/gemini-2.5-flash-lite"
   ],
   "method": "GET",
   "maximum_requests": 1,
@@ -47,8 +52,8 @@
     "src/scryveil/state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
     "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5",
     "scripts/provider_access_check.py": "81f86ea870f556ab7bb4d956aebd3fb1bef366f033305553429cd5b90e98d0de",
-    ".github/workflows/provider-access-check.yml": "ac3fd97c6a13452a25d00b8a18a97eb5bda80f04d3a7dd230d96851db3cb41c0",
+    ".github/workflows/provider-access-check.yml": "5b31f682687a960c6cfc0913de60c17cd6a731431151b3820acd0a9f8abe379d",
     "configs/qualification-provider.json": "09dba96d7a5abfe8040cd9ff5bc0672f45bd2898ec6a70797111301837b12a58"
   },
-  "plan_sha256": "8b1942cc2286fab9245cd6cbc95121d74347c032e16e8ac82e323798b662e19c"
+  "plan_sha256": "b29d71d54a45f59467ed5186ac0c903c923f95111dded179d4b17d26256468a8"
 }
