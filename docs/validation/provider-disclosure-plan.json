@@ -11,7 +11,7 @@
     "max_output_tokens": 4096,
     "max_total_tokens": 200000,
     "auth_scheme": "bearer",
-    "model": "gemini-3.1-flash-lite",
+    "model": "gemini-3.8-flash",
     "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
     "reasoning_effort": "low",
     "retry_http_503_once": true,
@@ -53,7 +53,7 @@
     "scripts/minimax_qualification.py": "5337ac7e1be072e546eb9e983c100c5199d9b22abccf6829b03d543e4fd2fca9",
     "scripts/provider_qualification.py": "c92c46039755e49594739f77b94516fa99192dfff1390800f5f7a5f71dabb53a",
     ".github/workflows/provider-qualification.yml": "f59d195c682077c24cb475c6b2e51a025f02846d4cdeaf3f211fdac9a8649303",
-    "configs/qualification-provider.json": "d38f7f54e66da263e0a81b7c147a7fc19a8045754e78fd7657cd7cdede8cc0c9"
+    "configs/qualification-provider.json": "e41bf4c6770794a7c4d652f30de4112291d5ada604d51f5cce57a2c607b72ba0"
   },
   "require_recurrence_before_collection": true,
   "remote_stop_after_failed_recurrence": true,
@@ -205,5 +205,5 @@
   ],
   "maximum_requests": 36,
   "maximum_reserved_token_estimate": 600000,
-  "plan_sha256": "1de8b523acf7f8a1427bac133495c0f169b628f0c08939078f560c7c622c6522"
+  "plan_sha256": "1c98c1c256ea0c30fee8acfdff1dd6b129741480f9fd119895de39ebdf3a59a2"
 }

@@ -298,3 +298,9 @@ Optional `retry_http_503_once: true` permits exactly one five-second delayed ret
 Timeout suffixes (`resolve`, `connect`, `tls`, `send`, `headers`, `body`, `decode`) identify the last trusted broker phase, not a definitive remote root cause. Only fixed phase names cross the diagnostic channel. Provider bodies, keys, URLs and evidence do not. Neither a timeout nor 503 proves a quota issue.
 
 Use repeated `--scenario` arguments with `scripts/provider_qualification.py` to select a focused benchmark; include the identical selection in preview and execution. Passing a subset does not qualify omitted scenarios. The reviewed workflow currently selects recurrence, injection and missing evidence. All criteria remain unchanged.
+
+### Evidence-free provider protocol check
+
+Before a forensic benchmark, run `scripts/provider_protocol_check.py --provider-config PRIVATE_CONFIG --preview`. Review the destination, model, exact code digest and capped budgets, then repeat with `--approve-plan-sha256 DIGEST`. The check uses the production isolated broker and action validator for at most two requests: a plan followed by a `coverage.inspect` request. It never creates a case, reads evidence or executes a tool. It stops on the first provider/protocol error, without retries or model fallback. Native Messages and Chat JSON wire paths are tested against fictional HTTP peers. A passing check establishes only this limited protocol behavior, never forensic reasoning or billing eligibility. Raw model text is not exported; closed errors, timing, context hashes and available usage are recorded.
+
+The explicit protocol CI workflow requires its own `[provider-protocol:DIGEST]` checkpoint marker; normal commits do not call a model. Selection of a provider remains owner-controlled. The current qualification configuration selects Gemini 3.8 Flash for a bounded availability/protocol experiment; it is not a preferred or qualified model.

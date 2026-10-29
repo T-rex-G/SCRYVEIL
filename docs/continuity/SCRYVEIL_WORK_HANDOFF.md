@@ -34,3 +34,9 @@ Resolve provider availability with a bounded, evidence-free protocol check for a
 Run checks in AGENTS.md, including `.venv/bin/python -m pytest -q`, Ruff, mypy, Bandit, hygiene, both historical compatibility scripts, all five source demos, build and installed-wheel demos. `scripts/provider_qualification.py --provider-config PRIVATE_CONFIG --scenario recurrence --scenario injection --scenario missing_evidence --preview` prepares offline disclosure. Execution requires its exact digest. Configuration alone never triggers inference.
 
 Owner authorized fictional model testing and reviewable development. No authorization for private owner diagnostic processing/device access, paid billing activation or automatic merge. Genuine Apple exports, independent authenticated custody, broad backup/sysdiagnose/PCAP/live acquisition remain open. No private evidence or credentials enter repository or model inputs.
+
+## In-progress continuation after b8777bde571c966d4c037ed100834f218c44fde3
+
+Implemented an evidence-free, two-turn provider protocol check, with no tool execution, explicit digest approval, capped budgets, sanitized errors and fail-fast behavior. 533 local tests, static/type/security/hygiene gates, historical compatibility, five source demos and package build pass. Native and Chat paths pass fictional HTTP tests; live protocol and reasoning results are pending.
+
+Selected Gemini 3.8 Flash for the next bounded check using the existing Google secret and endpoint. Current official compatibility documentation uses this model and standard pricing lists a free tier; account eligibility and billing are not verified by these public documents. Google now limits 2.5 access to prior users, consistent with (but not proof of the cause of) the earlier 404. No billing changes. If protocol succeeds, run the focused fictional benchmark; otherwise preserve the precise failure and do not replay the same experiment.

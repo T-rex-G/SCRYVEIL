@@ -41,7 +41,7 @@ jobs:
           SCRYVEIL_APPROVED_PLAN: ${{ steps.check.outputs.approved }}
         run: |
           install -m 600 configs/qualification-provider.json "$RUNNER_TEMP/scryveil-provider.json"
-          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://generativelanguage.googleapis.com/v1beta/openai/models --catalog-auth-scheme bearer --candidate-model gemini-3.1-flash-lite --candidate-model models/gemini-3.1-flash-lite --candidate-model gemini-2.5-flash --candidate-model models/gemini-2.5-flash --candidate-model gemini-2.5-flash-lite --candidate-model models/gemini-2.5-flash-lite --preview > "$RUNNER_TEMP/scryveil-access-plan.jsonl"
+          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://generativelanguage.googleapis.com/v1beta/openai/models --catalog-auth-scheme bearer --candidate-model gemini-3.1-flash-lite --candidate-model models/gemini-3.1-flash-lite --candidate-model gemini-3.8-flash --candidate-model models/gemini-3.8-flash --candidate-model gemini-3.5-flash-lite --candidate-model models/gemini-3.5-flash-lite --preview > "$RUNNER_TEMP/scryveil-access-plan.jsonl"
           python - <<'PY'
           import json, os
           from pathlib import Path
@@ -57,4 +57,4 @@ jobs:
           SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_GOOGLE_API_KEY }}
           SCRYVEIL_APPROVED_PLAN: ${{ steps.check.outputs.approved }}
         run: |
-          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://generativelanguage.googleapis.com/v1beta/openai/models --catalog-auth-scheme bearer --candidate-model gemini-3.1-flash-lite --candidate-model models/gemini-3.1-flash-lite --candidate-model gemini-2.5-flash --candidate-model models/gemini-2.5-flash --candidate-model gemini-2.5-flash-lite --candidate-model models/gemini-2.5-flash-lite --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"
+          python scripts/provider_access_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --catalog-endpoint https://generativelanguage.googleapis.com/v1beta/openai/models --catalog-auth-scheme bearer --candidate-model gemini-3.1-flash-lite --candidate-model models/gemini-3.1-flash-lite --candidate-model gemini-3.8-flash --candidate-model models/gemini-3.8-flash --candidate-model gemini-3.5-flash-lite --candidate-model models/gemini-3.5-flash-lite --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"

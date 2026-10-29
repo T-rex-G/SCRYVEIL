@@ -10,7 +10,7 @@
     "max_output_tokens": 4096,
     "max_total_tokens": 200000,
     "auth_scheme": "bearer",
-    "model": "gemini-3.1-flash-lite",
+    "model": "gemini-3.8-flash",
     "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
     "reasoning_effort": "low",
     "retry_http_503_once": true,
@@ -20,10 +20,10 @@
   "candidates": [
     "gemini-3.1-flash-lite",
     "models/gemini-3.1-flash-lite",
-    "gemini-2.5-flash",
-    "models/gemini-2.5-flash",
-    "gemini-2.5-flash-lite",
-    "models/gemini-2.5-flash-lite"
+    "gemini-3.8-flash",
+    "models/gemini-3.8-flash",
+    "gemini-3.5-flash-lite",
+    "models/gemini-3.5-flash-lite"
   ],
   "method": "GET",
   "maximum_requests": 1,
@@ -54,8 +54,8 @@
     "src/scryveil/state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
     "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5",
     "scripts/provider_access_check.py": "81f86ea870f556ab7bb4d956aebd3fb1bef366f033305553429cd5b90e98d0de",
-    ".github/workflows/provider-access-check.yml": "5b31f682687a960c6cfc0913de60c17cd6a731431151b3820acd0a9f8abe379d",
-    "configs/qualification-provider.json": "d38f7f54e66da263e0a81b7c147a7fc19a8045754e78fd7657cd7cdede8cc0c9"
+    ".github/workflows/provider-access-check.yml": "9dcdf96de6d03da93daff2a99a918ec0564e64ba7ce3a6dfda2e1a66630c723f",
+    "configs/qualification-provider.json": "e41bf4c6770794a7c4d652f30de4112291d5ada604d51f5cce57a2c607b72ba0"
   },
-  "plan_sha256": "bd498403eb7253d994cbe2857738b7953e910e878edbaef47430ec195ac59a2c"
+  "plan_sha256": "2462ad487a98b9e7a29eec247463142717963176ac873aeaff1e2150a3bfb0f3"
 }
