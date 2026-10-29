@@ -439,7 +439,9 @@ def test_native_compact_view_keeps_policy_prefix_and_worker_argument_limits(tmp_
     )
     with peer(lambda _: (200, canonical(native_response()))) as (base, _):
         body = payload(config(base), ctx.messages(131072))
-    assert body["system"] == SYSTEM
+    from scryveil.investigation_context import REASONING_GUIDE
+
+    assert body["system"] == SYSTEM + "\n" + REASONING_GUIDE
     last = body["messages"][-1]["content"]
     assert last[0]["type"] == "tool_result" and last[0]["is_error"]
     assert last[-1]["type"] == "text" and "Owner protocol state" in last[-1]["text"]

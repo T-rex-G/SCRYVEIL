@@ -1,3 +1,7 @@
+# Hypothesis reasoning comparison — 2026-10-29
+
+Parent checkpoint `f2b1f0eb29d7dce15b0c0d7084ab83856bd657dc`. Add a shared forensic reasoning procedure to both provider paths: preserve the tested proposition, map contrary evidence to it, compare alternative causes, inspect finding-linked events and avoid causal claims from labels/recurrence. This is experimental guidance, not a semantic validator; all worker gates remain unchanged. Fix consecutive rejection count reset after accepted plan. Test compaction against policy-size-relative budgets and preserve the native stable prefix with the shared procedure. Same-model controlled comparison pending. No private evidence, paid billing changes or expanded permissions.
+
 # Current handoff — measured recovery, reasoning still unqualified
 
 Verified implementation checkpoint: `bf88a45fd06b9e59a55337fa32d3bbee646c45f7` (branch `feat/forensic-core-genesis`, PR #1 unmerged). [Core CI 40848642662](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40848642662) passed all tests, static/typing/security/hygiene checks, historical compatibility, five source demonstrations, build and five installed-wheel demonstrations. Local regression count: 503 passing. Provider workflow 40848642657 explicitly skipped inference; no new live model qualification is claimed. This documentation checkpoint records the verified code state.

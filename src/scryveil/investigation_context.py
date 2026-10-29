@@ -15,6 +15,14 @@ from .provider_messages import validate_continuation
 POLICY = "scryveil.context/1"
 NATIVE_POLICY = "scryveil.context.native/1"
 MAX_EXCHANGES = 8
+REASONING_GUIDE = """Forensic reasoning procedure:
+1. Review source coverage and deterministic findings. For a relevant finding, call hypotheses.compare using its returned finding_id; inspect the referenced events before drawing conclusions.
+2. Keep the questioned hypothesis separate from its alternatives. If testing 'all incidents are fatal', evaluate that proposition explicitly; put evidence that refutes it in that hypothesis's contradictions list. Then discuss alternatives separately. Do not silently replace the tested proposition with its opposite and lose the contradiction mapping.
+3. Distinguish reported conditions from causes. A resource-exception label does not establish resource exhaustion caused other crashes. Repeated reports do not establish service survival, restart, continuous execution, or a shared device. Matching frames do not prove the fault originated in that function. Unknown/nonfatal flags do not establish every other event was fatal.
+4. Compare at least two plausible explanations when proposing a cause. State which observations discriminate between them and which missing measurement would change the assessment. If no evidence discriminates, say the cause is undetermined. Do not turn a candidate explanation into an asserted cause.
+5. Copy facts exactly, cite supporting and contrary records, and explain the scope of each citation. Your report is not complete merely because identifiers are valid. Never invent an observation to complete this procedure.
+"""
+
 UNFILTERED_QUERY = (
     '{"version":"scryveil.agent/1","kind":"tool","name":"timeline.query","arguments":{"limit":5}}'
 )
@@ -66,7 +74,7 @@ def model_view(result: dict[str, Any]) -> dict[str, Any]:
 class InvestigationContext:
     def __init__(self, system: str, question: str, *, native: bool = False):
         self.base = [
-            {"role": "system", "content": system},
+            {"role": "system", "content": system + "\n" + REASONING_GUIDE},
             {"role": "user", "content": question},
         ]
         self.plan: dict[str, Any] | None = None
@@ -97,6 +105,7 @@ class InvestigationContext:
             self.rejected = action, deepcopy(result)
             self.rejection_count += 1
         elif "plan" in result:
+            self.rejection_count = 0
             self.plan = action
         else:
             self.rejection_count = 0

@@ -218,8 +218,11 @@ def test_context_byte_eviction_is_disclosed_not_silently_truncated():
             query("timeline.query", cursor=cursor),
             {"ok": True, "data": {"events": [], "note": "x" * 1000}},
         )
-    messages = context.messages(2300)
-    assert len(canonical(messages)) <= 2300
+    budget = (
+        len(canonical(InvestigationContext("Fixed policy", "Question").messages(100000))) + 2300
+    )
+    messages = context.messages(budget)
+    assert len(canonical(messages)) <= budget
     assert context.omitted > 2
     assert f"omitted/replaced: {context.omitted}" in messages[0]["content"]
 
@@ -327,3 +330,25 @@ def test_final_requires_successful_coverage_review_even_with_valid_facts(tmp_pat
     assert session.step(final)["error"] == "coverage_review_required"
     assert session.step(query("coverage.inspect"))["ok"]
     assert session.step(final)["ok"]
+
+
+def test_reasoning_procedure_is_provider_neutral_and_not_an_evidence_verdict():
+    from scryveil.investigation_context import REASONING_GUIDE
+
+    for native in (False, True):
+        context = InvestigationContext("Fixed policy", "Question", native=native)
+        messages = context.messages(100000)
+        assert REASONING_GUIDE in messages[0]["content"]
+        assert "cause is undetermined" in messages[0]["content"]
+        assert "hypotheses.compare" in messages[0]["content"]
+        assert context.completed_queries == set()
+        assert context.exchanges == []
+        assert context.plan is None
+
+
+def test_accepted_plan_resets_consecutive_rejection_feedback():
+    context = InvestigationContext("Fixed policy", "Question")
+    context.accept(FINAL, {"ok": False, "error": "plan_required"})
+    context.accept(PLAN, {"ok": True, "plan": PLAN["steps"]})
+    context.accept(FINAL, {"ok": False, "error": "investigation_queries_required"})
+    assert "Consecutive rejected actions: 1." in context.messages(100000)[-1]["content"]

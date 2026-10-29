@@ -38,7 +38,7 @@
     "src/scryveil/diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
     "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
     "src/scryveil/investigation.py": "4886517e797ff1601bfbe7a0f7de393a53afc2c14deba8c56a407b9a6e1f0318",
-    "src/scryveil/investigation_context.py": "2b2f5d252082c8d0a5bcdf0c50270e942fd1fb5cbb17a5b773f655d07fe626cd",
+    "src/scryveil/investigation_context.py": "88d3c9e8abe4c1a3ebc8419899b0183ee7c80c2c0fab8e3ec52975054439327e",
     "src/scryveil/investigation_tools.py": "8f3b7d4052b12ea6a69540b6e8d4702774cd7b9b46a94d8aea46d256095588a4",
     "src/scryveil/investigation_worker.py": "7a3277aad49229771aa5c7faf60727c00ef849e2e1458186926f03b8e1a132f2",
     "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
@@ -55,5 +55,5 @@
     ".github/workflows/provider-access-check.yml": "5b31f682687a960c6cfc0913de60c17cd6a731431151b3820acd0a9f8abe379d",
     "configs/qualification-provider.json": "09dba96d7a5abfe8040cd9ff5bc0672f45bd2898ec6a70797111301837b12a58"
   },
-  "plan_sha256": "c8bcabb6fa9e5d498ba77a603a8c1d58fd41da2fc011595aed8a2afc4bb28a32"
+  "plan_sha256": "753059b7a4f9a3ecd54c512d6f13569fd1e2290ee1f096b8c26c8a7aa1b01490"
 }
