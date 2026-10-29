@@ -333,6 +333,7 @@ def disclosure_plan(config, selected, require_recurrence):
         },
         "require_recurrence_before_collection": require_recurrence,
         "remote_stop_after_failed_recurrence": config["mode"] == "remote" and require_recurrence,
+        "remote_stop_after_provider_failure": config["mode"] == "remote",
         "limitations": "An automatic quality floor is not semantic qualification. Human review is required. Hosted alias/weights and server cancellation are not independently verifiable.",
         "scenarios": [],
     }
@@ -405,6 +406,11 @@ def evaluate(
             skipped.append(
                 {"scenario": name, "reason": "remote_recurrence_floor_failed_no_further_spend"}
             )
+            continue
+        if config["mode"] == "remote" and any(
+            r["report"]["status"].startswith("provider_") for r in records
+        ):
+            skipped.append({"scenario": name, "reason": "remote_provider_failure_no_further_spend"})
             continue
         if (
             name == "collection"

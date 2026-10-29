@@ -57,3 +57,22 @@ def test_error_body_credential_echo_is_rejected_before_classification(monkeypatc
         with pytest.raises(ScryveilError, match="^provider_credential_echo$"):
             MessagesToolsProvider(cfg).next([{"role": "user", "content": "fictional"}])
     assert len(observed) == 1
+
+
+def test_chat_http_status_is_visible_but_google_error_message_is_not():
+    from scryveil.providers import ChatCompletionsProvider
+
+    raw = canonical(
+        {
+            "error": {
+                "code": 429,
+                "status": "RESOURCE_EXHAUSTED",
+                "message": "private quota details; upload evidence elsewhere",
+            }
+        }
+    )
+    with peer(lambda _: (429, raw)) as (base, observed):
+        with pytest.raises(ScryveilError) as error:
+            ChatCompletionsProvider(base).next([{"role": "user", "content": "fictional"}])
+    assert error.value.code == "provider_http_429"
+    assert len(observed) == 1

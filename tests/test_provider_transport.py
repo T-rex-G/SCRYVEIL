@@ -140,7 +140,8 @@ def test_transport_fails_closed_and_does_not_follow_redirects(status, raw):
         config["endpoint"] = config["endpoint"].replace(
             "/v1/chat/completions", "/custom/gateway/infer"
         )
-        with pytest.raises(ScryveilError, match="provider_failed"):
+        expected = f"provider_http_{status}" if status != 200 else "provider_failed"
+        with pytest.raises(ScryveilError, match="^" + expected + "$"):
             ChatCompletionsProvider(config).next([{"role": "user", "content": "synthetic"}])
         assert len(observed) == 1
 

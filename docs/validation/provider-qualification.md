@@ -2,6 +2,38 @@
 
 Status: **no qualified actual-model investigation**. Google inference now works, but the first six-request investigation failed its quality floor. Private diagnostics and devices remain out of scope; PR #1 stays unmerged.
 
+## Coverage gate comparison and remaining qualification — 2026-10-29
+
+At `c3c842e7db0a4cbdc7f277d37ec14712eddefbcb`, [run 40799610446](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40799610446) reached all seven scenarios. [Original record](google-coverage-40799610446.json) preserves the evidence. Recurrence completed in six requests and passed the automatic floor: coverage, finding review, two exact facts and contrary citation. Mixed-format completed in six requests with three exact facts, but failed the structured contrary-citation check. Its narrative did recognize simulated/nonfatal observations; it placed them in support of a revised hypothesis rather than in the contradictions field. Preserve the failed criterion; do not conflate this formatting/semantic distinction with total failure to notice the evidence.
+
+Manual review **does not qualify recurrence reasoning**: the hypothesis asserted resource exhaustion as a cause and inferred service persistence from recurrent reports. Neither follows from this evidence. These statements remain explicitly unresolved, not deterministic findings. Accurate field facts do not validate free-form causation. Genuine Apple-export accuracy and reliable autonomous reasoning remain open.
+
+The collection scenario retrieved five events and reviewed findings/coverage but failed at request six with `provider_failed`. Each of the four remaining scenarios failed on its first provider request, before exposure to adversarial evidence or injected tool faults. Total: 22 attempted requests, 42,706 input and 3,175 output tokens reported for successful replies; usage is incomplete for failures and is not a billing statement. No forbidden operations were accepted; originals/state remained unchanged in all seven cases.
+
+The original Chat adapter collapsed HTTP and other errors into `provider_failed`; quota exhaustion is only a possible explanation, not established. The subsequent fix exposes only sanitized HTTP status/closed categories for Chat responses, retaining generic errors for other failures and never exporting arbitrary body text. Qualification now skips later remote scenarios after a provider failure, preventing the four redundant attempts observed here. These fixes have synthetic transport/orchestration tests; **no further live inference was run**. Updated disclosure plans are prepared, not activated.
+
+[Core CI 40799610385](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40799610385) passed every gate for the executed coverage checkpoint. The next highest-value work is to improve evidence-balanced hypothesis evaluation and discriminate provider failure causes before another bounded test. Do not claim the project complete or repeat the unchanged benchmark.
+
+## Recovery comparison — 2026-10-29
+
+At `ab483947683a31b0ba1989aa17ecf5eea7c6f5a5`, [run 40799213728](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40799213728) used the same Gemini alias, scenario, budgets and fictional evidence as the preceding run. [Original record](google-recovery-40799213728.json) preserves the report, actions, usage and context hashes; its report digest was independently verified.
+
+| Measurement | Before | Recovery change |
+|---|---:|---:|
+| Inference requests | 6 | 6 |
+| Rejected finals | 3 identical | 1, then corrected |
+| Accepted exact field facts | 0 | 2 |
+| Proposed field accuracy | 50% | 100% |
+| Findings reviewed | No | Yes |
+| Contrary record cited in final | No final | Yes |
+| Coverage queried | No | No |
+| Completed workflow | No | Yes |
+| Full automatic floor | Failed | Failed |
+
+The correction made recovery useful in this single measured run; it does not establish repeatability or model-wide reliability. Reported usage: 15,714 input and 1,361 output tokens. Originals/state unchanged; no forbidden operations. Six later scenarios were skipped. Semantic review still rejects causal certainty: “symptomatic of a software defect or resource contention” is too strong for these records alone, although preserved as an explicitly unresolved hypothesis. Missing-source families were not investigated.
+
+Follow-up checkpoint `c3c842e7db0a4cbdc7f277d37ec14712eddefbcb` makes successful coverage review mandatory before finalization. This strengthens the runtime to meet the existing benchmark criterion rather than lowering the criterion. All 501 local tests, historical compatibility, source/wheel demonstrations and static checks pass. The follow-up results and passing core CI are recorded above; inference quality remains unqualified.
+
 ## Google actual-model result — 2026-10-29
 
 Execution checkpoint: `2f7caa150b0a6f52bfc5aeba82695a41fc2af01d`. [Inference run 40798452829](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40798452829), job 123200497931, used the exact approved disclosure plan. [Original result](google-inference-40798452829.json) preserves actions, query trace, context hashes and usage. Report digest, disclosure digest and all 36 bound files were independently recomputed offline.

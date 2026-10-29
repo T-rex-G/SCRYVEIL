@@ -33,8 +33,8 @@
     "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
     "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
     "src/scryveil/provider_messages.py": "0a672ecde084e558a6a74c9c2fae28f9bfaa03c6dc2ebb865f5922a93e10e11e",
-    "src/scryveil/provider_transport.py": "44a862a58e0a7b5f618eaffcb4a522f56b208285b9aba49bed9a0e7cd452484e",
-    "src/scryveil/providers.py": "76c9a1bea26c601362c32a0614976258a0aa8c8d07177f569a598dbfc20b98d0",
+    "src/scryveil/provider_transport.py": "aea1b9714033ee36813e662b563256bc44ab7f1a1ccd0eb87465209c692ebb7c",
+    "src/scryveil/providers.py": "a412dc970c1e3cfc9df6f6012d882c05c0f0c770e06cd9d2d633f0af5ddb3e93",
     "src/scryveil/report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
     "src/scryveil/state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
     "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5",
@@ -46,7 +46,7 @@
     "fixtures/synthetic/diagnostic-text-resource.ips": "ab16ab53baef868791046c2fef8534a0b8cd133c1508f38db448de3be37cc393",
     "fixtures/synthetic/diagnostic-v2-crash.ips": "43a461e3367db8c192c2cb65679f27cc5744bcda909f9937ae3b17d1b3435b75",
     "fixtures/synthetic/diagnostic-v2-exception.ips": "4474c35fa1dd12213ece71b8a89a8c246e39b9923c7b58903e0a338ca86b620e",
-    "scripts/model_qualification.py": "9a287fa908b796976d8de031a2658c0c07230daeeb5ece084bb8be547ff8d6a5",
+    "scripts/model_qualification.py": "1155bab05b3bce39965f62b226c6f3045af17dd747a9f3f75282f8d88c865b1c",
     "scripts/collection_demo.py": "77d22e136557143a831bc60f8aff8bdc966786c96df96d32079567edbd6a29d0",
     "scripts/minimax_qualification.py": "5337ac7e1be072e546eb9e983c100c5199d9b22abccf6829b03d543e4fd2fca9",
     "scripts/provider_qualification.py": "e548a860156743d801c70779c1d88bed1944a6d7da1c217e3328ad7487a9e764",
@@ -55,6 +55,7 @@
   },
   "require_recurrence_before_collection": true,
   "remote_stop_after_failed_recurrence": true,
+  "remote_stop_after_provider_failure": true,
   "limitations": "An automatic quality floor is not semantic qualification. Human review is required. Hosted alias/weights and server cancellation are not independently verifiable.",
   "scenarios": [
     {
@@ -482,5 +483,5 @@
   ],
   "maximum_requests": 74,
   "maximum_reserved_token_estimate": 1400000,
-  "plan_sha256": "d59c1e737d7407b3eca4b24cca414fbd5fa44f3af9fe04a64394d897de9440f8"
+  "plan_sha256": "9170264efdf2b4e502998b861b5786b60d61f70713c1540d8e21d828e8194e3e"
 }

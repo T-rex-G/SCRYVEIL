@@ -306,3 +306,35 @@ def test_benchmark_rejects_an_installed_runtime_different_from_recorded_source(
     monkeypatch.setitem(evaluate.__globals__, "scryveil", SimpleNamespace(__file__=str(different)))
     with pytest.raises(ScryveilError, match="qualification_runtime_source_mismatch"):
         evaluate(mock=True, scenarios=["recurrence"], preview=True)
+
+
+def test_remote_provider_failure_stops_later_cases_even_without_recurrence_gate(
+    monkeypatch, capsys
+):
+    module = runpy.run_path(str(Path(__file__).parents[1] / "scripts/model_qualification.py"))
+    evaluate = module["evaluate"]
+    calls = []
+
+    class Failed:
+        def next(self, messages):
+            calls.append(messages)
+            raise ScryveilError("provider_http_429")
+
+    monkeypatch.setitem(evaluate.__globals__, "ChatCompletionsProvider", lambda config: Failed())
+    kwargs = {
+        "provider_config": {
+            "adapter": "chat-completions-json",
+            "mode": "remote",
+            "endpoint": "https://model.example.invalid/v1/chat/completions",
+            "model": "fictional",
+        },
+        "scenarios": ["mixed_formats", "missing_evidence"],
+    }
+    plan = evaluate(**kwargs, preview=True)
+    assert plan["remote_stop_after_provider_failure"]
+    result = evaluate(**kwargs, approved_plan=plan["plan_sha256"])
+    assert len(calls) == 1
+    assert result["skipped_scenarios"] == [
+        {"scenario": "missing_evidence", "reason": "remote_provider_failure_no_further_spend"}
+    ]
+    capsys.readouterr()

@@ -145,8 +145,6 @@ def exchange(request: dict[str, Any]) -> dict[str, Any]:
         if response.status != 200:
             raise ScryveilError(
                 http_failure(response.status, response.read(65537), request["credential"])
-                if native or catalog
-                else "provider_http_error"
             )
         raw = response.read(1024 * 1024 + 1)
         if len(raw) > 1024 * 1024:

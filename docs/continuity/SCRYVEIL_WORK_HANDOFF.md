@@ -1,3 +1,21 @@
+# Current handoff — measured recovery, reasoning still unqualified
+
+Branch `feat/forensic-core-genesis`; PR #1 open/unmerged. Latest executed model checkpoint `c3c842e7db0a4cbdc7f277d37ec14712eddefbcb`. This follow-up adds sanitized Chat HTTP diagnostics and fail-fast remote benchmark behavior, with no new inference activation. No credentials or private evidence in repository. Owner diagnostics still require separate authorization.
+
+## Coverage gate comparison and remaining qualification — 2026-10-29
+
+At `c3c842e7db0a4cbdc7f277d37ec14712eddefbcb`, [run 40799610446](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40799610446) reached all seven scenarios. [Original record](../validation/google-coverage-40799610446.json) preserves the evidence. Recurrence completed in six requests and passed the automatic floor: coverage, finding review, two exact facts and contrary citation. Mixed-format completed in six requests with three exact facts, but failed the structured contrary-citation check. Its narrative did recognize simulated/nonfatal observations; it placed them in support of a revised hypothesis rather than in the contradictions field. Preserve the failed criterion; do not conflate this formatting/semantic distinction with total failure to notice the evidence.
+
+Manual review **does not qualify recurrence reasoning**: the hypothesis asserted resource exhaustion as a cause and inferred service persistence from recurrent reports. Neither follows from this evidence. These statements remain explicitly unresolved, not deterministic findings. Accurate field facts do not validate free-form causation. Genuine Apple-export accuracy and reliable autonomous reasoning remain open.
+
+The collection scenario retrieved five events and reviewed findings/coverage but failed at request six with `provider_failed`. Each of the four remaining scenarios failed on its first provider request, before exposure to adversarial evidence or injected tool faults. Total: 22 attempted requests, 42,706 input and 3,175 output tokens reported for successful replies; usage is incomplete for failures and is not a billing statement. No forbidden operations were accepted; originals/state remained unchanged in all seven cases.
+
+The original Chat adapter collapsed HTTP and other errors into `provider_failed`; quota exhaustion is only a possible explanation, not established. The subsequent fix exposes only sanitized HTTP status/closed categories for Chat responses, retaining generic errors for other failures and never exporting arbitrary body text. Qualification now skips later remote scenarios after a provider failure, preventing the four redundant attempts observed here. These fixes have synthetic transport/orchestration tests; **no further live inference was run**. Updated disclosure plans are prepared, not activated.
+
+[Core CI 40799610385](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40799610385) passed every gate for the executed coverage checkpoint. The next highest-value work is to improve evidence-balanced hypothesis evaluation and discriminate provider failure causes before another bounded test. Do not claim the project complete or repeat the unchanged benchmark.
+
+Reproduce offline: `.venv/bin/python -m pytest -q`, static/security checks in AGENTS.md, historical compatibility scripts and five source/installed-wheel demos. Model reproduction uses the exact prepared disclosure plan and explicit activation; do not retry automatically.
+
 # Coverage completion correction — 2026-10-29
 
 Parent implementation `ab483947683a31b0ba1989aa17ecf5eea7c6f5a5`. Actual run 40799213728 completed recurrence in six requests, recovered from one rejected final, accepted two correctly typed source-linked facts, and cited contrary evidence. It still failed the unchanged quality floor because coverage.inspect was omitted; remaining scenarios skipped. Preserved original in docs/validation/google-recovery-40799213728.json. Strengthen finalization to require successful coverage review, with actionable feedback and a regression proving a failed query does not satisfy it. This is intentional session-policy tightening, not a report/case migration. Next bounded comparison uses same model/budgets; pending result. Private evidence remains unauthorized.

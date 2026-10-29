@@ -172,6 +172,8 @@ Provider budgets: 1–32 requests, 1–60 seconds each, 4–256 KiB serialized c
 
 ## Reading results and recovering failures
 
+Before finalization, the worker now requires a successful `coverage.inspect` query. `coverage_review_required` means the model must read missing-source/omission information and then resubmit a grounded final. Failed coverage calls do not count. Recovery feedback tracks successful reviews across context eviction and preserves JSON value types; it does not repair or execute the model’s actions. This tightens session completion without changing stored cases or report schemas.
+
 For explicit diagnostic omissions and interpretation status, run `scryveil --root PRIVATE_CASE_ROOT diagnostics coverage --case CASE_ID --max-events 2000`. The offline owner report binds to the verified selected snapshot, lists artifact-linked warnings and categories absent from that selection, and leaves unimported/rejected-file counts unknown. It does not infer complete device history. See [resource and coverage qualification](validation/resource-format-continuation.md). The established default `coverage.inspect` tool remains unchanged.
 
 A completed report contains the question, plan, tool trace with result hashes, coverage, deterministic findings, exact-field observed facts, derived measurements, unresolved hypotheses, contrary evidence and unanswered questions. Evidence references point to original artifact IDs, byte regions and, JSON fields, JSON pointers; selected text fields carry their exact physical line/byte span. An exact reference proves where a value came from, not that the source or hypothesis is true. Reports include sensitive metadata and model text; review before sharing or rendering elsewhere.
@@ -284,3 +286,5 @@ python scripts/provider_access_check.py --provider-config PRIVATE_CONFIG \
 Review the exact destination, credential reference, auth and source digest. Repeat with `--approve-plan-sha256 REVIEWED_DIGEST` instead of `--preview` to perform the single GET. Omit `--catalog-auth-scheme` to use the configured auth scheme. Credentials stay in the referenced environment variable; never pass them as arguments. Neither preview nor catalog inspection grants consent to send forensic evidence.
 
 Known native API error codes are reported as `provider_http_STATUS_CODE`; unknown error bodies remain `provider_http_STATUS`. The suffix is an allowlisted provider assertion, not a verified account diagnosis. Free-form messages/identifiers are suppressed; credential echoes fail closed. Correct access/configuration before explicitly selecting another inference run.
+
+Chat provider HTTP failures now retain sanitized `provider_http_STATUS` codes (and closed known categories), without response bodies. A 429 identifies an HTTP rejection, not a verified account balance or specific quota. The fictional remote benchmark stops later scenarios after a provider failure; no automatic retry or fallback is performed.

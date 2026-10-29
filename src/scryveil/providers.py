@@ -358,9 +358,9 @@ class BrokerProvider:
         response = load_json(output)
         if not isinstance(response, dict) or not response.get("ok"):
             if (
-                diagnostic_errors
-                and isinstance(response, dict)
+                isinstance(response, dict)
                 and safe_error(response.get("error"))
+                and (diagnostic_errors or response["error"].startswith("provider_http_"))
             ):
                 raise ScryveilError(response["error"])
             raise ScryveilError("provider_failed")
