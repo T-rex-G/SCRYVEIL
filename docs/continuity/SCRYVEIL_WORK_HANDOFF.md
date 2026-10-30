@@ -1,22 +1,21 @@
 # SCRYVEIL engineering handoff
 
-Branch `feat/forensic-core-genesis`; PR #1 open; never merge automatically.
-Verified implementation: `2089c573939fcae8c9bcf170e81fb716856aeb38`; core CI [40964874799](https://github.com/T-rex-G/SCRYVEIL/actions/runs/40964874799) passed all gates, including source and installed-wheel offline delivery. This documentation checkpoint records that exact code.
+Branch `feat/forensic-core-genesis`, PR #1 open; never merge automatically.
+Verified code: `5be36d3fcbe31ec9ec080254ce2b6ce1ab843940`. [Core CI 41051459230](https://github.com/T-rex-G/SCRYVEIL/actions/runs/41051459230) passed. This handoff update changes no runtime code.
 
-## Delivered offline capability
+Implemented: `hypotheses.compare` now evaluates explicit propositions instead of aliasing findings inspection. Nonfatal/no-action declarations contradict an all-fatal interpretation, not report recurrence or every proposed cause. Comparisons retain exact source locations, bounded references and omission counts. `diagnostics compare` exposes the same deterministic checks offline. Unknown causes remain unresolved. The mock's contradictory-evidence mapping was corrected; this is not model qualification.
 
-`python scripts/collection_demo.py --offline-only --output /tmp/scryveil-example`
+Temporal correlation now excludes conflicting declared bundle IDs, counts uncertain-identity pairs explicitly and retains interval indexing without materializing all pairs. Model views remove repeated finding text and locator bookkeeping while full results remain in reports. The 30-report regression completes within its unchanged 200,000-unit budget.
 
-Creates the fictional collection, imports through the ordinary CLI, reconstructs 6,260 events, measures three signature groups of 80 incident declarations, and exports `diagnostics.md`, full JSON, inventory and paged queries. No AI (including mock) is invoked. Reports now show timeline coverage, authorized signature symbols, resource accounting windows, original hashes, byte ranges and JSON pointers. 24 explicit nonfatal declarations and 20 no-action resource reports contradict an all-fatal interpretation. Earlier Jetsam records do not establish pressure at later crash times.
+Reproduce from an installed checkout (output directory must be new):
 
-All 266 original member bytes and normalized crash timestamps/exception fields/flags were checked independently against Python's ZIP reader and raw JSON. Original bytes and case state remain unchanged. 534 local tests, static/type/security/hygiene checks, historical compatibility, five source/installed-wheel demos and the installed-wheel offline delivery pass. The downloadable generated example was extracted and its report reproduced byte-for-byte. Installed-wheel offline delivery completed in 3.727 seconds on this shared host; this is not a general scalability guarantee.
+```sh
+python scripts/collection_demo.py --offline-only --output /tmp/scryveil-check
+scryveil --root /tmp/scryveil-check/cases diagnostics compare --case "$(cat /tmp/scryveil-check/case-id.txt)" --all-events --finding diag-046ab4a7c407304ec7bd8a08ee8b848d387f452ec86f261e9d26d9b6b2932fc6
+```
 
-## Actual-model blocker
+Observable result: 6,260 events, zero omissions; comparison reports all-fatal `contradicted`, recurrence `supported_as_reported`, common cause `not_established`. Original evidence/state stay unchanged. 546 regressions, static/type/security/hygiene checks, historical case/report compatibility, source workflows and installed-wheel workflows pass in CI. No new downloadable demonstration is a deliverable.
 
-Evidence-free Gemini 3.8 Flash check 40905285383 at b205cad failed on request one: `provider_timeout_headers` after 60.03819 seconds, 2,096 context bytes, no reply, no tools, no evidence, no retries. Exact compact record: `docs/validation/provider-protocol-result.json`; executed plan is in that commit. No forensic benchmark followed. Earlier semantic failures remain unresolved; no actual model is qualified. No billing changes were made. Availability at this endpoint/model must be established before further reasoning tests; do not repeat the unchanged failing check.
+Actual-model gate remains blocked. Independent HTTPS controls at `0a40fa7113eb64ae43038b3bc2b622c5b4a8baa1`, [run 41049511201](https://github.com/T-rex-G/SCRYVEIL/actions/runs/41049511201), returned Chat HTTP 503 (4.605s) and native Google timeout (60.060s). Zero evidence/tools; two distinct requests, no retries. Both failures also occur outside the isolated broker; underlying provider/network cause is unknown. Original compact records/digests remain in `docs/validation/provider-protocol-result.json`. CI execution success is not inference success.
 
-## Boundaries and next action
-
-A is demonstrated on fictional inputs. B remains blocked by transport/provider response availability; its root cause is not established. Genuine Apple-export accuracy needs separately authorized independent samples. No private owner diagnostics/devices are authorized. Broader acquisition and authenticated custody remain unqualified. Eleven read-only tools, syscall isolation, consent, source integrity and historical contracts are preserved.
-
-Next: run a minimal protocol check only when an authorized endpoint/model has a concrete availability change; then evaluate the fixed case against source facts, competing explanations, contradictions and causal restraint. Preserve the offline delivery independently. Stored approval plans are historical evidence; re-preview the exact current code before any new authorized transmission. Do not expand research or compatibility layers without an observed blocker.
+Next: establish availability only after a concrete endpoint/account/model change, then run and independently review the existing fixed fictional investigation. Do not repeat unchanged failed probes or claim actual-model reasoning qualification. Genuine Apple-export accuracy remains open; private diagnostics/devices require separate owner authorization. No private evidence access, billing activation, security-boundary weakening or merges were performed.
