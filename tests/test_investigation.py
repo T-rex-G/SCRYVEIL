@@ -527,3 +527,84 @@ def test_shared_prompt_schemas_enforce_same_query_shapes():
         validator.validate({"where": {"nonfatal": True}, "limit": 5})
         assert not validator.is_valid({"where": {"nonfatal": 1}})
         assert not validator.is_valid({"where": {"path": "/etc/passwd"}})
+
+
+def test_hypothesis_comparison_separates_recurrence_from_fatality_and_preserves_boundaries(case):
+    store, cid = case
+    snapshot = snapshot_case(store, cid)
+    before = canonical(snapshot)
+    tools = ReadOnlyTools(snapshot)
+    finding = snapshot["findings"][0]
+    result = tools.call("hypotheses.compare", {"finding_id": finding["finding_id"]})
+    assert result["ok"]
+    comparison = result["data"][0]["comparison"]
+    tests = {t["test_id"]: t for t in comparison["tests"]}
+    assert tests["all_reports_fatal"]["status"] == "contradicted"
+    assert tests["all_reports_fatal"]["contradictory_evidence_ids"]
+    assert tests["reported_recurrence"]["status"] == "supported_as_reported"
+    assert tests["reported_recurrence"]["contradictory_evidence_ids"] == []
+    assert tests["common_cause"]["status"] == "not_established"
+    assert (
+        tests["common_cause"]["supporting_evidence_ids"]
+        == tests["common_cause"]["contradictory_evidence_ids"]
+        == []
+    )
+    assert canonical(snapshot) == before and not tools.read_events
+    assert "com.example.searchd" not in canonical(result).decode()
+    for obs in comparison["observations"]:
+        event = tools.events[obs["event_id"]]
+        assert obs["value"] == event[obs["field"]]
+        assert obs["byte_offset"] == event["byte_offset"]
+        assert obs["artifact_id"] == event["artifact_id"]
+    # Seeing a comparison never authorizes an invented field or unread fact.
+    fact = comparison["observations"][0]
+    with pytest.raises(ScryveilError, match="unsupported_factual_claim"):
+        tools.ground_final(final(facts=[{k: fact[k] for k in ("event_id", "field", "value")}]))
+    assert not tools.call("hypotheses.compare", {"finding_id": "diag-" + "0" * 64})["ok"]
+    # Absence/false nonfatal flags are not evidence of universal fatality.
+    for event in snapshot["events"]:
+        event["nonfatal"] = False
+        event.pop("action_taken", None)
+    comparison = ReadOnlyTools(snapshot).call(
+        "hypotheses.compare", {"finding_id": finding["finding_id"]}
+    )["data"][0]["comparison"]
+    assert comparison["tests"][0]["status"] == "not_established"
+    assert comparison["tests"][0]["supporting_evidence_ids"] == []
+
+
+def test_offline_cli_exposes_comparisons_without_model_or_case_writes(case, capsys, monkeypatch):
+    from scryveil.cli import main
+
+    store, cid = case
+    snapshot = snapshot_case(store, cid, all_events=True)
+    finding = next(
+        f for f in snapshot["findings"] if f["rule"] == "diagnostics.report_conditions/1"
+    )
+    paths = [store.path(cid) / "state.json", *(store.path(cid) / "originals").iterdir()]
+    before = {p: p.read_bytes() for p in paths}
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("Deterministic comparison invoked a model")
+
+    monkeypatch.setattr("scryveil.cli.investigate", forbidden)
+    assert (
+        main(
+            [
+                "--root",
+                str(store.root),
+                "diagnostics",
+                "compare",
+                "--case",
+                cid,
+                "--finding",
+                finding["finding_id"],
+                "--all-events",
+            ]
+        )
+        == 0
+    )
+    output = json.loads(capsys.readouterr().out)
+    assert output["data"][0]["comparison"]["tests"][0]["status"] == "contradicted"
+    assert output["data"][0]["comparison"]["observations"]
+    assert {p: p.read_bytes() for p in paths} == before
+    assert "com.example.searchd" not in canonical(output).decode()

@@ -265,6 +265,7 @@ class MockProvider:
                 "arguments": {"finding_id": findings[0]["finding_id"]},
             }
         else:
+            comparisons = findings[0].get("comparison", {}).get("tests", []) if findings else []
             action = {
                 **base,
                 "kind": "final",
@@ -275,11 +276,19 @@ class MockProvider:
                 "measurements": [f["finding_id"] for f in findings[:8]],
                 "hypotheses": [
                     {
+                        "text": test["proposition"],
+                        "support": test["supporting_evidence_ids"],
+                        "contradictions": test["contradictory_evidence_ids"],
+                        "confidence_justification": test["explanation"],
+                    }
+                    for test in comparisons
+                ]
+                if comparisons
+                else [
+                    {
                         "text": "A software or resource problem is a candidate explanation; the cause remains unresolved.",
                         "support": [e["event_id"] for e in events[:8]],
-                        "contradictions": sorted(
-                            {eid for f in findings[:8] for eid in f["contradictory_evidence_ids"]}
-                        )[:32],
+                        "contradictions": [],
                         "confidence_justification": "Diagnostic recurrence does not distinguish a software defect from other causes; independent corroboration is missing.",
                     }
                 ],

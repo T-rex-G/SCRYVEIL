@@ -270,9 +270,19 @@ def intelligence(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
         start_only_count = 0
         reversed_count = 0
         overlap_count = 0
+        conflicting_bundle_pairs = 0
+        unknown_bundle_pairs = 0
         for left, right in buckets.values():
             crash_times = sorted(datetime.fromisoformat(e["event_time"]).timestamp() for e in left)
+            crash_by_bundle: dict[str | None, list[float]] = defaultdict(list)
+            for e in left:
+                crash_by_bundle[e["attributes"].get("bundle_id")].append(
+                    datetime.fromisoformat(e["event_time"]).timestamp()
+                )
+            for values in crash_by_bundle.values():
+                values.sort()
             spans = []
+            by_bundle: dict[str | None, list[tuple[float, float]]] = defaultdict(list)
             for e in right:
                 start = datetime.fromisoformat(e["event_time"]).timestamp()
                 end_value = (
@@ -284,24 +294,61 @@ def intelligence(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 if end < start:
                     reversed_count += 1
                     continue
-                spans.append((start, end, e))
-                count = bisect_right(crash_times, end + 300) - bisect_left(crash_times, start - 300)
+                spans.append((start, end))
+                bundle = e["attributes"].get("bundle_id")
+                by_bundle[bundle].append((start, end))
+                # Unknown bundle is compatible, not evidence of equal identity.
+                # Known conflicting bundle declarations must never be pooled.
+                candidates = (
+                    [crash_times]
+                    if bundle is None
+                    else [crash_by_bundle.get(bundle, []), crash_by_bundle.get(None, [])]
+                )
+                count = sum(
+                    bisect_right(times, end + 300) - bisect_left(times, start - 300)
+                    for times in candidates
+                )
                 if count:
                     related[e["event_id"]] = e
                     if end_value is not None:
                         interval_count += 1
-                        overlap_count += bisect_right(crash_times, end) - bisect_left(
-                            crash_times, start
+                        overlap_count += sum(
+                            bisect_right(times, end) - bisect_left(times, start)
+                            for times in candidates
                         )
                     else:
                         start_only_count += 1
-            # Count intersecting intervals with sorted endpoints, without
-            # materializing the potentially quadratic set of observation pairs.
-            starts = sorted(start for start, _, _ in spans)
-            ends = sorted(end for _, end, _ in spans)
+            # Two binary searches per selected bucket; no pair materialization
+            # or repeated scan of unknown-identity records for each application.
+            starts = sorted(start for start, _ in spans)
+            ends = sorted(end for _, end in spans)
+            indexes = {
+                bundle: (sorted(a for a, _ in values), sorted(b for _, b in values))
+                for bundle, values in by_bundle.items()
+            }
             for e in left:
                 stamp = datetime.fromisoformat(e["event_time"]).timestamp()
-                count = bisect_right(starts, stamp + 300) - bisect_left(ends, stamp - 300)
+                bundle = e["attributes"].get("bundle_id")
+                interval_indexes = (
+                    [(starts, ends)]
+                    if bundle is None
+                    else [indexes.get(bundle, ([], [])), indexes.get(None, ([], []))]
+                )
+                count = sum(
+                    bisect_right(a, stamp + 300) - bisect_left(b, stamp - 300)
+                    for a, b in interval_indexes
+                )
+                all_count = bisect_right(starts, stamp + 300) - bisect_left(ends, stamp - 300)
+                conflicting_bundle_pairs += all_count - count
+                unknown_starts, unknown_ends = indexes.get(None, ([], []))
+                unknown_bundle_pairs += (
+                    count
+                    if bundle is None
+                    else (
+                        bisect_right(unknown_starts, stamp + 300)
+                        - bisect_left(unknown_ends, stamp - 300)
+                    )
+                )
                 if count:
                     related[e["event_id"]] = e
                     pair_count += count
@@ -311,10 +358,12 @@ def intelligence(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "diagnostics.resource_temporal_neighbors/1",
                     process,
                     list(related.values()),
-                    "Crash/exception times fall within, or at most five minutes outside, reported resource intervals or point observations in the same declared process/OS/build group. This is temporal proximity, not a demonstrated causal relationship or proof of resource activity at the crash time.",
+                    "Crash/exception times fall within, or at most five minutes outside, reported resource intervals or point observations in the same declared process/OS/build group without conflicting reported bundle IDs. Unknown bundle IDs remain unverified. This is temporal proximity, not a demonstrated causal relationship or proof of resource activity at the crash time.",
                     {
                         "window_seconds": 300,
                         "observation_pairs": pair_count,
+                        "conflicting_bundle_pairs_excluded": conflicting_bundle_pairs,
+                        "pairs_with_unknown_bundle_identity": unknown_bundle_pairs,
                         "pairs_inside_reported_intervals": overlap_count,
                         "related_resources_with_end_time": interval_count,
                         "related_resource_points_or_unknown_end": start_only_count,
@@ -331,6 +380,107 @@ def intelligence(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 )
             )
     return sorted(results, key=lambda f: f["finding_id"])
+
+
+def compare_hypotheses(
+    finding: dict[str, Any], events: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    """Test explicit propositions over authorized projected fields, not raw evidence.
+
+    A nonfatal declaration refutes an all-fatal interpretation; it does not
+    refute recurrence or a common cause. Missing declarations are unknown,
+    never positive evidence for the opposite proposition.
+    """
+    ids = sorted(set(finding["supporting_evidence_ids"] + finding["contradictory_evidence_ids"]))
+    rows = [events[eid] for eid in ids if eid in events]
+    diagnostic = finding["rule"].startswith("diagnostics.")
+    facts = []
+    fatal_counterexamples = []
+    for event in rows:
+        if not event["event_type"].startswith("diagnostic."):
+            continue
+        for field, value in (("nonfatal", True), ("action_taken", "none"), ("simulated", True)):
+            if type(event.get(field)) is not type(value) or event.get(field) != value:
+                continue
+            if field != "simulated":
+                fatal_counterexamples.append(event["event_id"])
+            location = event.get("field_locations", {}).get(field, event)
+            facts.append(
+                {
+                    "event_id": event["event_id"],
+                    "field": field,
+                    "value": value,
+                    "artifact_id": event["artifact_id"],
+                    "source_locator": location["source_locator"],
+                    "byte_offset": location["byte_offset"],
+                    "byte_length": location["byte_length"],
+                    "json_pointer": location.get("json_pointer", event.get("json_pointer")),
+                }
+            )
+    tests: list[dict[str, Any]] = []
+    if diagnostic:
+        tests.append(
+            {
+                "test_id": "all_reports_fatal",
+                "proposition": "Every diagnostic report referenced by this finding establishes a fatal termination.",
+                "status": "contradicted" if fatal_counterexamples else "not_established",
+                "supporting_evidence_ids": [],
+                "contradictory_evidence_ids": sorted(set(fatal_counterexamples)),
+                "explanation": "Explicit nonfatal or no-action declarations contradict this proposition. A false/missing nonfatal flag or a simulated report does not independently prove termination. This test does not establish survival or continuous service execution.",
+                "needed_evidence": [
+                    "Validated termination observations for each incident; missing flags alone are insufficient."
+                ],
+            }
+        )
+        if finding["rule"] in {
+            "diagnostics.signature_recurrence/1",
+            "diagnostics.recurrent_reports/1",
+        }:
+            tests.append(
+                {
+                    "test_id": "reported_recurrence",
+                    "proposition": "The deterministic rule found multiple source-declared incidents in its stated identity/signature scope.",
+                    "status": "supported_as_reported",
+                    "supporting_evidence_ids": finding["supporting_evidence_ids"],
+                    "contradictory_evidence_ids": [],
+                    "explanation": "Nonfatal, simulated and no-action observations may recur; those conditions do not contradict report recurrence. Incident declarations are not authenticated independent events or a common-device identity.",
+                    "needed_evidence": [
+                        "Independent acquisition and device identity to establish that the declarations describe one device's history."
+                    ],
+                }
+            )
+        tests.append(
+            {
+                "test_id": "common_cause",
+                "proposition": "A common software defect or resource condition caused the reported failures.",
+                "status": "not_established",
+                "supporting_evidence_ids": [],
+                "contradictory_evidence_ids": [],
+                "explanation": "Repeated signatures, resource labels and temporal neighbors do not discriminate a shared defect from workload, policy or mixed-device explanations. Nonfatal reports neither prove nor disprove these causes. No causal support or contradiction is established by these rules.",
+                "needed_evidence": [
+                    "Verified common device/build and source-clock relationship.",
+                    "Faulting-thread context and resource measurements at each incident, including comparison periods without failures.",
+                ],
+            }
+        )
+    for test in tests:
+        counts = {}
+        for role in ("supporting", "contradictory"):
+            key = role + "_evidence_ids"
+            counts[role] = len(test[key])
+            counts[role + "_omitted"] = max(0, len(test[key]) - REFERENCE_LIMIT)
+            test[key] = test[key][:REFERENCE_LIMIT]
+        test["reference_counts"] = counts
+    return {
+        "schema_version": "scryveil.hypothesis-tests/1",
+        "scope": "Only this finding's retained references in the authorized snapshot; no whole-device inference.",
+        "status": "evaluated" if diagnostic else "no_rule_specific_test",
+        "referenced_events": len(rows),
+        "missing_reference_ids": [eid for eid in ids if eid not in events],
+        "tests": tests,
+        "observations": facts[:REFERENCE_LIMIT],
+        "observations_omitted": max(0, len(facts) - REFERENCE_LIMIT),
+    }
 
 
 def narrative(snapshot: dict[str, Any]) -> str:
@@ -461,9 +611,22 @@ def narrative(snapshot: dict[str, Any]) -> str:
                 "Observed signature details: " + safe(json.dumps(details, sort_keys=True)),
                 "",
             ]
+        comparison = compare_hypotheses(finding, rows)
+        for test in comparison["tests"]:
+            lines += [
+                safe(test["proposition"])
+                + " **"
+                + safe(test["status"])
+                + "**. "
+                + safe(test["explanation"]),
+                "",
+            ]
         for key, title in (
             ("supporting_evidence_ids", "Supporting observations"),
-            ("contradictory_evidence_ids", "Contrary observations"),
+            (
+                "contradictory_evidence_ids",
+                "Observations requiring proposition-specific interpretation",
+            ),
         ):
             lines += [title + ":", ""]
             for eid in finding[key][:3]:

@@ -16,7 +16,7 @@ POLICY = "scryveil.context/1"
 NATIVE_POLICY = "scryveil.context.native/1"
 MAX_EXCHANGES = 8
 REASONING_GUIDE = """Forensic reasoning procedure:
-1. Review source coverage and deterministic findings. For a relevant finding, call hypotheses.compare using its returned finding_id; inspect the referenced events before drawing conclusions.
+1. Review source coverage and deterministic findings. For a relevant finding, call hypotheses.compare using its returned finding_id; use its proposition-specific comparison.tests instead of treating the finding's generic contrary list as a refutation of every hypothesis. Inspect referenced events before drawing conclusions.
 2. Keep the questioned hypothesis separate from its alternatives. If testing 'all incidents are fatal', evaluate that proposition explicitly; put evidence that refutes it in that hypothesis's contradictions list. Then discuss alternatives separately. Do not silently replace the tested proposition with its opposite and lose the contradiction mapping.
 3. Distinguish reported conditions from causes. A resource-exception label does not establish resource exhaustion caused other crashes. Repeated reports do not establish service survival, restart, continuous execution, or a shared device. Matching frames do not prove the fault originated in that function. Unknown/nonfatal flags do not establish every other event was fatal.
 4. Compare at least two plausible explanations when proposing a cause. State which observations discriminate between them and which missing measurement would change the assessment. If no evidence discriminates, say the cause is undetermined. Do not turn a candidate explanation into an asserted cause.
@@ -58,9 +58,28 @@ FEEDBACK = {
 
 
 def model_view(result: dict[str, Any]) -> dict[str, Any]:
-    """Remove repeated locator bookkeeping, not observations or contrary fields."""
+    """Compact bookkeeping; preserve observations and scoped counterevidence."""
     view = deepcopy(result)
     data = view.get("data")
+    if isinstance(data, list):
+        for finding in data:
+            if isinstance(finding, dict) and "comparison" in finding:
+                # Proposition-specific results supersede the generic contrary
+                # list in this presentation. Keep full findings in the report
+                # and findings.inspect; do not duplicate them on every turn.
+                for key in set(finding) - {
+                    "finding_id",
+                    "rule",
+                    "process_ref",
+                    "comparison",
+                    "statistics",
+                    "distinct_reported_incidents",
+                    "reference_counts",
+                }:
+                    finding.pop(key)
+                for observation in finding["comparison"]["observations"]:
+                    for field in PROVENANCE:
+                        observation.pop(field, None)
     if isinstance(data, dict):
         events = data.get("events", []) if "event_id" not in data else [data]
         if isinstance(events, list):

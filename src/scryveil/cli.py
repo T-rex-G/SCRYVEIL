@@ -98,6 +98,12 @@ def parser() -> Parser:
     coverage = diagnostic_commands.add_parser("coverage")
     coverage.add_argument("--case", required=True)
     coverage.add_argument("--max-events", type=int, default=2000)
+    compare = diagnostic_commands.add_parser("compare")
+    compare.add_argument("--case", required=True)
+    compare.add_argument("--finding", required=True)
+    compare.add_argument("--all-events", action="store_true")
+    compare.add_argument("--diagnostic-details", action="store_true")
+    compare.add_argument("--include-identifiers", action="store_true")
     timeline = (
         sub.add_parser("timeline").add_subparsers(dest="action", required=True).add_parser("query")
     )
@@ -183,6 +189,8 @@ def execute(args: argparse.Namespace) -> Any:
             all_events=args.all_events,
             diagnostic_details=args.diagnostic_details,
         )
+        if args.action == "compare":
+            return ReadOnlyTools(result).call("hypotheses.compare", {"finding_id": args.finding})
         return narrative(result) if args.format == "markdown" else result
     if args.command == "investigate":
         config = load_config(args.provider_config)

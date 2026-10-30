@@ -6,7 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from .collection import MAX_ARTIFACTS
-from .diagnostic_intelligence import PROFILE, intelligence
+from .diagnostic_intelligence import PROFILE, compare_hypotheses, intelligence
 from .diagnostics import diagnostic_findings
 from .engine import analyze
 from .models import ScryveilError
@@ -569,6 +569,10 @@ class ReadOnlyTools:
                     for e in f[k]
                 }
             )
+            if name == "hypotheses.compare":
+                selected = [
+                    {**f, "comparison": compare_hypotheses(f, self.events)} for f in selected
+                ]
             return selected, ids, truncated
         candidates: set[str] | None = None
         filters = {

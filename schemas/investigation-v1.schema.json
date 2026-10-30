@@ -1528,6 +1528,9 @@
             "minimum": 0
           },
           "maxProperties": 4
+        },
+        "comparison": {
+          "$ref": "#/$defs/HypothesisComparison"
         }
       },
       "required": [
@@ -2340,6 +2343,185 @@
           "$ref": "#/$defs/Error"
         }
       ]
+    },
+    "HypothesisComparison": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.hypothesis-tests/1"
+        },
+        "scope": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "status": {
+          "enum": [
+            "evaluated",
+            "no_rule_specific_test"
+          ]
+        },
+        "referenced_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_reference_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "maxItems": 20000
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "test_id": {
+                "enum": [
+                  "all_reports_fatal",
+                  "reported_recurrence",
+                  "common_cause"
+                ]
+              },
+              "proposition": {
+                "type": "string",
+                "maxLength": 1024
+              },
+              "status": {
+                "enum": [
+                  "contradicted",
+                  "not_established",
+                  "supported_as_reported"
+                ]
+              },
+              "supporting_evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "maxItems": 8
+              },
+              "contradictory_evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "maxItems": 8
+              },
+              "explanation": {
+                "type": "string",
+                "maxLength": 1024
+              },
+              "needed_evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                "maxItems": 4
+              },
+              "reference_counts": {
+                "$ref": "#/$defs/Finding/properties/reference_counts"
+              }
+            },
+            "required": [
+              "test_id",
+              "proposition",
+              "status",
+              "supporting_evidence_ids",
+              "contradictory_evidence_ids",
+              "explanation",
+              "needed_evidence",
+              "reference_counts"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 3
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "field": {
+                "enum": [
+                  "nonfatal",
+                  "action_taken",
+                  "simulated"
+                ]
+              },
+              "value": {
+                "enum": [
+                  true,
+                  "none"
+                ]
+              },
+              "artifact_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "source_locator": {
+                "type": "string",
+                "maxLength": 1024
+              },
+              "byte_offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "byte_length": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "json_pointer": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1024
+              }
+            },
+            "required": [
+              "event_id",
+              "field",
+              "value",
+              "artifact_id",
+              "source_locator",
+              "byte_offset",
+              "byte_length",
+              "json_pointer"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8
+        },
+        "observations_omitted": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "scope",
+        "status",
+        "referenced_events",
+        "missing_reference_ids",
+        "tests",
+        "observations",
+        "observations_omitted"
+      ],
+      "additionalProperties": false
     }
   }
 }

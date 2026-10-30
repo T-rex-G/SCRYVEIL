@@ -258,6 +258,18 @@ def test_30_mixed_reports_finish_under_unchanged_budget(tmp_path):
         if row.get("tool") == "diagnostics.search"
     )
     assert events[0]["field_locations"]  # Full provenance survives model-view compaction.
+    comparison = next(
+        row["result"]["data"][0]["comparison"]
+        for row in report["trace"]
+        if row.get("tool") == "hypotheses.compare"
+    )
+    fatal = comparison["tests"][0]
+    assert len(fatal["contradictory_evidence_ids"]) <= 8
+    assert (
+        fatal["reference_counts"]["contradictory"]
+        == len(fatal["contradictory_evidence_ids"])
+        + fatal["reference_counts"]["contradictory_omitted"]
+    )
 
 
 def test_recorded_gemini_final_rejections_get_distinct_actionable_feedback():

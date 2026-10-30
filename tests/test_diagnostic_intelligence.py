@@ -277,3 +277,64 @@ def test_interval_index_matches_brute_force_with_overlapping_nested_and_point_re
     assert finding["reference_counts"]["supporting"] == len(
         {eid for pair in expected_pairs for eid in pair}
     )
+
+
+def test_identity_aware_interval_index_matches_independent_pair_enumeration():
+    from datetime import UTC, datetime, timedelta
+    from random import Random
+
+    rng = Random(112903)
+    epoch = datetime(2026, 2, 3, 12, tzinfo=UTC)
+    rows = []
+    template = events()[0]
+    for i in range(240):
+        event = copy.deepcopy(template)
+        event["event_id"] = "evt-" + f"{i:064x}"
+        event["event_time"] = (epoch + timedelta(seconds=rng.randrange(-800, 800))).isoformat()
+        event["attributes"]["bundle_id"] = rng.choice([None, "com.example.one", "com.example.two"])
+        if i >= 100:
+            event["event_type"] = "diagnostic.resource"
+            event["attributes"]["event_end_time"] = (
+                (
+                    datetime.fromisoformat(event["event_time"])
+                    + timedelta(seconds=rng.randrange(-50, 800))
+                ).isoformat()
+                if i % 4
+                else None
+            )
+        rows.append(event)
+    pairs, unknown, conflicting, inside = [], 0, 0, 0
+    for resource in rows[100:]:
+        start = datetime.fromisoformat(resource["event_time"])
+        end = datetime.fromisoformat(
+            resource["attributes"].get("event_end_time") or resource["event_time"]
+        )
+        if end < start:
+            continue
+        for crash in rows[:100]:
+            stamp = datetime.fromisoformat(crash["event_time"])
+            if not start - timedelta(seconds=300) <= stamp <= end + timedelta(seconds=300):
+                continue
+            a, b = crash["attributes"]["bundle_id"], resource["attributes"]["bundle_id"]
+            if a is not None and b is not None and a != b:
+                conflicting += 1
+                continue
+            pairs.append((crash["event_id"], resource["event_id"]))
+            unknown += a is None or b is None
+            inside += (
+                resource["attributes"].get("event_end_time") is not None and start <= stamp <= end
+            )
+    stats = matching(rows, "resource_temporal_neighbors")[0]["statistics"]
+    assert conflicting > 0 and unknown > 0 and inside > 0
+    assert stats["observation_pairs"] == len(pairs)
+    assert stats["conflicting_bundle_pairs_excluded"] == conflicting
+    assert stats["pairs_with_unknown_bundle_identity"] == unknown
+    assert stats["pairs_inside_reported_intervals"] == inside
+    # A known identity conflict must never produce a temporal relationship.
+    rows = events()[:1]
+    rows[0]["attributes"]["bundle_id"] = "com.example.one"
+    resource = copy.deepcopy(rows[0])
+    resource["event_type"] = "diagnostic.resource"
+    resource["event_id"] = "evt-" + "f" * 64
+    resource["attributes"]["bundle_id"] = "com.example.different"
+    assert not matching(rows + [resource], "resource_temporal_neighbors")
