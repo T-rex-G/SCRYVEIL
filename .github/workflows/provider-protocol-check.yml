@@ -20,10 +20,11 @@ jobs:
           python - <<'PY'
           import os, re, subprocess
           message = subprocess.check_output(['git', 'log', '-1', '--format=%B']).decode()
-          match = re.search(r'\[provider-protocol:([0-9a-f]{64})\]', message)
+          match = re.search(r'\[(provider-protocol|provider-wire):([0-9a-f]{64})\]', message)
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('selected=' + str(match is not None).lower() + '\n')
-              output.write('approved=' + (match.group(1) if match else '') + '\n')
+              output.write('approved=' + (match.group(2) if match else '') + '\n')
+              output.write('wire=' + str(match is not None and match.group(1) == 'provider-wire').lower() + '\n')
           print('Explicit protocol check selected:', match is not None)
           PY
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -39,9 +40,12 @@ jobs:
         if: steps.check.outputs.selected == 'true'
         env:
           SCRYVEIL_APPROVED_PLAN: ${{ steps.check.outputs.approved }}
+          SCRYVEIL_WIRE_CONTROL: ${{ steps.check.outputs.wire }}
         run: |
           install -m 600 configs/qualification-provider.json "$RUNNER_TEMP/scryveil-provider.json"
-          python scripts/provider_protocol_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --preview > "$RUNNER_TEMP/scryveil-protocol-plan.jsonl"
+          extra=()
+          if [[ "$SCRYVEIL_WIRE_CONTROL" == true ]]; then extra=(--google-wire-control); fi
+          python scripts/provider_protocol_check.py "${extra[@]}" --provider-config "$RUNNER_TEMP/scryveil-provider.json" --preview > "$RUNNER_TEMP/scryveil-protocol-plan.jsonl"
           python - <<'PY'
           import json, os
           from pathlib import Path
@@ -51,10 +55,13 @@ jobs:
               raise SystemExit('Protocol plan changed; reviewed digest required')
           print(raw)
           PY
-      - name: Check at most two model actions through isolated broker without evidence
+      - name: Run selected evidence-free check; at most two requests
         if: steps.check.outputs.selected == 'true'
         env:
           SCRYVEIL_PROVIDER_API_KEY: ${{ secrets.SCRYVEIL_GOOGLE_API_KEY }}
           SCRYVEIL_APPROVED_PLAN: ${{ steps.check.outputs.approved }}
+          SCRYVEIL_WIRE_CONTROL: ${{ steps.check.outputs.wire }}
         run: |
-          python scripts/provider_protocol_check.py --provider-config "$RUNNER_TEMP/scryveil-provider.json" --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"
+          extra=()
+          if [[ "$SCRYVEIL_WIRE_CONTROL" == true ]]; then extra=(--google-wire-control); fi
+          python scripts/provider_protocol_check.py "${extra[@]}" --provider-config "$RUNNER_TEMP/scryveil-provider.json" --approve-plan-sha256 "$SCRYVEIL_APPROVED_PLAN"
