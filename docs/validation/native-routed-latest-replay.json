@@ -1,0 +1,22 @@
+{
+  "source_run": 40323112109,
+  "inference_performed": false,
+  "native_tool_layout": "routed-v1",
+  "interpretation": "Wire bytes are not tokenizer counts, latency or reasoning quality.",
+  "requests": [
+    {
+      "request": 1,
+      "historical_request_bytes": 2281,
+      "current_unfactored_bytes": 2458,
+      "current_wire_bytes": 2458,
+      "lossless_reconstruction": true
+    },
+    {
+      "request": 2,
+      "historical_request_bytes": 6895,
+      "current_unfactored_bytes": 5050,
+      "current_wire_bytes": 5050,
+      "lossless_reconstruction": true
+    }
+  ]
+}

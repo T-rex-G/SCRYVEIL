@@ -1,0 +1,1884 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCRYVEIL tool results v1; choose the $defs entry matching the requested tool",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/case.inspect"
+    },
+    {
+      "$ref": "#/$defs/coverage.inspect"
+    },
+    {
+      "$ref": "#/$defs/evidence.list"
+    },
+    {
+      "$ref": "#/$defs/integrity.verify"
+    },
+    {
+      "$ref": "#/$defs/evidence.read_excerpt"
+    },
+    {
+      "$ref": "#/$defs/findings.inspect"
+    },
+    {
+      "$ref": "#/$defs/hypotheses.compare"
+    },
+    {
+      "$ref": "#/$defs/timeline.query"
+    },
+    {
+      "$ref": "#/$defs/diagnostics.search"
+    },
+    {
+      "$ref": "#/$defs/network.query"
+    },
+    {
+      "$ref": "#/$defs/process.inspect"
+    }
+  ],
+  "$defs": {
+    "Event": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "source_locator": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "event_type": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "time_precision": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "parser": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "parser_version": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "byte_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "event_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_offset": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "process_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "app_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "domain_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "json_pointer": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "first_recorded_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_type": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termination_namespace": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "process": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "app": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "domain": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "process_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bundle_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parent_process": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_subtype": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termination_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "os_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "os_build": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pid": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "termination_code": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resident_pages": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "page_size": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "footprint_bytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hits": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nonfatal": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "simulated": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "frames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "symbol": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 1024
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "image_index": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "image_offset": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "symbol",
+              "image_index",
+              "image_offset"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 32
+        },
+        "format_profile": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "schema_status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interpretation_status": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "resource_kind": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_time_role": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_end_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writes_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sampled_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "action_taken": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_codes": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_message": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writes_summary": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lightweight_corpse": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "writes_caused": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "pattern": "^\\d{1,20}(?:\\.\\d{1,9})?$"
+                },
+                "unit": {
+                  "enum": [
+                    "bytes",
+                    "KB",
+                    "MB",
+                    "GB",
+                    "KiB",
+                    "MiB",
+                    "GiB"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "writes_limit": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "pattern": "^\\d{1,20}(?:\\.\\d{1,9})?$"
+                },
+                "unit": {
+                  "enum": [
+                    "bytes",
+                    "KB",
+                    "MB",
+                    "GB",
+                    "KiB",
+                    "MiB",
+                    "GiB"
+                  ]
+                }
+              },
+              "required": [
+                "value",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_raw_codes": {
+          "anyOf": [
+            {
+              "type": "array",
+              "maxItems": 4,
+              "items": {
+                "type": "integer",
+                "minimum": -9223372036854775808,
+                "maximum": 18446744073709551615
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "field_locations": {
+          "type": "object",
+          "maxProperties": 32,
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "source_locator": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "byte_offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "byte_length": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "json_pointer": {
+                "type": "string",
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "source_locator",
+              "byte_offset",
+              "byte_length",
+              "json_pointer"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "sample_start_gap_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sample_end_gap_seconds": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "header_duration_ms": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "duration_text": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sampled_duration_text": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "exception_signal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1024
+        }
+      },
+      "required": [
+        "event_id",
+        "artifact_id",
+        "source_locator",
+        "event_type",
+        "time_precision",
+        "parser",
+        "parser_version",
+        "byte_offset",
+        "byte_length",
+        "event_time",
+        "source_offset",
+        "process_ref",
+        "app_ref",
+        "domain_ref",
+        "synthetic"
+      ],
+      "additionalProperties": false
+    },
+    "Finding": {
+      "type": "object",
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "rule": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "assessment": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "supporting_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "maxItems": 20000
+        },
+        "contradictory_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "maxItems": 20000
+        },
+        "observation": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "alternatives": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 1024
+          },
+          "maxItems": 32
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 1024
+          },
+          "maxItems": 32
+        },
+        "process_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "distinct_reported_incidents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "first_observed_utc": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_observed_utc": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1024
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "statistics": {
+          "type": "object",
+          "maxProperties": 32
+        },
+        "reference_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxProperties": 4
+        },
+        "comparison": {
+          "$ref": "#/$defs/HypothesisComparison"
+        }
+      },
+      "required": [
+        "finding_id",
+        "rule",
+        "assessment",
+        "supporting_evidence_ids",
+        "contradictory_evidence_ids",
+        "observation",
+        "alternatives",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "total_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "selected_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "omitted_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "families": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "not_collected_or_supported": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 1024
+          },
+          "maxItems": 32
+        },
+        "real_export_qualification": {
+          "const": "open"
+        },
+        "clock_accuracy": {
+          "const": "unknown"
+        },
+        "same_device_identity": {
+          "const": "unverified"
+        },
+        "complete_device_history": {
+          "const": false
+        },
+        "selection": {
+          "enum": [
+            "full_case_fail_on_capacity",
+            "earliest_event_cap"
+          ]
+        },
+        "collection_archives": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "collection_member_status_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "selected_event_type_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "selected_diagnostic_schema_status_counts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "total_events",
+        "selected_events",
+        "omitted_events",
+        "families",
+        "not_collected_or_supported",
+        "real_export_qualification",
+        "clock_accuracy",
+        "same_device_identity",
+        "complete_device_history"
+      ],
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "format": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "line": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 1024
+              }
+            },
+            "required": [
+              "line",
+              "code"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 5001
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256",
+        "size",
+        "format",
+        "synthetic",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.tools/1"
+        },
+        "ok": {
+          "const": false
+        },
+        "error": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "evidence_ids": {
+          "const": []
+        },
+        "truncated": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "ok",
+        "error",
+        "evidence_ids",
+        "truncated"
+      ],
+      "additionalProperties": false
+    },
+    "case.inspect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "snapshot_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "events": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "findings": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "identifiers_included": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "snapshot_sha256",
+                "events",
+                "findings",
+                "identifiers_included"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "coverage.inspect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "$ref": "#/$defs/Coverage"
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "evidence.list": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Artifact"
+              },
+              "maxItems": 64
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "integrity.verify": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "const": "verified_at_snapshot_creation"
+                },
+                "source_state_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                },
+                "snapshot_sha256": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "status",
+                "source_state_sha256",
+                "snapshot_sha256"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "evidence.read_excerpt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "$ref": "#/$defs/Event"
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "findings.inspect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Finding"
+              },
+              "maxItems": 20000
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "hypotheses.compare": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Finding"
+              },
+              "maxItems": 1
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "timeline.query": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Event"
+                  },
+                  "maxItems": 25
+                },
+                "matched": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "next_cursor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "events",
+                "matched",
+                "next_cursor"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "diagnostics.search": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Event"
+                  },
+                  "maxItems": 25
+                },
+                "matched": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "next_cursor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "events",
+                "matched",
+                "next_cursor"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "network.query": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Event"
+                  },
+                  "maxItems": 25
+                },
+                "matched": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "next_cursor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "events",
+                "matched",
+                "next_cursor"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "process.inspect": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "scryveil.tools/1"
+            },
+            "ok": {
+              "const": true
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "events": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/Event"
+                  },
+                  "maxItems": 25
+                },
+                "matched": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "next_cursor": {
+                  "anyOf": [
+                    {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "events",
+                "matched",
+                "next_cursor"
+              ],
+              "additionalProperties": false
+            },
+            "evidence_ids": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "maxItems": 20000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "schema_version",
+            "ok",
+            "data",
+            "evidence_ids",
+            "truncated"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "#/$defs/Error"
+        }
+      ]
+    },
+    "HypothesisComparison": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "scryveil.hypothesis-tests/1"
+        },
+        "scope": {
+          "type": "string",
+          "maxLength": 1024
+        },
+        "status": {
+          "enum": [
+            "evaluated",
+            "no_rule_specific_test"
+          ]
+        },
+        "referenced_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_reference_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "maxItems": 20000
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "test_id": {
+                "enum": [
+                  "all_reports_fatal",
+                  "reported_recurrence",
+                  "common_cause"
+                ]
+              },
+              "proposition": {
+                "type": "string",
+                "maxLength": 1024
+              },
+              "status": {
+                "enum": [
+                  "contradicted",
+                  "not_established",
+                  "supported_as_reported"
+                ]
+              },
+              "supporting_evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "maxItems": 8
+              },
+              "contradictory_evidence_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "maxItems": 8
+              },
+              "explanation": {
+                "type": "string",
+                "maxLength": 1024
+              },
+              "needed_evidence": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 1024
+                },
+                "maxItems": 4
+              },
+              "reference_counts": {
+                "$ref": "#/$defs/Finding/properties/reference_counts"
+              }
+            },
+            "required": [
+              "test_id",
+              "proposition",
+              "status",
+              "supporting_evidence_ids",
+              "contradictory_evidence_ids",
+              "explanation",
+              "needed_evidence",
+              "reference_counts"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 3
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "field": {
+                "enum": [
+                  "nonfatal",
+                  "action_taken",
+                  "simulated"
+                ]
+              },
+              "value": {
+                "enum": [
+                  true,
+                  "none"
+                ]
+              },
+              "artifact_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "source_locator": {
+                "type": "string",
+                "maxLength": 1024
+              },
+              "byte_offset": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "byte_length": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "json_pointer": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1024
+              }
+            },
+            "required": [
+              "event_id",
+              "field",
+              "value",
+              "artifact_id",
+              "source_locator",
+              "byte_offset",
+              "byte_length",
+              "json_pointer"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8
+        },
+        "observations_omitted": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "schema_version",
+        "scope",
+        "status",
+        "referenced_events",
+        "missing_reference_ids",
+        "tests",
+        "observations",
+        "observations_omitted"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

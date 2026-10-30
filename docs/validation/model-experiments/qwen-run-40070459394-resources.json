@@ -1,0 +1,16 @@
+{
+  "scope": "server and evaluation child processes; excludes build/download",
+  "wall_seconds": 312.9314142850001,
+  "user_cpu_seconds": 620.416527,
+  "system_cpu_seconds": 1.056258,
+  "largest_child_peak_rss_kib": 6696048,
+  "model_threads": 2,
+  "enable_thinking": false,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "top_k": 20,
+  "min_p": 0,
+  "presence_penalty": 1.5,
+  "seed": 41,
+  "network": "loopback_only"
+}

@@ -1,0 +1,1279 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scryveil.invalid/schema/0.1.0/case-and-report",
+  "title": "SCRYVEIL case and redacted report v0.1.0",
+  "$defs": {
+    "Warning": {
+      "type": "object",
+      "properties": {
+        "line": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "line",
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "ReportEvent": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^evt-[0-9a-f]{64}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "source_locator": {
+          "type": "string",
+          "pattern": "^line:[1-9][0-9]*$"
+        },
+        "byte_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "event_type": {
+          "enum": [
+            "network.observation",
+            "network.summary",
+            "privacy.access",
+            "context.approved_sync",
+            "indicator.domain",
+            "diagnostic.crash",
+            "diagnostic.resource",
+            "diagnostic.jetsam",
+            "diagnostic.exception"
+          ]
+        },
+        "event_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_offset": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "time_precision": {
+          "type": "string"
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "parser": {
+          "enum": [
+            "synthetic_jsonl",
+            "apple_apr_experimental",
+            "ioc_jsonl",
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1"
+          ]
+        },
+        "parser_version": {
+          "enum": [
+            "0.1.0",
+            "1.0.0",
+            "2.0.0"
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "event_id",
+        "artifact_id",
+        "source_locator",
+        "byte_offset",
+        "byte_length",
+        "event_type",
+        "event_time",
+        "source_offset",
+        "time_precision",
+        "synthetic",
+        "parser",
+        "parser_version",
+        "limitations"
+      ],
+      "additionalProperties": false
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^evt-[0-9a-f]{64}$"
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "source_locator": {
+          "type": "string",
+          "pattern": "^line:[1-9][0-9]*$"
+        },
+        "byte_offset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "event_type": {
+          "enum": [
+            "network.observation",
+            "network.summary",
+            "privacy.access",
+            "context.approved_sync",
+            "indicator.domain",
+            "diagnostic.crash",
+            "diagnostic.resource",
+            "diagnostic.jetsam",
+            "diagnostic.exception"
+          ]
+        },
+        "event_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_offset": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "time_precision": {
+          "type": "string"
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "parser": {
+          "enum": [
+            "synthetic_jsonl",
+            "apple_apr_experimental",
+            "ioc_jsonl",
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1"
+          ]
+        },
+        "parser_version": {
+          "enum": [
+            "0.1.0",
+            "1.0.0",
+            "2.0.0"
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_timestamp": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attributes": {
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.1.0"
+        }
+      },
+      "required": [
+        "event_id",
+        "artifact_id",
+        "source_locator",
+        "byte_offset",
+        "byte_length",
+        "event_type",
+        "event_time",
+        "source_offset",
+        "time_precision",
+        "synthetic",
+        "parser",
+        "parser_version",
+        "limitations",
+        "source_timestamp",
+        "attributes",
+        "schema_version"
+      ],
+      "additionalProperties": false
+    },
+    "ReportArtifact": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "format": {
+          "enum": [
+            "synthetic_jsonl",
+            "apple_apr_experimental",
+            "ioc_jsonl",
+            "mixed",
+            "unknown",
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1",
+            "scryveil_zip_collection_v1",
+            "scryveil_preserved_bytes_v1"
+          ]
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "imported_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+        },
+        "collection_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "collection_mode": {
+          "enum": [
+            "synthetic",
+            "imported"
+          ]
+        },
+        "tool_version": {
+          "const": "0.1.0"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Warning"
+          }
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256",
+        "size",
+        "format",
+        "synthetic",
+        "imported_at",
+        "collection_time",
+        "collection_mode",
+        "tool_version",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "Artifact": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "format": {
+          "enum": [
+            "synthetic_jsonl",
+            "apple_apr_experimental",
+            "ioc_jsonl",
+            "mixed",
+            "unknown",
+            "apple_ips_json_v1",
+            "apple_ips_diagnostic_v2",
+            "apple_ips_resource_text_v1",
+            "scryveil_zip_collection_v1",
+            "scryveil_preserved_bytes_v1"
+          ]
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "imported_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+        },
+        "collection_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "collection_mode": {
+          "enum": [
+            "synthetic",
+            "imported"
+          ]
+        },
+        "tool_version": {
+          "const": "0.1.0"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Warning"
+          }
+        },
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "original_filename": {
+          "type": "string"
+        },
+        "capture_interval": {
+          "type": "null"
+        },
+        "source_machine": {
+          "const": "unknown"
+        },
+        "sensitivity": {
+          "const": "private"
+        },
+        "collection_manifest": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/CollectionMember"
+          }
+        }
+      },
+      "required": [
+        "artifact_id",
+        "sha256",
+        "size",
+        "format",
+        "synthetic",
+        "imported_at",
+        "collection_time",
+        "collection_mode",
+        "tool_version",
+        "warnings",
+        "schema_version",
+        "original_filename",
+        "capture_interval",
+        "source_machine",
+        "sensitivity"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "scryveil_zip_collection_v1"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "collection_manifest"
+            ]
+          },
+          "else": {
+            "not": {
+              "required": [
+                "collection_manifest"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "Hypothesis": {
+      "type": "object",
+      "properties": {
+        "hypothesis": {
+          "type": "string"
+        },
+        "support": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          }
+        },
+        "contradictions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          }
+        },
+        "status": {
+          "enum": [
+            "unproven",
+            "unresolved"
+          ]
+        }
+      },
+      "required": [
+        "hypothesis",
+        "support",
+        "contradictions",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "Finding": {
+      "type": "object",
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^finding-[0-9a-f]{64}$"
+        },
+        "title": {
+          "type": "string"
+        },
+        "category": {
+          "enum": [
+            "indicator",
+            "periodicity"
+          ]
+        },
+        "severity": {
+          "enum": [
+            "unknown",
+            "informational"
+          ]
+        },
+        "assessment": {
+          "enum": [
+            "review_needed",
+            "inconclusive",
+            "indicator_match"
+          ]
+        },
+        "rule_id": {
+          "enum": [
+            "periodic.metadata",
+            "ioc.domain.exact"
+          ]
+        },
+        "supporting_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          },
+          "minItems": 1
+        },
+        "contradictory_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          }
+        },
+        "first_observed_utc": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_observed_utc": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "explanation": {
+          "type": "string"
+        },
+        "statistics": {
+          "type": "object"
+        },
+        "missing_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "alternative_explanations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hypotheses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Hypothesis"
+          }
+        },
+        "recommended_non_destructive_next_step": {
+          "type": "string"
+        },
+        "analyst_review_status": {
+          "enum": [
+            "unreviewed",
+            "review_needed",
+            "accepted_benign",
+            "inconclusive"
+          ]
+        },
+        "rule_version": {
+          "const": "0.1.0"
+        }
+      },
+      "required": [
+        "finding_id",
+        "title",
+        "category",
+        "severity",
+        "assessment",
+        "rule_id",
+        "supporting_evidence_ids",
+        "contradictory_evidence_ids",
+        "first_observed_utc",
+        "last_observed_utc",
+        "explanation",
+        "statistics",
+        "missing_evidence",
+        "alternative_explanations",
+        "limitations",
+        "hypotheses",
+        "recommended_non_destructive_next_step",
+        "analyst_review_status",
+        "rule_version"
+      ],
+      "additionalProperties": false
+    },
+    "Relation": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "observed_in",
+            "supports",
+            "context_weakens"
+          ]
+        },
+        "supporting_event_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^evt-[0-9a-f]{64}$"
+          },
+          "minItems": 1
+        },
+        "method": {
+          "type": "string"
+        },
+        "version": {
+          "const": "0.1.0"
+        }
+      },
+      "required": [
+        "source",
+        "target",
+        "relation",
+        "supporting_event_ids",
+        "method",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "source_family": {
+          "type": "string"
+        },
+        "ios_version": {
+          "const": "unknown"
+        },
+        "permission": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "failed",
+            "analyzed",
+            "not_present"
+          ]
+        },
+        "partial": {
+          "type": "boolean"
+        },
+        "failure_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "untimed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "first_recorded_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_recorded_time": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interval_is_complete": {
+          "const": false
+        },
+        "capture_interval": {
+          "const": "unknown"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "source_family",
+        "ios_version",
+        "permission",
+        "status",
+        "partial",
+        "failure_reasons",
+        "record_count",
+        "untimed_records",
+        "first_recorded_time",
+        "last_recorded_time",
+        "interval_is_complete",
+        "capture_interval"
+      ],
+      "additionalProperties": false
+    },
+    "AbsentCoverage": {
+      "type": "object",
+      "properties": {
+        "source_family": {
+          "type": "string"
+        },
+        "status": {
+          "const": "not_collected"
+        },
+        "capability": {
+          "const": "unsupported"
+        }
+      },
+      "required": [
+        "source_family",
+        "status",
+        "capability"
+      ],
+      "additionalProperties": false
+    },
+    "Config": {
+      "type": "object",
+      "properties": {
+        "min_events": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 5000
+        },
+        "min_window_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "max_cv": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_relative_mad": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "min_events",
+        "min_window_seconds",
+        "max_cv",
+        "max_relative_mad"
+      ],
+      "additionalProperties": false
+    },
+    "Analysis": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "rules_version": {
+          "const": "0.1.0"
+        },
+        "config": {
+          "$ref": "#/$defs/Config"
+        },
+        "config_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Finding"
+          }
+        },
+        "rule_outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Coverage"
+              },
+              {
+                "$ref": "#/$defs/AbsentCoverage"
+              }
+            ]
+          }
+        },
+        "graph": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Relation"
+          }
+        },
+        "overall_assessment": {
+          "enum": [
+            "review_needed",
+            "inconclusive",
+            "insufficient_evidence"
+          ]
+        },
+        "scope_statement": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "rules_version",
+        "config",
+        "config_sha256",
+        "findings",
+        "rule_outcomes",
+        "coverage",
+        "graph",
+        "overall_assessment",
+        "scope_statement"
+      ],
+      "additionalProperties": false
+    },
+    "AuditEvent": {
+      "type": "object",
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "operation": {
+          "enum": [
+            "case.create",
+            "evidence.import",
+            "evidence.reimport",
+            "analyze",
+            "analyst.review"
+          ]
+        },
+        "actor": {
+          "const": "local_operator"
+        },
+        "timestamp": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+        },
+        "affected_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "result": {
+          "type": "string"
+        },
+        "previous_hash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "sequence",
+        "operation",
+        "actor",
+        "timestamp",
+        "affected_ids",
+        "result",
+        "previous_hash",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "RuleRun": {
+      "type": "object",
+      "properties": {
+        "started_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+        },
+        "runtime_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "runtime": {
+          "type": "string"
+        },
+        "tool_version": {
+          "const": "0.1.0"
+        },
+        "input_artifact_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^artifact-[0-9a-f]{64}$"
+          }
+        },
+        "config_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "started_at",
+        "runtime_seconds",
+        "runtime",
+        "tool_version",
+        "input_artifact_ids",
+        "config_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "Review": {
+      "type": "object",
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^finding-[0-9a-f]{64}$"
+        },
+        "decision": {
+          "enum": [
+            "review_needed",
+            "accepted_benign",
+            "inconclusive"
+          ]
+        },
+        "timestamp": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+        }
+      },
+      "required": [
+        "finding_id",
+        "decision",
+        "timestamp"
+      ],
+      "additionalProperties": false
+    },
+    "Case": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^case-[0-9a-f]{32}$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "consent_scope": {
+          "enum": [
+            "self",
+            "authorized"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d{6}Z$"
+        },
+        "evidence_root": {
+          "const": "originals"
+        },
+        "retention_policy": {
+          "const": "local_owner_managed"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Artifact"
+          },
+          "maxItems": 32
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Event"
+          },
+          "maxItems": 20000
+        },
+        "audit": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AuditEvent"
+          }
+        },
+        "analysis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Analysis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rule_run": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RuleRun"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Review"
+          }
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "label",
+        "consent_scope",
+        "created_at",
+        "evidence_root",
+        "retention_policy",
+        "artifacts",
+        "events",
+        "audit",
+        "analysis",
+        "rule_run",
+        "reviews"
+      ],
+      "additionalProperties": false
+    },
+    "Report": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "case_id": {
+          "type": "string",
+          "pattern": "^case-[0-9a-f]{32}$"
+        },
+        "provenance_mode": {
+          "enum": [
+            "synthetic",
+            "mixed_or_imported",
+            "no_evidence"
+          ]
+        },
+        "redaction": {
+          "type": "string"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReportArtifact"
+          }
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReportEvent"
+          }
+        },
+        "analysis": {
+          "$ref": "#/$defs/Analysis"
+        },
+        "audit": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AuditEvent"
+          }
+        },
+        "rule_run": {
+          "$ref": "#/$defs/RuleRun"
+        },
+        "analyst_decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Review"
+          }
+        },
+        "reproduction": {
+          "type": "string"
+        },
+        "report_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "provenance_mode",
+        "redaction",
+        "artifacts",
+        "timeline",
+        "analysis",
+        "audit",
+        "rule_run",
+        "analyst_decisions",
+        "reproduction",
+        "report_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "CollectionMember": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "kind": {
+          "enum": [
+            "file",
+            "directory"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "clock": {
+          "const": "zip_local_time_offset_unknown"
+        },
+        "stored_local_time": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {
+            "type": "integer"
+          }
+        },
+        "compression_method": {
+          "enum": [
+            0,
+            8
+          ]
+        },
+        "local_header_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "compressed_data_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "compressed_size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 67108864
+        },
+        "artifact_id": {
+          "type": "string",
+          "pattern": "^artifact-[0-9a-f]{64}$"
+        },
+        "format": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "parsed_subset",
+            "partial",
+            "unqualified_version",
+            "no_parsed_events",
+            "unsupported",
+            "malformed"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "index",
+        "path",
+        "kind",
+        "sha256",
+        "clock",
+        "stored_local_time",
+        "compression_method",
+        "local_header_offset",
+        "compressed_data_offset",
+        "compressed_size",
+        "size"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "file"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "artifact_id",
+              "format",
+              "status",
+              "reason"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "$ref": "#/$defs/Case"
+}

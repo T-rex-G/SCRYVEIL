@@ -1,0 +1,7 @@
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "context.approved_sync", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:00:00Z", "valid_until": "2026-01-01T00:15:00Z"}
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "network.observation", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:00:00+00:00"}
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "network.observation", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:02:00+00:00"}
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "network.observation", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:04:00+00:00"}
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "network.observation", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:06:00+00:00"}
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "network.observation", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:08:00+00:00"}
+{"app": "com.example.sync", "domain": "beacon.example.invalid", "event_type": "network.observation", "schema": "scryveil.events/1", "synthetic": true, "timestamp": "2026-01-01T00:10:00+00:00"}

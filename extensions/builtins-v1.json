@@ -1,0 +1,293 @@
+[
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "apple_ips_json_v1",
+    "kind": "parser",
+    "implementation": "scryveil.diagnostics:parse_ips",
+    "compatibility": [
+      "case 0.1.0 additive IPS event support",
+      "JSON envelope bug_type 309 / 298; report version 104 for 309"
+    ],
+    "capabilities": [
+      "parse supplied bytes",
+      "preserve exact body locations",
+      "warn on unqualified fields"
+    ],
+    "resource_budgets": {
+      "input_bytes": 8388608,
+      "json_depth": 32,
+      "json_nodes": 100000,
+      "processes": 5000,
+      "frames": 32
+    },
+    "qualification": "synthetic fixtures and Apple documentation; real export gate open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "2.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "apple_ips_diagnostic_v2",
+    "kind": "parser",
+    "implementation": "scryveil.diagnostics:parse_diagnostic_v2",
+    "compatibility": [
+      "case 0.1.0 additive diagnostic observations",
+      "309 / 308 JSON body version 2; 145 disk writes text Report Version 29"
+    ],
+    "capabilities": [
+      "preserve original byte and field locations",
+      "distinguish tracking time and event interval",
+      "retain raw exception codes and rounded resource quantities",
+      "explicit partial interpretation and schema qualification status"
+    ],
+    "resource_budgets": {
+      "input_bytes": 8388608,
+      "json_depth": 32,
+      "json_nodes": 100000,
+      "processes": 5000,
+      "frames": 32,
+      "text_summary_lines": 200,
+      "text_line_bytes": 65536
+    },
+    "qualification": "Apple documentation and public author-posted structures; independent synthetic regressions; owner exports not received or qualified"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; public structural research and fictional regression fixtures",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "apple_ips_resource_text_v1",
+    "kind": "parser",
+    "implementation": "scryveil.diagnostic_text:parse_resource_summary",
+    "compatibility": [
+      "case 0.1.0 additive reader identity; existing v2 text cases keep their recorded reader",
+      "145 disk-write summary shared fields; versions 29/55/60 structurally recognized; 73 unqualified"
+    ],
+    "capabilities": [
+      "bounded summary parsing and exact line locations",
+      "displayed quantities and separate body/header durations",
+      "observed sampling-duration annotations; unknown suffixes remain unparsed"
+    ],
+    "resource_budgets": {
+      "input_bytes": 8388608,
+      "text_summary_lines": 200,
+      "text_line_bytes": 65536
+    },
+    "qualification": "public author-posted structures and independently authored fixtures only; genuine Apple export/version 73 gate open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "diagnostics.recurrent_reports/1",
+    "kind": "detector",
+    "implementation": "scryveil.diagnostics:diagnostic_findings",
+    "compatibility": [
+      "normalized diagnostic events 0.1.0"
+    ],
+    "capabilities": [
+      "derive incident recurrence",
+      "retain nonfatal/simulated contrary evidence"
+    ],
+    "resource_budgets": {
+      "events": 20000
+    },
+    "qualification": "synthetic expected results only; no calibrated security accuracy"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [
+      "read authorized in-memory snapshot",
+      "write pipe responses"
+    ],
+    "side_effects": [],
+    "extension_id": "scryveil.tools/1",
+    "kind": "investigator_tools",
+    "implementation": "scryveil.investigation_tools:ReadOnlyTools",
+    "compatibility": [
+      "scryveil.snapshot/1",
+      "scryveil.agent/1",
+      "Linux libseccomp.so.2 required by runtime"
+    ],
+    "capabilities": [
+      "case.inspect",
+      "coverage.inspect",
+      "evidence.list",
+      "integrity.verify",
+      "timeline.query",
+      "diagnostics.search",
+      "network.query",
+      "process.inspect",
+      "evidence.read_excerpt",
+      "findings.inspect",
+      "hypotheses.compare"
+    ],
+    "resource_budgets": {
+      "snapshot_bytes": 16777216,
+      "result_bytes": 65536,
+      "query_events": 25,
+      "worker_cpu_seconds": 20,
+      "worker_address_space_bytes": 536870912
+    },
+    "qualification": "OS syscall denial and adversarial synthetic tests; no independent audit"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "extension_id": "mock",
+    "kind": "provider",
+    "implementation": "scryveil.providers:MockProvider",
+    "compatibility": [
+      "scryveil.provider/1",
+      "scryveil.agent/1"
+    ],
+    "capabilities": [
+      "deterministic scripted investigation demonstration"
+    ],
+    "resource_budgets": {
+      "requests": 32,
+      "action_bytes": 65536
+    },
+    "qualification": "executed offline; not a model or an intelligence benchmark"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [
+      "loopback connection after explicit run OR public HTTPS after exact disclosure consent",
+      "one named SCRYVEIL_ credential from owner environment"
+    ],
+    "side_effects": [
+      "explicitly authorized model requests disclose minimized context",
+      "provider may log requests or incur charges"
+    ],
+    "extension_id": "chat-completions-json",
+    "kind": "provider",
+    "implementation": "scryveil.providers:ChatCompletionsProvider",
+    "compatibility": [
+      "scryveil.provider/1",
+      "scryveil.agent/1",
+      "non-streaming /v1/chat/completions JSON message content"
+    ],
+    "capabilities": [
+      "owner-configured model endpoint",
+      "optional provider usage reporting"
+    ],
+    "resource_budgets": {
+      "requests": 32,
+      "request_timeout_seconds": 60,
+      "context_bytes": 262144,
+      "response_bytes": 1048576,
+      "action_bytes": 65536
+    },
+    "qualification": "Pinned Qwen 1.5B and Qwen3 4B CPU configurations exercised the real adapter but have no qualified evidence-grounded final result. See docs/validation/qwen3-recovery-comparison.md. Other models and external providers remain untested."
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "extension_id": "scryveil_zip_collection_v1",
+    "kind": "parser",
+    "version": "1.0.0",
+    "implementation": "scryveil.collection:unpack",
+    "provenance": "SCRYVEIL original implementation; no incorporated upstream code",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "compatibility": [
+      "case 0.1.0; optional collection manifest and full-case snapshot profile"
+    ],
+    "capabilities": [
+      "bounded ZIP inventory without filesystem extraction",
+      "preserve archive/member relationships and unsupported bytes"
+    ],
+    "resource_budgets": {
+      "archive_bytes": 67108864,
+      "member_bytes": 8388608,
+      "expanded_bytes": 67108864,
+      "members": 1000,
+      "expansion_ratio": 200
+    },
+    "qualification": "independently generated collections only; genuine exports and independent security audit open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "extension_id": "scryveil.diagnostic-intelligence/1",
+    "kind": "detector",
+    "version": "1.0.0",
+    "implementation": "scryveil.diagnostic_intelligence:intelligence",
+    "provenance": "SCRYVEIL original implementation; no incorporated upstream code",
+    "license": "MIT",
+    "permissions": [],
+    "side_effects": [],
+    "compatibility": [
+      "case 0.1.0; optional collection manifest and full-case snapshot profile"
+    ],
+    "capabilities": [
+      "declared exception and symbol signature recurrence",
+      "explicit Jetsam reasons and report condition contradictions",
+      "bounded temporal proximity without causal claims"
+    ],
+    "resource_budgets": {
+      "events": 20000,
+      "references_per_finding_side": 8
+    },
+    "qualification": "independently generated collections only; genuine exports and independent security audit open"
+  },
+  {
+    "schema_version": "scryveil.extension/1",
+    "version": "1.0.0",
+    "provenance": "SCRYVEIL original code; reviewed development branch",
+    "license": "MIT",
+    "permissions": [
+      "loopback connection after explicit run OR public HTTPS after exact disclosure consent",
+      "one named SCRYVEIL_ credential from owner environment"
+    ],
+    "side_effects": [
+      "explicitly authorized model requests disclose minimized context",
+      "provider may log requests or incur charges"
+    ],
+    "extension_id": "messages-tools",
+    "kind": "provider",
+    "implementation": "scryveil.providers:MessagesToolsProvider",
+    "compatibility": [
+      "scryveil.provider/1",
+      "scryveil.agent/1",
+      "non-streaming /v1/messages client-tool blocks; anthropic-version 2023-06-01"
+    ],
+    "capabilities": [
+      "phase-scoped native client-tool definitions mapped to the same eleven read-only tools",
+      "native tool_use/tool_result history with complete exchange pairs",
+      "single-call response requirement; server-side tools, thinking blocks and streaming unsupported",
+      "input usage includes cache read and creation tokens; no prompt-cache configuration",
+      "sanitized HTTP/protocol error codes; no provider error-body disclosure"
+    ],
+    "resource_budgets": {
+      "requests": 32,
+      "request_timeout_seconds": 60,
+      "context_bytes": 262144,
+      "response_bytes": 1048576,
+      "action_bytes": 65536
+    },
+    "qualification": "Synthetic HTTP broker/isolated-worker protocol tested; actual-model and hosted-provider qualification pending. Does not claim universal model compatibility."
+  }
+]

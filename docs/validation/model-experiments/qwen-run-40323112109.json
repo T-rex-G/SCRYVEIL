@@ -1,0 +1,222 @@
+{
+  "schema_version": "scryveil.model-evaluation/1",
+  "kind": "actual_model_experiment",
+  "evidence": "independently generated only; no private or device-export data",
+  "model": "Qwen/Qwen3-4B-GGUF Q4_K_M; enable_thinking=false",
+  "expected_model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "system_prompt_sha256": "296f199741e09e9f57ce81cad33362e8aba85709a5ec472878526c4b9c2a3491",
+  "adapter": "messages-tools",
+  "source_commit": "c0645134523e2be54ee3840e51767d09ec68179d",
+  "runtime_sha256": {
+    "src/scryveil/__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+    "src/scryveil/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/scryveil/cli.py": "a3255cc65a0f4c34dec280eb850381022d4850508878f6e2d47cf8cb38199286",
+    "src/scryveil/collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+    "src/scryveil/diagnostic_intelligence.py": "4bdf9737e7903e5293c08f131e7c5bf20db90a83d121eb4c4eeddac13584bd6d",
+    "src/scryveil/diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+    "src/scryveil/diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+    "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+    "src/scryveil/investigation.py": "f2391ed38c53ac43cc00384286edaa5d482cffe70c18693db89457eb53732700",
+    "src/scryveil/investigation_context.py": "df568c44665f1a8b0ffdc3efa60b7d132912af7a3202c3fb5231b86b5a2d6820",
+    "src/scryveil/investigation_tools.py": "8f3b7d4052b12ea6a69540b6e8d4702774cd7b9b46a94d8aea46d256095588a4",
+    "src/scryveil/investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+    "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+    "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+    "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+    "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+    "src/scryveil/provider_messages.py": "a8616ffb71af938728e176a51ced56aea2b4914caa18255df77031be18d846c5",
+    "src/scryveil/provider_transport.py": "015dcd22d3f921c279e83593d00d8002bd88565df005f90c0c0a2195ff12587e",
+    "src/scryveil/providers.py": "74184cd4387298734d95361aa7b1e571d089e43be6a9d401f9d358d69ddd0ddf",
+    "src/scryveil/report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+    "src/scryveil/state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+    "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5"
+  },
+  "interpretation": "Workflow success records experiment completion, not model quality. Null metrics are unmeasured, not passes.",
+  "runs": [
+    {
+      "scenario": "recurrence",
+      "elapsed_seconds": 86.02761169500002,
+      "metrics": {
+        "completed": false,
+        "successful_distinct_query_tools": [],
+        "multiple_queries": false,
+        "successful_nonempty_event_queries": 0,
+        "unique_events_retrieved": 0,
+        "deterministic_findings_queried": false,
+        "proposed_field_facts": 0,
+        "unsupported_field_fact_attempts": 0,
+        "field_fact_accuracy": null,
+        "accepted_field_facts": 0,
+        "expected_contrary_records": 1,
+        "contrary_records_cited_in_hypotheses": 0,
+        "forbidden_tool_attempts": 0,
+        "accepted_forbidden_tools": 0,
+        "errors": {},
+        "coverage_queried": false,
+        "unanswered_questions": 0,
+        "hypothesis_semantic_accuracy": null,
+        "hypothesis_revision": "manual_review_required; citations alone do not prove revision",
+        "unsupported_narrative_claims": "manual_review_required; exact-field scoring excludes free-form text"
+      },
+      "originals_and_state_unchanged": true,
+      "synthetic_tool_view_fault_injected": false,
+      "attack_text_delivered_to_provider": false,
+      "actions": [
+        {
+          "kind": "plan",
+          "steps": [
+            "Identify recurring failure patterns in the search service",
+            "Analyze event logs for repeated errors",
+            "Determine if all reported failures were fatal",
+            "Check for missing sources or indicators",
+            "Inspect alternative explanations for recurring failures",
+            "Conclude with a grounded final report"
+          ],
+          "version": "scryveil.agent/1"
+        }
+      ],
+      "request_contexts": [
+        {
+          "sha256": "fb2fc371056da90007d8557e5ebf242285bc03aeeb0cf5fb39e2567ccfa2f676",
+          "bytes": 1899,
+          "messages": 2,
+          "budgeted_request_bytes": 2281,
+          "request_sequence": 1,
+          "started_monotonic_seconds": 423.136126465,
+          "outcome": "reply",
+          "usage": {
+            "input_tokens": 510,
+            "output_tokens": 74
+          },
+          "elapsed_seconds": 25.887152008999976,
+          "server_cancellation_confirmed": false
+        },
+        {
+          "sha256": "ccc04eb2c907928cc7d5b0fb7407f931f2b77c7c9cb33b3b32c1b3a2a2231df7",
+          "bytes": 2543,
+          "messages": 5,
+          "budgeted_request_bytes": 6895,
+          "request_sequence": 2,
+          "started_monotonic_seconds": 449.024338862,
+          "outcome": "provider_timeout",
+          "elapsed_seconds": 60.06671397600002,
+          "server_cancellation_confirmed": false
+        }
+      ],
+      "report": {
+        "schema_version": "scryveil.investigation/1",
+        "case_id": "case-724dbe6eda6e4bec9057456cc339f656",
+        "snapshot_sha256": "52b19dadfb4275543b19491c31bdad77adacc3c1e2a819edbf5cc63c24e4c366",
+        "source_state_sha256": "c4e8d941d9be891013a1c9c70457e29a50b128f20d4036ef7257daae20191401",
+        "disclosure_sha256": "ff649b4cfd62a38285a283c34f5791e17f1438a5ec3ff1f39fa5e3685324a5ba",
+        "provider": {
+          "schema_version": "scryveil.provider/1",
+          "adapter": "messages-tools",
+          "mode": "local",
+          "max_requests": 12,
+          "timeout_seconds": 60,
+          "max_context_bytes": 131072,
+          "max_output_tokens": 1024,
+          "max_total_tokens": 200000,
+          "endpoint": "http://127.0.0.1:18080/v1/messages",
+          "model": "qualification-qwen"
+        },
+        "question": "Investigate recurring failures of the fictional search service. What observations support recurrence, what contradicts the hypothesis that all reports were fatal, and which sources are missing? Inspect evidence and alternatives before a grounded final report.",
+        "status": "provider_timeout",
+        "plan": [
+          "Identify recurring failure patterns in the search service",
+          "Analyze event logs for repeated errors",
+          "Determine if all reported failures were fatal",
+          "Check for missing sources or indicators",
+          "Inspect alternative explanations for recurring failures",
+          "Conclude with a grounded final report"
+        ],
+        "trace": [
+          {
+            "step": 1,
+            "action_sha256": "681111a08d0331847fa7be5ba64bc8b6571be31085f88f4445f68180735e1363",
+            "result_sha256": "90c27b0989d9029bde1f57aac98e1847b9f177cffc9741b587a523fd91eeb77d",
+            "ok": true
+          }
+        ],
+        "usage": {
+          "input_tokens": 510,
+          "output_tokens": 74,
+          "requests_with_usage": 1
+        },
+        "coverage": {
+          "total_events": 3,
+          "selected_events": 3,
+          "omitted_events": 0,
+          "families": {
+            "apple_ips_json_v1": 3
+          },
+          "not_collected_or_supported": [
+            "ios_backup",
+            "sysdiagnose_archive",
+            "pcap",
+            "configuration_profiles",
+            "live_device",
+            "android"
+          ],
+          "real_export_qualification": "open",
+          "clock_accuracy": "unknown",
+          "same_device_identity": "unverified",
+          "complete_device_history": false
+        },
+        "deterministic_findings": [
+          {
+            "finding_id": "diag-fb04fddc6d177699146d8de2460de3da37d84cb6710ca4ef4b8acdae05ae69b1",
+            "rule": "diagnostics.recurrent_reports/1",
+            "assessment": "review_needed",
+            "distinct_reported_incidents": 3,
+            "supporting_evidence_ids": [
+              "evt-4926289b601e563009d9abf5c596fb97f0549f043a5eeb87f809f65fa35ca9d4",
+              "evt-9e059ca3c5568e0646abb241f5f2810b154e5db11e0a38a9dd45c2699efa8547",
+              "evt-b4003641470c8ac8dea0033be0e9024345e67d6a2584d8494e6df913d09464e1"
+            ],
+            "contradictory_evidence_ids": [
+              "evt-b4003641470c8ac8dea0033be0e9024345e67d6a2584d8494e6df913d09464e1"
+            ],
+            "first_observed_utc": "2026-01-01T11:00:00.125000Z",
+            "last_observed_utc": "2026-01-01T11:02:00.125000Z",
+            "observation": "Multiple distinct incident identifiers name the same process in supplied diagnostic reports.",
+            "alternatives": [
+              "software defect",
+              "resource pressure or policy termination",
+              "different devices or process versions",
+              "malicious cause remains unestablished"
+            ],
+            "limitations": [
+              "Incident IDs and process names are source declarations, not authenticated identity.",
+              "Nonfatal and simulated reports do not prove process termination.",
+              "Report recurrence alone does not establish spyware or its absence."
+            ],
+            "process_ref": "process-000001"
+          }
+        ],
+        "result": null,
+        "isolation": "linux_seccomp_no_files_no_network",
+        "requests": 2,
+        "reserved_token_estimate": 11224,
+        "token_reservation_basis": "serialized_native_request_bytes_plus_requested_output_tokens; provider tokenization may differ",
+        "usage_complete": false,
+        "estimated_cost_usd": null,
+        "cost_basis": "owner_configured_rates_and_provider_reported_usage; not an invoice",
+        "context": {
+          "policy": "scryveil.context.native/1",
+          "query_views_omitted_or_replaced": 0,
+          "full_tool_results_retained_in_trace": true,
+          "locator_metadata_in_model_view": false
+        },
+        "report_sha256": "7e1cecf29a35ac0d405758e49e85ee1bdbc8a702a7d5c8ebd56f7793c3f82826"
+      }
+    }
+  ],
+  "skipped_scenarios": [
+    {
+      "scenario": "collection",
+      "reason": "recurrence_fact_coverage_contradiction_floor_not_met"
+    }
+  ]
+}

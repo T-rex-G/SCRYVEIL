@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SCRYVEIL built-in extension declaration v1; metadata does not grant permission",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "schema_version": {
+        "const": "scryveil.extension/1"
+      },
+      "extension_id": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "version": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "kind": {
+        "enum": [
+          "parser",
+          "detector",
+          "investigator_tools",
+          "provider"
+        ]
+      },
+      "provenance": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "license": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "implementation": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "compatibility": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxItems": 64
+      },
+      "capabilities": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxItems": 64
+      },
+      "permissions": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxItems": 64
+      },
+      "side_effects": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "maxItems": 64
+      },
+      "resource_budgets": {
+        "type": "object",
+        "minProperties": 1,
+        "additionalProperties": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "qualification": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "required": [
+      "schema_version",
+      "extension_id",
+      "version",
+      "kind",
+      "provenance",
+      "license",
+      "implementation",
+      "compatibility",
+      "capabilities",
+      "permissions",
+      "side_effects",
+      "resource_budgets",
+      "qualification"
+    ],
+    "additionalProperties": false
+  }
+}

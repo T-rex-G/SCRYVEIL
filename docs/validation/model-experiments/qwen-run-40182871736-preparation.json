@@ -1,0 +1,20 @@
+{
+  "schema_version": "scryveil.model-preparation/1",
+  "source_commit": "38e7b3320d4403b88b8f47ef3710b9dd721b7bcb",
+  "run_id": 40182871736,
+  "job_id": 121137454993,
+  "stage": "public_weights_download",
+  "status": "failed",
+  "inference_started": false,
+  "model_quality_measured": false,
+  "curl_exit_code": 28,
+  "timeout_milliseconds": 299861,
+  "received_bytes": 503858822,
+  "expected_bytes": 2497280256,
+  "original_log_excerpts": [
+    "2026-10-25T10:02:19.9826728Z [ 98%] Built target llama-server-impl",
+    "2026-10-25T10:02:20.0540705Z [100%] Built target llama-server",
+    "2026-10-25T10:07:20.0768661Z curl: (28) Operation timed out after 299861 milliseconds with 503858822 out of 2497280256 bytes received",
+    "2026-10-25T10:07:20.0809087Z ##[error]Process completed with exit code 28."
+  ]
+}

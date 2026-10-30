@@ -1,0 +1,166 @@
+{
+  "host": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "source_commit": "4f55541c805af34bd4378f0693de5b9124505358",
+  "runtime_sha256": {
+    "src/scryveil/__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+    "src/scryveil/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/scryveil/cli.py": "ac1b573183e739355081a24f103bace4ff7e44a2210531cf2189093a2c5001f0",
+    "src/scryveil/diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+    "src/scryveil/diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+    "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+    "src/scryveil/investigation.py": "97c9e50c89b5389ae2cf73573e9a4eecd7900f086f1bd6e851b9aba547c8f1ce",
+    "src/scryveil/investigation_context.py": "adfd7cf7e19a649568340afecd834cb72ea2537d30fb328cf798b1f05cf98bd9",
+    "src/scryveil/investigation_tools.py": "0ed9bbe18de67a7d8c413e4f96d2626e134b2811218be332ede4868c62621377",
+    "src/scryveil/investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+    "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+    "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+    "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+    "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+    "src/scryveil/provider_transport.py": "7ee809a4747071e0e29ce16f22acb095161568101995cbdb617c732d20a37a03",
+    "src/scryveil/providers.py": "e400a0ce9dc41f8423fbbca5d11a1785fd85e8f2f224e2c69a5ed1d84fd6c76c",
+    "src/scryveil/report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+    "src/scryveil/state.py": "5797cb432205a8a1d03cd0c6d212a6db8fd105e7267c7b7b61368dcd910d5dd8",
+    "src/scryveil/store.py": "b690e7ce6a67160691fe0dc4bb4034bf56384e269423a4c32df1a52c95f935a0"
+  },
+  "measured_working_tree_modified": true,
+  "measurement_script_sha256": "c174b090d8aa398fd80bce36232e643042817b64bc79672acb01f2207faf5761",
+  "method": "Three sequential fresh processes on shared Linux host; no concurrent local benchmark; process wall includes imports; RSS per process, not aggregate; no real evidence or model.",
+  "samples": [
+    {
+      "seconds": 0.44803770999999415,
+      "import_seconds": 0.24424895599997853,
+      "parent_peak_rss_kib": 16896,
+      "largest_child_peak_rss_kib": 16768,
+      "records": 30,
+      "snapshot_bytes": 76571,
+      "query_limits": {
+        "5": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 8426,
+          "returned_events": 5,
+          "truncated": true
+        },
+        "10": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 16722,
+          "returned_events": 10,
+          "truncated": true
+        },
+        "25": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 51482,
+          "returned_events": 25,
+          "truncated": true
+        }
+      },
+      "mock_status": "completed",
+      "mock_requests": 8,
+      "mock_reserved_token_estimate": 185203,
+      "max_total_tokens": 200000,
+      "context_policy": {
+        "policy": "scryveil.context/1",
+        "query_views_omitted_or_replaced": 0,
+        "full_tool_results_retained_in_trace": true,
+        "locator_metadata_in_model_view": false
+      },
+      "mock_errors": [],
+      "repeated_report_identical": true,
+      "originals_and_state_unchanged": true,
+      "process_wall_seconds": 0.5231626750000373
+    },
+    {
+      "seconds": 0.36858934299999646,
+      "import_seconds": 0.19132284199997684,
+      "parent_peak_rss_kib": 16896,
+      "largest_child_peak_rss_kib": 16768,
+      "records": 30,
+      "snapshot_bytes": 76571,
+      "query_limits": {
+        "5": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 8426,
+          "returned_events": 5,
+          "truncated": true
+        },
+        "10": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 16722,
+          "returned_events": 10,
+          "truncated": true
+        },
+        "25": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 51482,
+          "returned_events": 25,
+          "truncated": true
+        }
+      },
+      "mock_status": "completed",
+      "mock_requests": 8,
+      "mock_reserved_token_estimate": 185203,
+      "max_total_tokens": 200000,
+      "context_policy": {
+        "policy": "scryveil.context/1",
+        "query_views_omitted_or_replaced": 0,
+        "full_tool_results_retained_in_trace": true,
+        "locator_metadata_in_model_view": false
+      },
+      "mock_errors": [],
+      "repeated_report_identical": true,
+      "originals_and_state_unchanged": true,
+      "process_wall_seconds": 0.42501558200001455
+    },
+    {
+      "seconds": 0.43588610400001926,
+      "import_seconds": 0.23915293900000734,
+      "parent_peak_rss_kib": 16896,
+      "largest_child_peak_rss_kib": 16768,
+      "records": 30,
+      "snapshot_bytes": 76571,
+      "query_limits": {
+        "5": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 8426,
+          "returned_events": 5,
+          "truncated": true
+        },
+        "10": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 16722,
+          "returned_events": 10,
+          "truncated": true
+        },
+        "25": {
+          "ok": true,
+          "error": null,
+          "serialized_bytes": 51482,
+          "returned_events": 25,
+          "truncated": true
+        }
+      },
+      "mock_status": "completed",
+      "mock_requests": 8,
+      "mock_reserved_token_estimate": 185203,
+      "max_total_tokens": 200000,
+      "context_policy": {
+        "policy": "scryveil.context/1",
+        "query_views_omitted_or_replaced": 0,
+        "full_tool_results_retained_in_trace": true,
+        "locator_metadata_in_model_view": false
+      },
+      "mock_errors": [],
+      "repeated_report_identical": true,
+      "originals_and_state_unchanged": true,
+      "process_wall_seconds": 0.5049751919999608
+    }
+  ]
+}

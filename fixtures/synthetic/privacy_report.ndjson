@@ -1,0 +1,2 @@
+{"accessor": {"identifier": "com.example.camera", "identifierType": "bundleID"}, "category": "camera", "kind": "intervalBegin", "timeStamp": "2026-01-01T00:01:00+01:00", "type": "access"}
+{"bundleID": "com.example.research", "domain": "beacon.example.invalid", "firstTimeStamp": "2026-01-01T00:00:00Z", "hits": 20, "timeStamp": "2026-01-01T00:10:00Z", "type": "networkActivity"}

@@ -1,0 +1,2 @@
+{ invalid synthetic JSON
+{"schema": "scryveil.events/1", "synthetic": true, "event_type": "network.observation", "timestamp": "2026-01-01T00:00:00+00:00", "app": "com.example.research", "domain": "beacon.example.invalid"}

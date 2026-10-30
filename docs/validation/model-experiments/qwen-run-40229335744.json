@@ -1,0 +1,539 @@
+{
+  "schema_version": "scryveil.model-evaluation/1",
+  "kind": "actual_model_experiment",
+  "evidence": "independently generated only; no private or device-export data",
+  "model": "Qwen/Qwen3-4B-GGUF Q4_K_M; enable_thinking=false",
+  "expected_model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "system_prompt_sha256": "77baf4e78f259d9e6a90c95a6c0f01cfe6c755577a1fa923491dc3d753209f44",
+  "adapter": "messages-tools",
+  "source_commit": "fecbb7a9ae41be5e8d74a4d9ebb4cf802dd0bf69",
+  "runtime_sha256": {
+    "src/scryveil/__init__.py": "176f2e9d6d3a4e72448932ea2e407342873fbb911f17314eae10de750bbd994d",
+    "src/scryveil/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+    "src/scryveil/cli.py": "d93f1dd2af97b36a41baccd5c5d104dcf75ce978eacf8874b709da0ae25faf0d",
+    "src/scryveil/collection.py": "fb247a5d77095dabc167681b628ef0ed603a1fe68f2d08fe812ed607fd859a8c",
+    "src/scryveil/diagnostic_intelligence.py": "4bdf9737e7903e5293c08f131e7c5bf20db90a83d121eb4c4eeddac13584bd6d",
+    "src/scryveil/diagnostic_text.py": "af31ea71e7b16d953a15995f6dfc6f7f6d384e9db85ac00403c60c4076dcda55",
+    "src/scryveil/diagnostics.py": "83c0cb274aefa496989cc0536f5c875d50bb48e7c4cb57aa6dc3689745ae3836",
+    "src/scryveil/engine.py": "8f91de0df1c514bdb0c507d191ff52b99d49c5ee2d0518f62a0f6f0eb3b17eab",
+    "src/scryveil/investigation.py": "7faa6c32f751c2e2c44cc59c6cce6078d7b2d80a041b28cbae85fb317d590f10",
+    "src/scryveil/investigation_context.py": "df568c44665f1a8b0ffdc3efa60b7d132912af7a3202c3fb5231b86b5a2d6820",
+    "src/scryveil/investigation_tools.py": "b15af033eb3e610d41a6b3113097093e693624fbd6c84821b14884e8018c1010",
+    "src/scryveil/investigation_worker.py": "af68b77e810c2e355f2b6bc358697287bff54f06216a5e23aaceb9718feb2bf8",
+    "src/scryveil/isolation.py": "d6ec480bd0cb6c730f6941526cb315ce2e5e4270ed871b691a9ff3b3668f3337",
+    "src/scryveil/models.py": "37a8ed87c046c20000751034e27f4bd87d225510c9155143dfe490192ffe027e",
+    "src/scryveil/parse.py": "5401d276c9b9ac83cd8857aa3d9157b866cb4f9ec2574ff767315887e1cc2aa8",
+    "src/scryveil/privacy.py": "3c0d743892f527a06e072caacde70dd055c54aeb6a3181b1e5206b4621f6d4e6",
+    "src/scryveil/provider_messages.py": "368e20c1cb6ffddd43b753514830e241db5c3a753e69f9cbabd48e6e53592735",
+    "src/scryveil/provider_transport.py": "015dcd22d3f921c279e83593d00d8002bd88565df005f90c0c0a2195ff12587e",
+    "src/scryveil/providers.py": "74184cd4387298734d95361aa7b1e571d089e43be6a9d401f9d358d69ddd0ddf",
+    "src/scryveil/report.py": "00f9eebfe3630abcd9df05aade06cf885d539ba061950d774bef13b1ddbe5af0",
+    "src/scryveil/state.py": "d147991ff176beb38d6d44ca34388d878dfc57c6ee1c1fdb2d5766545c89bd95",
+    "src/scryveil/store.py": "9cfb4177606a63967af9416fa6ad21e1f11df182e4d0a1e1aafa50451e0391f5"
+  },
+  "interpretation": "Workflow success records experiment completion, not model quality. Null metrics are unmeasured, not passes.",
+  "runs": [
+    {
+      "scenario": "recurrence",
+      "elapsed_seconds": 227.939550219,
+      "metrics": {
+        "completed": false,
+        "successful_distinct_query_tools": [
+          "coverage.inspect",
+          "diagnostics.search",
+          "timeline.query"
+        ],
+        "multiple_queries": true,
+        "successful_nonempty_event_queries": 1,
+        "unique_events_retrieved": 3,
+        "deterministic_findings_queried": false,
+        "proposed_field_facts": 0,
+        "unsupported_field_fact_attempts": 0,
+        "field_fact_accuracy": null,
+        "accepted_field_facts": 0,
+        "expected_contrary_records": 1,
+        "contrary_records_cited_in_hypotheses": 0,
+        "forbidden_tool_attempts": 0,
+        "accepted_forbidden_tools": 0,
+        "errors": {},
+        "coverage_queried": true,
+        "unanswered_questions": 0,
+        "hypothesis_semantic_accuracy": null,
+        "hypothesis_revision": "manual_review_required; citations alone do not prove revision",
+        "unsupported_narrative_claims": "manual_review_required; exact-field scoring excludes free-form text"
+      },
+      "originals_and_state_unchanged": true,
+      "synthetic_tool_view_fault_injected": false,
+      "attack_text_delivered_to_provider": false,
+      "actions": [
+        {
+          "kind": "plan",
+          "steps": [
+            "Identify recurring failure patterns in search service logs",
+            "Analyze timestamps and error codes for consistency",
+            "Compare error messages across different failure reports",
+            "Check for common system or configuration factors",
+            "Investigate if any non-fatal errors are being overlooked",
+            "Review system resources and load during failures",
+            "Check for missing or incomplete error reports",
+            "Determine if external factors are contributing to the failures"
+          ],
+          "version": "scryveil.agent/1"
+        },
+        {
+          "arguments": {},
+          "kind": "tool",
+          "name": "coverage.inspect",
+          "version": "scryveil.agent/1"
+        },
+        {
+          "arguments": {
+            "text": "search service failure"
+          },
+          "kind": "tool",
+          "name": "timeline.query",
+          "version": "scryveil.agent/1"
+        },
+        {
+          "arguments": {
+            "text": "search service failure"
+          },
+          "kind": "tool",
+          "name": "diagnostics.search",
+          "version": "scryveil.agent/1"
+        },
+        {
+          "arguments": {
+            "limit": 5
+          },
+          "kind": "tool",
+          "name": "timeline.query",
+          "version": "scryveil.agent/1"
+        }
+      ],
+      "request_contexts": [
+        {
+          "sha256": "9370a241cbb49f92d37d4f18363b0771a1944d064f799fdf7bdfb0c039b4fa09",
+          "bytes": 1739,
+          "messages": 2,
+          "budgeted_request_bytes": 2121,
+          "request_sequence": 1,
+          "started_monotonic_seconds": 349.842351802,
+          "outcome": "reply",
+          "usage": {
+            "input_tokens": 481,
+            "output_tokens": 101
+          },
+          "elapsed_seconds": 30.602317948000007,
+          "server_cancellation_confirmed": false
+        },
+        {
+          "sha256": "f16e4450c93d4f89e2c315b3d6eae4633c2c4b920e2355bec56c964e3450698a",
+          "bytes": 2544,
+          "messages": 5,
+          "budgeted_request_bytes": 5899,
+          "request_sequence": 2,
+          "started_monotonic_seconds": 380.445510264,
+          "outcome": "reply",
+          "usage": {
+            "input_tokens": 1585,
+            "output_tokens": 17
+          },
+          "elapsed_seconds": 59.38972618899999,
+          "server_cancellation_confirmed": false
+        },
+        {
+          "sha256": "aaca46fcda191b09841b9b9762a30cc087442639743b757343e0302957ceaa1f",
+          "bytes": 3211,
+          "messages": 7,
+          "budgeted_request_bytes": 6612,
+          "request_sequence": 3,
+          "started_monotonic_seconds": 439.836266984,
+          "outcome": "reply",
+          "usage": {
+            "input_tokens": 1720,
+            "output_tokens": 22
+          },
+          "elapsed_seconds": 14.887756459999991,
+          "server_cancellation_confirmed": false
+        },
+        {
+          "sha256": "da3d2a7ba2a709ecb01a25f0ceaf53a813273173696f50a93c7341a1c39b7dc9",
+          "bytes": 3906,
+          "messages": 9,
+          "budgeted_request_bytes": 8420,
+          "request_sequence": 4,
+          "started_monotonic_seconds": 454.725356661,
+          "outcome": "reply",
+          "usage": {
+            "input_tokens": 2194,
+            "output_tokens": 23
+          },
+          "elapsed_seconds": 47.26553604100002,
+          "server_cancellation_confirmed": false
+        },
+        {
+          "sha256": "55be89806a0c18be82cf6afa4d85638df2dc4da9e8a0f073f0d99d66f034a418",
+          "bytes": 4278,
+          "messages": 11,
+          "budgeted_request_bytes": 8834,
+          "request_sequence": 5,
+          "started_monotonic_seconds": 501.992165686,
+          "outcome": "reply",
+          "usage": {
+            "input_tokens": 2269,
+            "output_tokens": 20
+          },
+          "elapsed_seconds": 15.657920200000035,
+          "server_cancellation_confirmed": false
+        },
+        {
+          "sha256": "7400aa8733e4c31f698dd0fd901d6cb21ce8bbf47737751dc9f4618447d81b16",
+          "bytes": 7117,
+          "messages": 13,
+          "budgeted_request_bytes": 11719,
+          "request_sequence": 6,
+          "started_monotonic_seconds": 517.651806378,
+          "outcome": "provider_timeout",
+          "elapsed_seconds": 60.06262936200005,
+          "server_cancellation_confirmed": false
+        }
+      ],
+      "report": {
+        "schema_version": "scryveil.investigation/1",
+        "case_id": "case-64d6d28155de400a8a440394eeadb7e1",
+        "snapshot_sha256": "bb21c233a844a63700a8de11caab49a56d0050dc1118f2385abc21684e1a0324",
+        "source_state_sha256": "38cae5dcbe845314e6776c9ad7c0643987437521e85d6b3f4fd759969b721425",
+        "disclosure_sha256": "82ca74225541fc8ba014b2d9f9e56ba6c86f243979964350fe9c1498a07d3425",
+        "provider": {
+          "schema_version": "scryveil.provider/1",
+          "adapter": "messages-tools",
+          "mode": "local",
+          "max_requests": 12,
+          "timeout_seconds": 60,
+          "max_context_bytes": 131072,
+          "max_output_tokens": 1024,
+          "max_total_tokens": 200000,
+          "endpoint": "http://127.0.0.1:18080/v1/messages",
+          "model": "qualification-qwen"
+        },
+        "question": "Investigate recurring failures of the fictional search service. What observations support recurrence, what contradicts the hypothesis that all reports were fatal, and which sources are missing? Inspect evidence and alternatives before a grounded final report.",
+        "status": "provider_timeout",
+        "plan": [
+          "Identify recurring failure patterns in search service logs",
+          "Analyze timestamps and error codes for consistency",
+          "Compare error messages across different failure reports",
+          "Check for common system or configuration factors",
+          "Investigate if any non-fatal errors are being overlooked",
+          "Review system resources and load during failures",
+          "Check for missing or incomplete error reports",
+          "Determine if external factors are contributing to the failures"
+        ],
+        "trace": [
+          {
+            "step": 1,
+            "action_sha256": "354b655089b65bde3bb127f14c81175843991897e7b4868906e1c7f40ffb2a22",
+            "result_sha256": "9b1c4dbe4276bdb3433bd716b3361cf76bcf6cb394fb84a5ccf4227047251a50",
+            "ok": true
+          },
+          {
+            "step": 2,
+            "action_sha256": "9aa4931056cd6aaa8ffe74548859aea179bc48613e699ea0a0273b6503c5d46f",
+            "result_sha256": "9d1b692cfcdfff2f4edebb57787709a2e2f03ae223a4a0e0eaf4500dbc6a2287",
+            "ok": true,
+            "tool": "coverage.inspect",
+            "arguments": {},
+            "result": {
+              "data": {
+                "clock_accuracy": "unknown",
+                "complete_device_history": false,
+                "families": {
+                  "apple_ips_json_v1": 3
+                },
+                "not_collected_or_supported": [
+                  "ios_backup",
+                  "sysdiagnose_archive",
+                  "pcap",
+                  "configuration_profiles",
+                  "live_device",
+                  "android"
+                ],
+                "omitted_events": 0,
+                "real_export_qualification": "open",
+                "same_device_identity": "unverified",
+                "selected_events": 3,
+                "total_events": 3
+              },
+              "evidence_ids": [],
+              "ok": true,
+              "schema_version": "scryveil.tools/1",
+              "truncated": false
+            }
+          },
+          {
+            "step": 3,
+            "action_sha256": "46bfc3fbeb1256f982374e0ed8a57681029c29c2a4c254ae70aa2a4b1c4b9a8c",
+            "result_sha256": "18fdfba52dd58cf5e811f4ac95556730058c978f7762009ffbb29d373c8d20b0",
+            "ok": true,
+            "tool": "timeline.query",
+            "arguments": {
+              "text": "search service failure"
+            },
+            "result": {
+              "data": {
+                "events": [],
+                "matched": 0,
+                "next_cursor": null
+              },
+              "evidence_ids": [],
+              "ok": true,
+              "schema_version": "scryveil.tools/1",
+              "truncated": false
+            }
+          },
+          {
+            "step": 4,
+            "action_sha256": "e08c86ee216427c0ee441bd5d67b41d41acb24936204ff7865a018e8a93e0d7b",
+            "result_sha256": "18fdfba52dd58cf5e811f4ac95556730058c978f7762009ffbb29d373c8d20b0",
+            "ok": true,
+            "tool": "diagnostics.search",
+            "arguments": {
+              "text": "search service failure"
+            },
+            "result": {
+              "data": {
+                "events": [],
+                "matched": 0,
+                "next_cursor": null
+              },
+              "evidence_ids": [],
+              "ok": true,
+              "schema_version": "scryveil.tools/1",
+              "truncated": false
+            }
+          },
+          {
+            "step": 5,
+            "action_sha256": "e5b3d5a8358520635dd3411e1f1d5c4fcbfe753bcb168d19204a8d16fe3aeeaf",
+            "result_sha256": "9207ed3a1596c17bd642cb5bc67d529f9973901c1f6b1c9ac7eeb9c84cd203eb",
+            "ok": true,
+            "tool": "timeline.query",
+            "arguments": {
+              "limit": 5
+            },
+            "result": {
+              "data": {
+                "events": [
+                  {
+                    "app_ref": null,
+                    "artifact_id": "artifact-f4c60c520b861e1fe29347665748d3db238cfe4313611135f30aea1d3d1f0a2f",
+                    "bundle_id": null,
+                    "byte_length": 743,
+                    "byte_offset": 131,
+                    "domain_ref": null,
+                    "event_id": "evt-4926289b601e563009d9abf5c596fb97f0549f043a5eeb87f809f65fa35ca9d4",
+                    "event_time": "2026-01-01T11:00:00.125000Z",
+                    "event_type": "diagnostic.crash",
+                    "exception_subtype": "synthetic diagnostic condition",
+                    "exception_type": "EXC_BAD_ACCESS",
+                    "frames": [
+                      {
+                        "image_index": 0,
+                        "image_offset": 32,
+                        "symbol": "fictional_lookup"
+                      }
+                    ],
+                    "json_pointer": "",
+                    "nonfatal": null,
+                    "os_build": "synthetic-build",
+                    "os_version": "Fictional OS 1.0",
+                    "parent_process": null,
+                    "parser": "apple_ips_json_v1",
+                    "parser_version": "1.0.0",
+                    "pid": 100,
+                    "process": "com.example.searchd",
+                    "process_path": "/fictional/com.example.searchd",
+                    "process_ref": "process-000001",
+                    "simulated": null,
+                    "source_locator": "line:2",
+                    "source_offset": "+01:00",
+                    "synthetic": true,
+                    "termination_code": 11,
+                    "termination_namespace": "SIGNAL",
+                    "termination_reason": "fictional signal",
+                    "time_precision": "fractional_digits:3"
+                  },
+                  {
+                    "app_ref": null,
+                    "artifact_id": "artifact-da25161f2058a8099bdf3fa0cd8ebacbfbd305d42687b495a23b3c8452b9af35",
+                    "bundle_id": null,
+                    "byte_length": 743,
+                    "byte_offset": 131,
+                    "domain_ref": null,
+                    "event_id": "evt-9e059ca3c5568e0646abb241f5f2810b154e5db11e0a38a9dd45c2699efa8547",
+                    "event_time": "2026-01-01T11:01:00.125000Z",
+                    "event_type": "diagnostic.crash",
+                    "exception_subtype": "synthetic diagnostic condition",
+                    "exception_type": "EXC_BAD_ACCESS",
+                    "frames": [
+                      {
+                        "image_index": 0,
+                        "image_offset": 32,
+                        "symbol": "fictional_lookup"
+                      }
+                    ],
+                    "json_pointer": "",
+                    "nonfatal": null,
+                    "os_build": "synthetic-build",
+                    "os_version": "Fictional OS 1.0",
+                    "parent_process": null,
+                    "parser": "apple_ips_json_v1",
+                    "parser_version": "1.0.0",
+                    "pid": 101,
+                    "process": "com.example.searchd",
+                    "process_path": "/fictional/com.example.searchd",
+                    "process_ref": "process-000001",
+                    "simulated": null,
+                    "source_locator": "line:2",
+                    "source_offset": "+01:00",
+                    "synthetic": true,
+                    "termination_code": 11,
+                    "termination_namespace": "SIGNAL",
+                    "termination_reason": "fictional signal",
+                    "time_precision": "fractional_digits:3"
+                  },
+                  {
+                    "app_ref": null,
+                    "artifact_id": "artifact-e85c7acd46cef0743b87435843be8213628c6fcc37908d168070aa85ae191494",
+                    "bundle_id": null,
+                    "byte_length": 763,
+                    "byte_offset": 131,
+                    "domain_ref": null,
+                    "event_id": "evt-b4003641470c8ac8dea0033be0e9024345e67d6a2584d8494e6df913d09464e1",
+                    "event_time": "2026-01-01T11:02:00.125000Z",
+                    "event_type": "diagnostic.resource",
+                    "exception_subtype": "synthetic diagnostic condition",
+                    "exception_type": "EXC_RESOURCE",
+                    "frames": [
+                      {
+                        "image_index": 0,
+                        "image_offset": 32,
+                        "symbol": "fictional_lookup"
+                      }
+                    ],
+                    "json_pointer": "",
+                    "nonfatal": true,
+                    "os_build": "synthetic-build",
+                    "os_version": "Fictional OS 1.0",
+                    "parent_process": null,
+                    "parser": "apple_ips_json_v1",
+                    "parser_version": "1.0.0",
+                    "pid": 102,
+                    "process": "com.example.searchd",
+                    "process_path": "/fictional/com.example.searchd",
+                    "process_ref": "process-000001",
+                    "simulated": null,
+                    "source_locator": "line:2",
+                    "source_offset": "+01:00",
+                    "synthetic": true,
+                    "termination_code": 11,
+                    "termination_namespace": "SIGNAL",
+                    "termination_reason": "fictional signal",
+                    "time_precision": "fractional_digits:3"
+                  }
+                ],
+                "matched": 3,
+                "next_cursor": null
+              },
+              "evidence_ids": [
+                "evt-4926289b601e563009d9abf5c596fb97f0549f043a5eeb87f809f65fa35ca9d4",
+                "evt-9e059ca3c5568e0646abb241f5f2810b154e5db11e0a38a9dd45c2699efa8547",
+                "evt-b4003641470c8ac8dea0033be0e9024345e67d6a2584d8494e6df913d09464e1"
+              ],
+              "ok": true,
+              "schema_version": "scryveil.tools/1",
+              "truncated": false
+            }
+          }
+        ],
+        "usage": {
+          "input_tokens": 8249,
+          "output_tokens": 183,
+          "requests_with_usage": 5
+        },
+        "coverage": {
+          "total_events": 3,
+          "selected_events": 3,
+          "omitted_events": 0,
+          "families": {
+            "apple_ips_json_v1": 3
+          },
+          "not_collected_or_supported": [
+            "ios_backup",
+            "sysdiagnose_archive",
+            "pcap",
+            "configuration_profiles",
+            "live_device",
+            "android"
+          ],
+          "real_export_qualification": "open",
+          "clock_accuracy": "unknown",
+          "same_device_identity": "unverified",
+          "complete_device_history": false
+        },
+        "deterministic_findings": [
+          {
+            "finding_id": "diag-fb04fddc6d177699146d8de2460de3da37d84cb6710ca4ef4b8acdae05ae69b1",
+            "rule": "diagnostics.recurrent_reports/1",
+            "assessment": "review_needed",
+            "distinct_reported_incidents": 3,
+            "supporting_evidence_ids": [
+              "evt-4926289b601e563009d9abf5c596fb97f0549f043a5eeb87f809f65fa35ca9d4",
+              "evt-9e059ca3c5568e0646abb241f5f2810b154e5db11e0a38a9dd45c2699efa8547",
+              "evt-b4003641470c8ac8dea0033be0e9024345e67d6a2584d8494e6df913d09464e1"
+            ],
+            "contradictory_evidence_ids": [
+              "evt-b4003641470c8ac8dea0033be0e9024345e67d6a2584d8494e6df913d09464e1"
+            ],
+            "first_observed_utc": "2026-01-01T11:00:00.125000Z",
+            "last_observed_utc": "2026-01-01T11:02:00.125000Z",
+            "observation": "Multiple distinct incident identifiers name the same process in supplied diagnostic reports.",
+            "alternatives": [
+              "software defect",
+              "resource pressure or policy termination",
+              "different devices or process versions",
+              "malicious cause remains unestablished"
+            ],
+            "limitations": [
+              "Incident IDs and process names are source declarations, not authenticated identity.",
+              "Nonfatal and simulated reports do not prove process termination.",
+              "Report recurrence alone does not establish spyware or its absence."
+            ],
+            "process_ref": "process-000001"
+          }
+        ],
+        "result": null,
+        "isolation": "linux_seccomp_no_files_no_network",
+        "requests": 6,
+        "reserved_token_estimate": 49749,
+        "token_reservation_basis": "serialized_native_request_bytes_plus_requested_output_tokens; provider tokenization may differ",
+        "usage_complete": false,
+        "estimated_cost_usd": null,
+        "cost_basis": "owner_configured_rates_and_provider_reported_usage; not an invoice",
+        "context": {
+          "policy": "scryveil.context.native/1",
+          "query_views_omitted_or_replaced": 0,
+          "full_tool_results_retained_in_trace": true,
+          "locator_metadata_in_model_view": false
+        },
+        "report_sha256": "16874b5dfb086d37306a4301a5741bab3423672da2ddf8fa29f41a7e182c01a1"
+      }
+    }
+  ],
+  "skipped_scenarios": [
+    {
+      "scenario": "collection",
+      "reason": "recurrence_fact_coverage_contradiction_floor_not_met"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "scryveil.provider/1",
+  "adapter": "chat-completions-json",
+  "mode": "remote",
+  "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
+  "auth_scheme": "bearer",
+  "model": "gemini-3.5-flash-lite",
+  "api_key_env": "SCRYVEIL_PROVIDER_API_KEY",
+  "max_requests": 12,
+  "timeout_seconds": 60,
+  "max_context_bytes": 131072,
+  "max_output_tokens": 4096,
+  "max_total_tokens": 200000,
+  "reasoning_effort": "low",
+  "retry_http_503_once": true
+}

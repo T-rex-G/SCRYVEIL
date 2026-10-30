@@ -1,0 +1,20 @@
+{
+  "scope": "server and evaluation child processes; excludes build/download",
+  "wall_seconds": 93.117248985,
+  "user_cpu_seconds": 362.234033,
+  "system_cpu_seconds": 0.6697179999999999,
+  "largest_child_peak_rss_kib": 6604616,
+  "model_threads": 4,
+  "affinity_cpus": 4,
+  "logical_cpus": 4,
+  "logical_batch_tokens": 128,
+  "physical_batch_tokens": 128,
+  "enable_thinking": false,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "top_k": 20,
+  "min_p": 0,
+  "presence_penalty": 1.5,
+  "seed": 41,
+  "network": "loopback_only"
+}

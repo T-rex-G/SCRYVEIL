@@ -1,0 +1,15 @@
+{"bug_type":"308","incident_id":"fictional-version-two-exception","is_simulated":1,"timestamp":"2026-02-03 14:33:00.000 +0230","scryveil_fixture":true}
+{
+  "version": 2,
+  "bug_type": "308",
+  "incident": "fictional-version-two-exception",
+  "captureTime": "2026-02-03 14:32:00.2500 +0230",
+  "procName": "com.example.searchd",
+  "procPath": "/fictional/com.example.searchd",
+  "pid": 202,
+  "isLightWeightCorpse": 1,
+  "exception": {"type":"EXC_GUARD","codes":"0x6000000000000007, 0x0000000000000009","rawCodes":[6917529027641081863,9],"subtype":"GUARD_TYPE_USER","message":"fictional guard diagnostic"},
+  "termination": {"namespace":"LIBXPC","code":9,"indicator":"fictional fault"},
+  "faultingThread":0,
+  "threads":[{"triggered":true,"frames":[{"imageIndex":0,"imageOffset":64}]}]
+}
